@@ -1,0 +1,17 @@
+{
+  "name": "faith-and-fast-root",
+  "version": "1.0.0",
+  "description": "Root workspace workspace runner for Faith & Fast storefront",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix client && npm install --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "build:client": "npm run build --prefix client",
+    "lint:client": "npm run lint --prefix client",
+    "check:all": "npm run build:client"
+  },
+  "keywords": [],
+  "author": "Faith & Fast Team",
+  "license": "ISC"
+}
