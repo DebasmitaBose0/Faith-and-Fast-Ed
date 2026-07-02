@@ -185,6 +185,9 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) and [FAI
 ## License
 This project is licensed under the ISC License.
 
+## Security
+For security issues or vulnerability reporting, please review our [Security Policy](SECURITY.md).
+
 ## Author Information
 **Project Admin**: Faith & Fast Team
 **Developer**: Jules (Senior Staff Software Engineer)

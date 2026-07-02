@@ -9,6 +9,7 @@ import morgan from "morgan";
 import connectDB from "./config/connectDB.js";
 import validateEnv from "./config/validateEnv.js";
 import errorMiddleware from "./middleware/error.js";
+import securityMiddleware from "./middleware/security.js";
 dotenv.config();
 validateEnv();
 
@@ -48,11 +49,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ limit: "5mb", extended: true }));
-app.use(
-  helmet({
-    crossOriginResourcePolicy: false,
-  })
-);
+securityMiddleware(app);
 app.use(limiter);
 app.use(morgan("combined"));
 app.use(errorMiddleware);
@@ -66,7 +63,7 @@ app.get("/", (req, res) => {
 import addressRouter from "./route/addressRoute.js";
 import cartRouter from "./route/cartRoute.js";
 import categoryRouter from "./route/categoryRoute.js";
-import discountRouter from "./route/discountRoutes.js";
+import discountRouter from "./route/discountRoute.js";
 import inventoryRouter from "./route/inventoryRoute.js";
 import orderRouter from "./route/orderRoute.js";
 import paymentRouter from "./route/paymentRoute.js";
