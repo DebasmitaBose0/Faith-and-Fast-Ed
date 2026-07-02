@@ -8,7 +8,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import connectDB from "./config/connectDB.js";
 import validateEnv from "./config/validateEnv.js";
-import errorMiddleware from "./middleware/error.js";
+import errorMiddleware from "./middleware/errorMiddleware.js";
 dotenv.config();
 validateEnv();
 

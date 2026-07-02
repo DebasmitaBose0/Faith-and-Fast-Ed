@@ -1,4 +1,5 @@
 import ErrorHandler from "../utils/errorHandler.js";
+import { logger } from "../utils/logger.js";
 
 const errorMiddleware = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
@@ -27,6 +28,9 @@ const errorMiddleware = (err, req, res, next) => {
     const message = `Json Web Token is Expired, Try again `;
     err = new ErrorHandler(message, 400);
   }
+
+  // Log error using the structured logger
+  logger.error(`${req.method} ${req.originalUrl} - Status: ${err.statusCode}`, err);
 
   res.status(err.statusCode).json({
     success: false,
