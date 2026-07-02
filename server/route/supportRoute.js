@@ -5,7 +5,7 @@ import admin from "../middleware/Admin.js";
 import {
   submitContactMessage,
   getContactMessages,
-} from "../controllers/contactController.js";
+} from "../controllers/supportController.js";
 
 const supportRouter = express.Router();
 
