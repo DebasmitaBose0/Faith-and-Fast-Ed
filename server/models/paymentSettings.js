@@ -16,9 +16,6 @@ const paymentSettingsSchema = new mongoose.Schema(
   }
 );
 
-const PaymentSettingsModel = mongoose.model(
-  "PaymentSettings",
-  paymentSettingsSchema
-);
+const PaymentSettingsModel = mongoose.model("PaymentSettings", paymentSettingsSchema);
 
 export default PaymentSettingsModel;

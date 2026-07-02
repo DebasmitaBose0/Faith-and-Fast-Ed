@@ -70,7 +70,7 @@ import discountRouter from "./route/discountRoutes.js";
 import inventoryRouter from "./route/inventoryRoute.js";
 import orderRouter from "./route/orderRoute.js";
 import paymentRouter from "./route/paymentRoute.js";
-import paymentSettingsRouter from "./route/paymentSettingsRoute.js";
+import paymentSettingsRouter from "./route/paymentSettingRoute.js";
 import productRouter from "./route/productRoute.js";
 import supportRouter from "./route/supportRoute.js";
 import userRouter from "./route/userRoute.js";

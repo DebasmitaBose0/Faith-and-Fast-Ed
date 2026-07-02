@@ -7,18 +7,15 @@ import {
   updatePaymentSettings,
 } from "../controllers/paymentSettingsController.js";
 
-const paymentSettingsRouter = express.Router();
+const paymentSettingRouter = express.Router();
 
-// Public — checkout reads UPI ID + QR
-paymentSettingsRouter.get("/", getPaymentSettings);
-
-// Admin — configure UPI ID + upload QR image
-paymentSettingsRouter.put(
-  "/admin/update",
+paymentSettingRouter.get("/get", getPaymentSettings);
+paymentSettingRouter.post(
+  "/update",
   auth,
   admin,
   upload.single("qrCode"),
   updatePaymentSettings
 );
 
-export default paymentSettingsRouter;
+export default paymentSettingRouter;

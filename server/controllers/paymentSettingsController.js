@@ -1,6 +1,7 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import PaymentSettingsModel from "../models/paymentSettingsModel.js";
+import PaymentSettingsModel from "../models/paymentSettings.js";
 import { uploadImage, deleteImage } from "../utils/cloudinary.js";
+import { encrypt, decrypt } from "../utils/cryptoHelper.js";
 
 // Public — the checkout page needs the UPI ID and QR to show online-payment instructions.
 export const getPaymentSettings = catchAsyncErrors(async (req, res) => {
@@ -12,6 +13,13 @@ export const getPaymentSettings = catchAsyncErrors(async (req, res) => {
         upiId: "",
         qrCode: { public_id: "", url: "" },
       });
+    } else if (settings.upiId) {
+      // Decrypt UPI ID before sending it to the client for display
+      try {
+        settings.upiId = decrypt(settings.upiId);
+      } catch (e) {
+        // Fallback to raw if not encrypted
+      }
     }
 
     res.status(200).json({ success: true, settings });
@@ -34,7 +42,7 @@ export const updatePaymentSettings = catchAsyncErrors(async (req, res) => {
     }
 
     if (typeof upiId === "string") {
-      settings.upiId = upiId.trim();
+      settings.upiId = encrypt(upiId.trim());
     }
 
     if (req.file) {
