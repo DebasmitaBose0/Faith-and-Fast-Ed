@@ -74,7 +74,7 @@ import paymentSettingsRouter from "./route/paymentSettingsRoute.js";
 import productRouter from "./route/productRoute.js";
 import supportRouter from "./route/supportRoute.js";
 import userRouter from "./route/userRoute.js";
-import wishListRouter from "./route/wishListRoute.js";
+import wishlistRouter from "./route/wishlistRoute.js";
 
 app.use("/api/address", addressRouter);
 app.use("/api/cart", cartRouter);
@@ -87,7 +87,7 @@ app.use("/api/payment-settings", paymentSettingsRouter);
 app.use("/api/product", productRouter);
 app.use("/api/support", supportRouter);
 app.use("/api/user", userRouter);
-app.use("/api/wishlist", wishListRouter);
+app.use("/api/wishlist", wishlistRouter);
 
 connectDB().then(() => {
   const server = app.listen(PORT, () =>
