@@ -30,7 +30,7 @@ const NotFoundPage = () => {
         </motion.p>
 
         <motion.div
-          className="mt-8"
+          className="mt-8 flex justify-center"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.9, duration: 0.7 }}
