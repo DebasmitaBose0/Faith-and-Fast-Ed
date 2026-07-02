@@ -38,8 +38,6 @@ export const getWishListItems = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      // An empty wishlist is returned by the API as a 404. Treat it as an
-      // empty (non-error) result so the page shows only the EmptyState.
       if (error.response?.status === 404) {
         return { data: [], error: false, success: true };
       }
@@ -56,7 +54,7 @@ export const updateWishListItemQty = createAsyncThunk(
     try {
       const token = localStorage.getItem("token");
       const response = await axiosInstance.put(
-        "/api/wishList/update",
+        "/api/wishlist/update",
         { _id, qty },
         {
           headers: {
@@ -79,12 +77,10 @@ export const deleteWishListItem = createAsyncThunk(
   async (_id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axiosInstance.delete("/api/wishList/delete", {
+      const response = await axiosInstance.delete(`/api/wishlist/delete/${_id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-
-        data: { _id },
         withCredentials: true,
       });
       return response.data;
@@ -106,7 +102,6 @@ const WishListSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-
       .addCase(addToWishList.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -119,7 +114,6 @@ const WishListSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
       .addCase(getWishListItems.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -132,7 +126,6 @@ const WishListSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
       .addCase(updateWishListItemQty.pending, (state) => {
         state.loading = true;
       })
@@ -147,7 +140,6 @@ const WishListSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
       .addCase(deleteWishListItem.pending, (state) => {
         state.loading = true;
       })

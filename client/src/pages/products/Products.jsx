@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProductByFilter } from "@/store/product-slice/productSlice";
 import { Pagination } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { addToWishList } from "@/store/add-to-wishList/addToWishList";
+import { addToWishList } from "@/store/add-to-wishlist/addToWishlist";
 import { toast } from "react-toastify";
 import categories from "./Categories";
 import colors from "../extras/Colors";

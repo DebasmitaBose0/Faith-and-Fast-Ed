@@ -8,7 +8,7 @@ import productDetailsSlice from "./product-slice/productDetails";
 import otpSlice from "./auth-slice/otpSlice";
 import adminProductSlice from "./product-slice/AdminProduct";
 import cartReducer from "./add-to-cart/addToCart";
-import wishListReducer from "./add-to-wishList/addToWishList";
+import wishListReducer from "./add-to-wishlist/addToWishlist";
 import orderReducer from "./order-slice/order";
 import discountReducer from "./extra-slice/discount";
 import onlineReducer from "./order-slice/order";
@@ -17,6 +17,7 @@ import adminAnalyticsReducer from "./order-slice/analyticsSlice";
 import paymentSettingsReducer from "./extra-slice/paymentSettingsSlice";
 import contactReducer from "./extra-slice/contactSlice";
 import inventoryReducer from "./extra-slice/inventorySlice";
+import { persistMiddleware } from "./middleware/persistMiddleware";
 
 const store = configureStore({
   reducer: {
@@ -39,6 +40,8 @@ const store = configureStore({
     contact: contactReducer,
     inventory: inventoryReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(persistMiddleware),
 });
 
 export default store;

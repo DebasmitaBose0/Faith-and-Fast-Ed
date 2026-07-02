@@ -36,7 +36,7 @@ import AdminDiscount from "./pages/admin/AdminDiscount";
 import PromoBanner from "./pages/components/PromoBanner";
 import { useEffect } from "react";
 import { getCartItems } from "./store/add-to-cart/addToCart";
-import { getWishListItems } from "./store/add-to-wishList/addToWishList";
+import { getWishListItems } from "./store/add-to-wishlist/addToWishlist";
 import NotFoundPage from "./pages/extras/NotFoundPage ";
 import FAQPage from "./pages/extras/FAQPage";
 import PrivacyPolicy from "./pages/extras/PrivacyPolicy";
