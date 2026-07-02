@@ -75,6 +75,7 @@ import productRouter from "./route/productRoute.js";
 import supportRouter from "./route/supportRoute.js";
 import userRouter from "./route/userRoute.js";
 import wishListRouter from "./route/wishListRoute.js";
+import couponAuditRouter from "./route/couponAuditRoute.js";
 
 app.use("/api/address", addressRouter);
 app.use("/api/cart", cartRouter);
@@ -88,6 +89,7 @@ app.use("/api/product", productRouter);
 app.use("/api/support", supportRouter);
 app.use("/api/user", userRouter);
 app.use("/api/wishlist", wishListRouter);
+app.use("/api/coupon-audit", couponAuditRouter);
 
 connectDB().then(() => {
   const server = app.listen(PORT, () =>

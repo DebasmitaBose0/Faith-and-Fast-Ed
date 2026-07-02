@@ -1,4 +1,5 @@
 import DiscountModel from "../models/discountModel.js";
+import CouponAuditModel from "../models/couponAudit.js";
 
 // Admin
 export const createDiscount = async (req, res) => {
@@ -207,6 +208,18 @@ export const applyDiscount = async (req, res) => {
 
     discount.usedBy.push(userId);
     await discount.save();
+
+    // Create audit log entry
+    try {
+      await CouponAuditModel.create({
+        discountId: discount._id,
+        userId,
+        action: "APPLY",
+        ipAddress: req.ip || "",
+      });
+    } catch (auditError) {
+      // Non-blocking: fail-safe if audit creation fails
+    }
 
     return res.status(200).json({
       success: true,
