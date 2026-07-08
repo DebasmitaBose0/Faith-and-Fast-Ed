@@ -1,15 +1,12 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import ContactMessageModel from "../models/contactMessageModel.js";
+import SupportMessageModel from "../models/supportModel.js";
 import sendEmail from "../config/sendEmail.js";
 
-// Basic email shape check — mirrors the lightweight validation style used
-// elsewhere in the codebase rather than pulling in a new dependency.
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const submitContactMessage = catchAsyncErrors(async (req, res) => {
   const { name, email, phone, message } = req.body;
 
-  // -------- Validation --------
   if (!name || !name.trim()) {
     return res.status(400).json({
       message: "Name is required",
@@ -50,18 +47,13 @@ export const submitContactMessage = catchAsyncErrors(async (req, res) => {
     });
   }
 
-  // -------- Store --------
-  const contactMessage = await ContactMessageModel.create({
+  const contactMessage = await SupportMessageModel.create({
     name: name.trim(),
     email: email.trim(),
     phone: phone ? String(phone).trim() : "",
     message: message.trim(),
   });
 
-  // -------- Optional admin notification --------
-  // Fire-and-forget: a failed notification email must not fail the request,
-  // since the message is already safely stored. sendEmail already swallows
-  // its own errors and returns false on failure.
   if (process.env.ADMIN_EMAIL) {
     sendEmail({
       sendTo: process.env.ADMIN_EMAIL,
@@ -89,7 +81,7 @@ export const submitContactMessage = catchAsyncErrors(async (req, res) => {
 });
 
 export const getContactMessages = catchAsyncErrors(async (req, res) => {
-  const messages = await ContactMessageModel.find().sort({ createdAt: -1 });
+  const messages = await SupportMessageModel.find().sort({ createdAt: -1 });
 
   return res.status(200).json({
     message: "Contact messages fetched successfully",
