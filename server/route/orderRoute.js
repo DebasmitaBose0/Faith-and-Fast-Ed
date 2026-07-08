@@ -15,10 +15,11 @@ import {
 import admin from "../middleware/Admin.js";
 import upload from "../middleware/multer.js";
 import { getOrderAnalytics } from "../controllers/analyticsController.js";
+import { orderValidation } from "../middleware/validator.js";
 
 const orderRouter = express.Router();
 
-orderRouter.post("/create", auth, createOrder);
+orderRouter.post("/create", auth, orderValidation.create, createOrder);
 
 orderRouter.post(
   "/upload-payment-screenshot",
@@ -42,7 +43,7 @@ orderRouter.get("/admin/analytics", auth, admin, getOrderAnalytics);
 
 orderRouter.get("/get/:orderId", auth, getSingleOrder);
 
-orderRouter.put("/admin/update/:orderId", auth, admin, updateOrderStatus);
+orderRouter.put("/admin/update/:orderId", auth, admin, orderValidation.updateStatus, updateOrderStatus);
 
 orderRouter.put("/cancel/:orderId", auth, cancelOrder);
 

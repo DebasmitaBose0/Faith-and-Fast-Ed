@@ -20,26 +20,27 @@ import {
 import auth from "../middleware/auth.js";
 import upload from "../middleware/multer.js";
 import admin from "../middleware/Admin.js";
+import { userValidation } from "../middleware/validator.js";
 
 const userRouter = express.Router();
 
-userRouter.post("/register", registerUser);
+userRouter.post("/register", userValidation.register, registerUser);
 
 userRouter.post("/verify-email", verifyEmailOtp);
 
 userRouter.post("/resend-otp", resendOtp);
 
-userRouter.post("/login", loginUser);
+userRouter.post("/login", userValidation.login, loginUser);
 
 userRouter.get("/logout", logoutUser);
 
 userRouter.put("/upload-avatar", upload.single("avatar"), auth, uploadAvatar);
 
-userRouter.put("/forgot-password", forgotPassword);
+userRouter.put("/forgot-password", userValidation.forgotPassword, forgotPassword);
 
 userRouter.put("/verify-otp", verifyOtp);
 
-userRouter.put("/reset-password", resetPassword);
+userRouter.put("/reset-password", userValidation.resetPassword, resetPassword);
 
 userRouter.get("/me", auth, getUserDetails);
 

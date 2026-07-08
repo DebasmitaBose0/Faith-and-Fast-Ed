@@ -19,6 +19,7 @@ import {
 import admin from "../middleware/Admin.js";
 import auth from "../middleware/auth.js";
 import upload from "../middleware/multer.js";
+import { productValidation } from "../middleware/validator.js";
 
 const productRouter = express.Router();
 
@@ -26,6 +27,7 @@ productRouter.post(
   "/new",
   auth,
   admin,
+  productValidation.create,
   upload.array("images", 10),
   createProduct
 );
