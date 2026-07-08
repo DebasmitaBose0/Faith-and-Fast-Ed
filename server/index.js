@@ -9,6 +9,7 @@ import morgan from "morgan";
 import connectDB from "./config/connectDB.js";
 import validateEnv from "./config/validateEnv.js";
 import errorMiddleware from "./middleware/error.js";
+import config from "./config/index.js";
 dotenv.config();
 validateEnv();
 
@@ -25,13 +26,9 @@ const limiter = rateLimit({
 });
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = config.port;
 
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  process.env.FRONTEND_WWW_URL,
-  "http://localhost:5173"
-];
+const allowedOrigins = config.cors.allowedOrigins;
 app.use(
   cors({
     origin: (origin, callback) => {
