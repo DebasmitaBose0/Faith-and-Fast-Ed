@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "index.js",
     "dev": "nodemon index.js",
-    "seed-admin": "node utils/seedAdmin.js"
+    "seed-admin": "node utils/seedAdmin.js",
+    "lint": "eslint \"**/*.js\" --max-warnings 20",
+    "format": "prettier --write \"**/*.js\""
   },
   "keywords": [],
   "author": "",

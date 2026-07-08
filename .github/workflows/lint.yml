@@ -1,0 +1,30 @@
+name: Code Quality Checks
+
+on:
+  pull_request:
+    branches: [elusoc, main]
+
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+        working-directory: client
+      - run: npx eslint "src/**/*.{js,jsx}" --max-warnings 20
+        working-directory: client
+
+  server-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+        working-directory: server
+      - run: npx eslint "**/*.js" --max-warnings 20
+        working-directory: server
