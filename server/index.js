@@ -3,12 +3,14 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import rateLimit from "express-rate-limit";
 import helmet from "helmet";
 import morgan from "morgan";
 import connectDB from "./config/connectDB.js";
 import validateEnv from "./config/validateEnv.js";
 import errorMiddleware from "./middleware/error.js";
+import { generalLimiter } from "./middleware/rateLimiter.js";
+import requestLogger from "./middleware/requestLogger.js";
+import logger from "./utils/logger.js";
 dotenv.config();
 validateEnv();
 
@@ -53,7 +55,8 @@ app.use(
     crossOriginResourcePolicy: false,
   })
 );
-app.use(limiter);
+app.use(generalLimiter);
+app.use(requestLogger);
 app.use(morgan("combined"));
 app.use(errorMiddleware);
 app.disable("x-powered-by");
@@ -91,35 +94,25 @@ app.use("/api/wishlist", wishListRouter);
 
 connectDB().then(() => {
   const server = app.listen(PORT, () =>
-    console.log(`Server is running on port ${PORT}`)
+    logger.info(`Server is running on port ${PORT}`)
   );
 
-  // Graceful shutdown helper — close the HTTP server so in-flight requests
-  // can finish before the process exits. Log every exit reason distinctly so
-  // operators can tell a crash from a signal-triggered stop in the logs.
   const shutdown = (reason, code = 1) => {
-    console.error(`[shutdown] reason=${reason} code=${code}`);
+    logger.error(`Server shutting down: reason=${reason} code=${code}`);
     server.close(() => process.exit(code));
-    // Safety net: force-exit after 10 s if connections linger.
     setTimeout(() => process.exit(code), 10_000).unref();
   };
 
-  // Single unhandledRejection handler (was duplicated — both fired on every
-  // unhandled rejection, causing a race between two concurrent shutdowns).
   process.on("unhandledRejection", (err) => {
-    console.error(`[unhandledRejection] ${err?.message ?? err}`);
+    logger.error(`Unhandled rejection: ${err?.message ?? err}`, { stack: err?.stack });
     shutdown("unhandledRejection");
   });
 
-  // Synchronous throw that escaped all try/catch blocks.
   process.on("uncaughtException", (err) => {
-    console.error(`[uncaughtException] ${err?.message ?? err}`);
+    logger.error(`Uncaught exception: ${err?.message ?? err}`, { stack: err?.stack });
     shutdown("uncaughtException");
   });
 
-  // Container / PM2 / Heroku stop signal — exit cleanly with code 0.
   process.on("SIGTERM", () => shutdown("SIGTERM", 0));
-
-  // Ctrl-C in development — same clean exit.
   process.on("SIGINT", () => shutdown("SIGINT", 0));
 });
