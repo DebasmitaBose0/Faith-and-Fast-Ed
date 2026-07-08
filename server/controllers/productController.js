@@ -1,8 +1,8 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import ProductModel from "../models/productModel.js";
 import { deleteImage, uploadImage } from "../utils/cloudinary.js";
+import { successResponse, errorResponse } from "../utils/responseHelper.js";
 
-// Admin
 export const createProduct = catchAsyncErrors(async (req, res, next) => {
   try {
     const {
@@ -19,19 +19,11 @@ export const createProduct = catchAsyncErrors(async (req, res, next) => {
     } = req.body;
 
     if (!name) {
-      return res.status(400).json({
-        message: "Please enter all required fields (name)",
-        error: true,
-        success: false,
-      });
+      return errorResponse(res, "Please enter all required fields (name)", 400);
     }
 
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({
-        message: "Please upload at least one image.",
-        error: true,
-        success: false,
-      });
+      return errorResponse(res, "Please upload at least one image.", 400);
     }
 
     const uploadedImages = await Promise.all(
@@ -60,18 +52,9 @@ export const createProduct = catchAsyncErrors(async (req, res, next) => {
 
     const savedProduct = await product.save();
 
-    return res.status(201).json({
-      message: "Product Created Successfully",
-      data: savedProduct,
-      error: false,
-      success: true,
-    });
+    return successResponse(res, savedProduct, "Product Created Successfully", 201);
   } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      success: false,
-    });
+    return errorResponse(res, error.message || "Internal Server Error", 500);
   }
 });
 

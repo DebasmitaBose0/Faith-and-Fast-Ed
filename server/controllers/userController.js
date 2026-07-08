@@ -7,27 +7,20 @@ import { deleteImage, uploadImage } from "../utils/cloudinary.js";
 import forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
 import generatedOtp from "../utils/generatedOtp.js";
 import sendToken from "../utils/jwtToken.js";
+import { successResponse, errorResponse } from "../utils/responseHelper.js";
 
 export const registerUser = catchAsyncErrors(async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({
-        message: "Please fill all required fields",
-        error: true,
-        success: false,
-      });
+      return errorResponse(res, "Please fill all required fields", 400);
     }
 
     const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
-      return res.status(400).json({
-        message: "Email already exists",
-        error: true,
-        success: false,
-      });
+      return errorResponse(res, "Email already exists", 400);
     }
 
     const otp = generatedOtp();
@@ -41,11 +34,7 @@ export const registerUser = catchAsyncErrors(async (req, res) => {
     });
 
     if (!emailResponse) {
-      return res.status(500).json({
-        message: "Failed to send verification email",
-        error: true,
-        success: false,
-      });
+      return errorResponse(res, "Failed to send verification email", 500);
     }
 
     const newUser = new UserModel({
@@ -61,26 +50,12 @@ export const registerUser = catchAsyncErrors(async (req, res) => {
     const savedUser = await newUser.save();
 
     if (!savedUser) {
-      return res.status(500).json({
-        message: "Failed to create user",
-        error: true,
-        success: false,
-      });
+      return errorResponse(res, "Failed to create user", 500);
     }
 
-    return res.status(201).json({
-      message:
-        "User registered successfully. Please check your email to verify your account.",
-      error: false,
-      success: true,
-      data: savedUser,
-    });
+    return successResponse(res, savedUser, "User registered successfully. Please check your email to verify your account.", 201);
   } catch (error) {
-    return res.status(500).json({
-      message: "Server error. Please try again.",
-      error: true,
-      success: false,
-    });
+    return errorResponse(res, "Server error. Please try again.", 500);
   }
 });
 
@@ -91,11 +66,7 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res) => {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({
-        message: "Email not registered.",
-        error: true,
-        success: false,
-      });
+      return errorResponse(res, "Email not registered.", 400);
     }
     if (user.login_expiry < new Date()) {
       const newOtp = generatedOtp();
@@ -109,26 +80,18 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res) => {
       });
 
       if (!emailResponse) {
-        return res.status(500).json({
-          message: "Failed to resend OTP. Try again later.",
-          error: true,
-          success: false,
-        });
+        return errorResponse(res, "Failed to resend OTP. Try again later.", 500);
       }
 
       user.login_otp = newOtp;
       user.login_expiry = newExpiry;
       await user.save();
 
-      return res.status(410).json({
-        message: "OTP expired. A new OTP has been sent to your email.",
-        error: true,
-        success: false,
-      });
+      return errorResponse(res, "OTP expired. A new OTP has been sent to your email.", 410);
     }
 
     if (otp !== user.login_otp) {
-      return res.status(401).json({ message: "Invalid OTP", error: true });
+      return errorResponse(res, "Invalid OTP", 401);
     }
 
     await UserModel.findByIdAndUpdate(user._id, {
@@ -137,17 +100,9 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res) => {
       login_expiry: null,
     });
 
-    return res.json({
-      message: "Email verified successfully.",
-      error: false,
-      success: true,
-    });
+    return successResponse(res, null, "Email verified successfully.");
   } catch (error) {
-    return res.status(500).json({
-      message: error.message || "An error occurred while verifying OTP.",
-      error: true,
-      success: false,
-    });
+    return errorResponse(res, error.message || "An error occurred while verifying OTP.", 500);
   }
 });
 

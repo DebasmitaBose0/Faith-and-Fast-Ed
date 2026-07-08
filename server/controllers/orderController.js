@@ -6,6 +6,7 @@ import DiscountModel from "../models/discountModel.js";
 import sendEmail from "../config/sendEmail.js";
 import generateReceiptHTML from "../utils/generateReceipt.js";
 import { uploadImage } from "../utils/cloudinary.js";
+import { successResponse, errorResponse } from "../utils/responseHelper.js";
 
 export const createOrder = catchAsyncErrors(async (req, res) => {
   try {
@@ -18,10 +19,6 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
       upiReference,
       paymentScreenshot,
     } = req.body;
-    // NOTE: totalAmount and discountAmount are intentionally NOT read from the
-    // request body — they are recomputed server-side below from real DB prices
-    // and a re-validated coupon, so a tampered client-supplied total is ignored.
-
     let { deliveryDate } = req.body;
 
     const createdAt = new Date();
@@ -30,22 +27,14 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
 
     const method = paymentMethod || "COD";
     if (!["COD", "ONLINE", "STRIPE"].includes(method)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid payment method" });
+      return errorResponse(res, "Invalid payment method", 400);
     }
     if (method === "ONLINE" && (!paymentScreenshot || !paymentScreenshot.url)) {
-      return res.status(400).json({
-        success: false,
-        message: "Payment screenshot is required for online payments",
-      });
+      return errorResponse(res, "Payment screenshot is required for online payments", 400);
     }
 
     if (!Array.isArray(products) || products.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Order must contain at least one product",
-      });
+      return errorResponse(res, "Order must contain at least one product", 400);
     }
 
     // Rebuild every line item from the database: trust the client only for which
@@ -156,9 +145,9 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
       });
     }
 
-    res.status(201).json({ success: true, order: populatedOrder });
+    return successResponse(res, { order: populatedOrder }, "Order created successfully", 201);
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return errorResponse(res, error.message, 500);
   }
 });
 
