@@ -9,6 +9,7 @@ import morgan from "morgan";
 import connectDB from "./config/connectDB.js";
 import validateEnv from "./config/validateEnv.js";
 import errorMiddleware from "./middleware/error.js";
+import errorMonitor from "./middleware/errorMonitor.js";
 dotenv.config();
 validateEnv();
 
@@ -55,6 +56,7 @@ app.use(
 );
 app.use(limiter);
 app.use(morgan("combined"));
+app.use(errorMonitor);
 app.use(errorMiddleware);
 app.disable("x-powered-by");
 
@@ -75,6 +77,7 @@ import productRouter from "./route/productRoute.js";
 import supportRouter from "./route/supportRoute.js";
 import userRouter from "./route/userRoute.js";
 import wishListRouter from "./route/wishListRoute.js";
+import { setupShutdownHandlers } from "./utils/gracefulShutdown.js";
 
 app.use("/api/address", addressRouter);
 app.use("/api/cart", cartRouter);
@@ -94,32 +97,5 @@ connectDB().then(() => {
     console.log(`Server is running on port ${PORT}`)
   );
 
-  // Graceful shutdown helper — close the HTTP server so in-flight requests
-  // can finish before the process exits. Log every exit reason distinctly so
-  // operators can tell a crash from a signal-triggered stop in the logs.
-  const shutdown = (reason, code = 1) => {
-    console.error(`[shutdown] reason=${reason} code=${code}`);
-    server.close(() => process.exit(code));
-    // Safety net: force-exit after 10 s if connections linger.
-    setTimeout(() => process.exit(code), 10_000).unref();
-  };
-
-  // Single unhandledRejection handler (was duplicated — both fired on every
-  // unhandled rejection, causing a race between two concurrent shutdowns).
-  process.on("unhandledRejection", (err) => {
-    console.error(`[unhandledRejection] ${err?.message ?? err}`);
-    shutdown("unhandledRejection");
-  });
-
-  // Synchronous throw that escaped all try/catch blocks.
-  process.on("uncaughtException", (err) => {
-    console.error(`[uncaughtException] ${err?.message ?? err}`);
-    shutdown("uncaughtException");
-  });
-
-  // Container / PM2 / Heroku stop signal — exit cleanly with code 0.
-  process.on("SIGTERM", () => shutdown("SIGTERM", 0));
-
-  // Ctrl-C in development — same clean exit.
-  process.on("SIGINT", () => shutdown("SIGINT", 0));
+  setupShutdownHandlers(server);
 });
