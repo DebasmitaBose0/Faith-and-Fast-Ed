@@ -9,6 +9,7 @@ import morgan from "morgan";
 import connectDB from "./config/connectDB.js";
 import validateEnv from "./config/validateEnv.js";
 import errorMiddleware from "./middleware/error.js";
+import securityHeaders from "./middleware/securityHeaders.js";
 dotenv.config();
 validateEnv();
 
@@ -51,8 +52,10 @@ app.use(express.urlencoded({ limit: "5mb", extended: true }));
 app.use(
   helmet({
     crossOriginResourcePolicy: false,
+    contentSecurityPolicy: false,
   })
 );
+app.use(securityHeaders);
 app.use(limiter);
 app.use(morgan("combined"));
 app.use(errorMiddleware);
