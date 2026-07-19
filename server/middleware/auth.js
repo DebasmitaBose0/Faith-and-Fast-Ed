@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
+import SessionModel from "../models/sessionModel.js";
 import { requestContextStore } from "../utils/logger.js";
 
 const auth = async (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
+  const token = req.headers.authorization?.split(" ")[1] || req.cookies.token;
 
   if (!token) {
     return res
@@ -13,6 +14,14 @@ const auth = async (req, res, next) => {
 
   try {
     const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Check if session has been revoked
+    const session = await SessionModel.findOne({ token, isRevoked: false });
+    if (!session) {
+      return res.status(401).json({ success: false, code: "AUTH_TOKEN_EXPIRED", message: "Session expired or revoked" });
+    }
+    
+    req.userId = decoded.id;
     req.user = await User.findById(decoded.id);
 
     if (!req.user) {

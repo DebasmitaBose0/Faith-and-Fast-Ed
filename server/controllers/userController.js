@@ -6,7 +6,7 @@ import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import { deleteImage, uploadImage } from "../utils/cloudinary.js";
 import forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
 import generatedOtp from "../utils/generatedOtp.js";
-import sendToken from "../utils/jwtToken.js";
+import sendToken from "../utils/tokenManager.js";
 
 export const registerUser = catchAsyncErrors(async (req, res) => {
   try {
@@ -243,7 +243,7 @@ export const loginUser = catchAsyncErrors(async (req, res) => {
   user.lastLogin = new Date();
   await user.save();
 
-  sendToken(user, 200, res);
+  sendToken(user, 200, res, req);
 });
 
 export const logoutUser = catchAsyncErrors(async (req, res) => {

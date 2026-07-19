@@ -92,6 +92,7 @@ import supportRouter from "./route/supportRoute.js";
 import userRouter from "./route/userRoute.js";
 import wishListRouter from "./route/wishListRoute.js";
 import healthRouter from "./route/healthRoute.js";
+import sessionRouter from "./route/sessionRoute.js";
 import { startMonitoring } from "./utils/systemMonitor.js";
 import healthConfig from "./config/healthConfig.js";
 
@@ -109,6 +110,7 @@ app.use("/api/support", supportRouter);
 app.use("/api/user", userRouter);
 app.use("/api/wishlist", wishListRouter);
 app.use("/api/review", reviewRouter);
+app.use("/api/session", sessionRouter);
 
 app.use(errorMiddleware);
 
