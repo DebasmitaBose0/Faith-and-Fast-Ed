@@ -58,6 +58,7 @@ app.use(
 );
 app.use(generalLimiter);
 app.use(morgan("combined"));
+app.use(userAuditMiddleware);
 app.use(errorMiddleware);
 app.disable("x-powered-by");
 
@@ -92,6 +93,8 @@ import supportRouter from "./route/supportRoute.js";
 import userRouter from "./route/userRoute.js";
 import wishListRouter from "./route/wishListRoute.js";
 import healthRouter from "./route/healthRoute.js";
+import userAuditRouter from "./route/userAuditRoute.js";
+import userAuditMiddleware from "./middleware/userAuditMiddleware.js";
 import { startMonitoring } from "./utils/systemMonitor.js";
 import healthConfig from "./config/healthConfig.js";
 
@@ -109,6 +112,7 @@ app.use("/api/support", supportRouter);
 app.use("/api/user", userRouter);
 app.use("/api/wishlist", wishListRouter);
 app.use("/api/review", reviewRouter);
+app.use("/api/audit", userAuditRouter);
 
 app.use(errorMiddleware);
 
