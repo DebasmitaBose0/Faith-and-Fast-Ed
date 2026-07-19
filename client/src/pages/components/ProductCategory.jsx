@@ -12,7 +12,7 @@ import Typewriter from "typewriter-effect";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-import { addToWishList } from "@/store/add-to-wishList/addToWishList";
+import { addToWishList } from "@/store/add-to-wishlist/addToWishList";
 import StockBadge from "./StockBadge";
 
 const ProductCategory = ({ title, items }) => {

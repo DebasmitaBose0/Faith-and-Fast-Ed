@@ -198,6 +198,9 @@ Issue → Assignment → Development → PR to `elusoc` → Review → Merge
 ## Contributing
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) and [FAITH_FAST_ISSUES.md](FAITH_FAST_ISSUES.md) for more details.
 
+## Security
+For security issues or vulnerability reporting, please review our [Security Policy](SECURITY.md).
+
 ## License
 This project is licensed under the ISC License.
 

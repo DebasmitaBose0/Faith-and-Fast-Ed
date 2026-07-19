@@ -15,12 +15,15 @@ import {
   getInventoryOverview,
   bulkUpdateStock,
 } from "@/store/extra-slice/inventorySlice";
+import { hasPermission } from "@/utils/permissions";
 
 const AdminInventory = () => {
   const dispatch = useDispatch();
   const { summary, products, threshold, loading, updating } = useSelector(
     (state) => state.inventory
   );
+  const { user } = useSelector((state) => state.auth);
+  const canWrite = hasPermission(user, "inventory:write");
 
   // Local map of productId -> edited stock value (only dirty rows are tracked).
   const [edits, setEdits] = useState({});
@@ -193,7 +196,7 @@ const AdminInventory = () => {
         <Button
           variant="contained"
           onClick={handleBulkSave}
-          disabled={updating || Object.keys(edits).length === 0}
+          disabled={updating || Object.keys(edits).length === 0 || !canWrite}
           sx={{
             background: "linear-gradient(to right, #16a34a, #15803d)",
             "&:hover": {
@@ -221,6 +224,7 @@ const AdminInventory = () => {
               <th className="p-3">Price</th>
               <th className="p-3">Current Stock</th>
               <th className="p-3">Status</th>
+              <th className="p-3">Updated By</th>
               <th className="p-3">New Stock</th>
             </tr>
           </thead>
@@ -274,16 +278,20 @@ const AdminInventory = () => {
                       {statusLabel(p.status)}
                     </span>
                   </td>
+                  <td className="p-3 text-gray-600 dark:text-gray-300">
+                    {p.lastUpdatedBy ? p.lastUpdatedBy.name : "System"}
+                  </td>
                   <td className="p-3">
                     <input
                       type="number"
                       min="0"
+                      disabled={!canWrite}
                       placeholder={String(p.stock)}
                       value={edits[p._id] ?? ""}
                       onChange={(e) =>
                         handleStockChange(p._id, e.target.value)
                       }
-                      className="w-24 p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-yellow-500 dark:focus:ring-red-500"
+                      className="w-24 p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-yellow-500 dark:focus:ring-red-500 disabled:opacity-50"
                     />
                   </td>
                 </tr>

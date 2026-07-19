@@ -21,7 +21,7 @@ import { Heart, ShoppingCartIcon } from "lucide-react";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import { addToCart } from "@/store/add-to-cart/addToCart";
-import { addToWishList } from "@/store/add-to-wishList/addToWishList";
+import { addToWishList } from "@/store/add-to-wishlist/addToWishList";
 
 const ProductDetails = ({ products }) => {
   const { productId } = useParams();

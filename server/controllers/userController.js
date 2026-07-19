@@ -559,22 +559,12 @@ export const getUserDetails = catchAsyncErrors(async (req, res) => {
     const user = await UserModel.findById(req.user._id);
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      return res.sendError(404, "USER_NOT_FOUND", "User not found");
     }
 
-    res.status(200).json({
-      success: true,
-      user,
-    });
+    return res.sendSuccess({ user });
   } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Server error while fetching user details",
-      error: true,
-      success: false,
-    });
+    return res.sendError(500, "SERVER_ERROR", error.message || "Server error while fetching user details");
   }
 });
 
@@ -747,11 +737,19 @@ export const updateUserRole = catchAsyncErrors(async (req, res) => {
       });
     }
 
-    const { email, role } = req.body;
+    const { email, role, permissions } = req.body;
 
     if (!role || !["USER", "ADMIN"].includes(role)) {
       return res.status(400).json({
         message: "Invalid role. Role must be either 'USER' or 'ADMIN'.",
+        error: true,
+        success: false,
+      });
+    }
+
+    if (permissions !== undefined && !Array.isArray(permissions)) {
+      return res.status(400).json({
+        message: "Permissions must be an array of strings",
         error: true,
         success: false,
       });
@@ -768,10 +766,13 @@ export const updateUserRole = catchAsyncErrors(async (req, res) => {
     }
 
     user.role = role;
+    if (permissions !== undefined) {
+      user.permissions = permissions;
+    }
     const updatedUser = await user.save();
 
     return res.json({
-      message: "User role updated successfully",
+      message: "User role and permissions updated successfully",
       error: false,
       success: true,
       data: updatedUser,

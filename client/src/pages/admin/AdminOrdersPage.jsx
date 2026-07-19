@@ -24,10 +24,13 @@ import {
 } from "@/store/order-slice/AdminOrderSlice";
 import { Link } from "react-router-dom";
 import MetaData from "../extras/MetaData";
+import { hasPermission } from "@/utils/permissions";
 
 const AdminOrdersPage = () => {
   const dispatch = useDispatch();
   const { orders, loading, error } = useSelector((state) => state.adminOrders);
+  const { user } = useSelector((state) => state.auth);
+  const canUpdate = hasPermission(user, "orders:update");
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openDeleteAllDialog, setOpenDeleteAllDialog] = useState(false);
@@ -342,16 +345,18 @@ const AdminOrdersPage = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button
-                variant="contained"
-                onClick={handleDeleteAllClick}
-                disabled={loading || orders.length === 0}
-                className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-xs sm:text-sm lg:text-base w-full sm:w-auto"
-              >
-                Delete All
-              </Button>
-            </motion.div>
+            {canUpdate && (
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                <Button
+                  variant="contained"
+                  onClick={handleDeleteAllClick}
+                  disabled={loading || orders.length === 0}
+                  className="bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-xs sm:text-sm lg:text-base w-full sm:w-auto"
+                >
+                  Delete All
+                </Button>
+              </motion.div>
+            )}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 variant="outlined"
@@ -417,8 +422,11 @@ const AdminOrdersPage = () => {
                     <th className="p-2 sm:p-3 lg:p-4 text-left text-xs sm:text-sm font-semibold">
                       Status
                     </th>
-                    <th className="p-2 sm:p-3 lg:p-4 text-left text-xs sm:text-sm font-semibold hidden md:table-cell">
+                     <th className="p-2 sm:p-3 lg:p-4 text-left text-xs sm:text-sm font-semibold hidden md:table-cell">
                       Tracking ID
+                    </th>
+                    <th className="p-2 sm:p-3 lg:p-4 text-left text-xs sm:text-sm font-semibold">
+                      Updated By
                     </th>
                     <th className="p-2 sm:p-3 lg:p-4 text-left text-xs sm:text-sm font-semibold">
                       Total
@@ -491,8 +499,11 @@ const AdminOrdersPage = () => {
                         <td className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
                           {order.orderStatus}
                         </td>
-                        <td className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">
+                         <td className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">
                           {order.trackingId || "N/A"}
+                        </td>
+                        <td className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
+                          {order.lastUpdatedBy ? order.lastUpdatedBy.name : "System"}
                         </td>
                         <td className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm text-green-600 font-bold">
                           ₹{order.totalAmount.toFixed(2)}
@@ -510,43 +521,49 @@ const AdminOrdersPage = () => {
                             </Link>
                           </motion.div>
                         </td>
-                        <td className="p-2 sm:p-3 lg:p-4 text-center space-x-1 sm:space-x-2">
-                          {order.orderStatus !== "DELIVERED" &&
-                            order.orderStatus !== "CANCELLED" && (
-                              <Tooltip title="Update Order">
+                         <td className="p-2 sm:p-3 lg:p-4 text-center space-x-1 sm:space-x-2">
+                          {canUpdate ? (
+                            <>
+                              {order.orderStatus !== "DELIVERED" &&
+                                order.orderStatus !== "CANCELLED" && (
+                                  <Tooltip title="Update Order">
+                                    <motion.button
+                                      whileHover={{ scale: 1.1 }}
+                                      whileTap={{ scale: 0.95 }}
+                                      onClick={() => handleUpdateClick(order)}
+                                      className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-xs sm:text-sm"
+                                    >
+                                      Update
+                                    </motion.button>
+                                  </Tooltip>
+                                )}
+                              {order.paymentMethod === "ONLINE" &&
+                                order.paymentStatus === "PENDING" && (
+                                  <Tooltip title="Verify Payment">
+                                    <motion.button
+                                      whileHover={{ scale: 1.1 }}
+                                      whileTap={{ scale: 0.95 }}
+                                      onClick={() => handleVerifyClick(order)}
+                                      className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-xs sm:text-sm"
+                                    >
+                                      Verify
+                                    </motion.button>
+                                  </Tooltip>
+                                )}
+                              <Tooltip title="Delete Order">
                                 <motion.button
                                   whileHover={{ scale: 1.1 }}
                                   whileTap={{ scale: 0.95 }}
-                                  onClick={() => handleUpdateClick(order)}
-                                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 text-xs sm:text-sm"
+                                  onClick={() => handleDeleteClick(order._id)}
+                                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-xs sm:text-sm"
                                 >
-                                  Update
+                                  Delete
                                 </motion.button>
                               </Tooltip>
-                            )}
-                          {order.paymentMethod === "ONLINE" &&
-                            order.paymentStatus === "PENDING" && (
-                              <Tooltip title="Verify Payment">
-                                <motion.button
-                                  whileHover={{ scale: 1.1 }}
-                                  whileTap={{ scale: 0.95 }}
-                                  onClick={() => handleVerifyClick(order)}
-                                  className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 text-xs sm:text-sm"
-                                >
-                                  Verify
-                                </motion.button>
-                              </Tooltip>
-                            )}
-                          <Tooltip title="Delete Order">
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={() => handleDeleteClick(order._id)}
-                              className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-xs sm:text-sm"
-                            >
-                              Delete
-                            </motion.button>
-                          </Tooltip>
+                            </>
+                          ) : (
+                            <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">—</span>
+                          )}
                         </td>
                       </motion.tr>
                     ))}

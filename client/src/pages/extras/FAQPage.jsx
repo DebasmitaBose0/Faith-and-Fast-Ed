@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { Link } from "react-router-dom";
 import MetaData from "./MetaData";
+import contactConfig from "../../config/contact";
 
 const faqs = [
   {
@@ -44,7 +45,7 @@ const faqs = [
     answer: (
       <>
         Please report security vulnerabilities by emailing us at{" "}
-        <strong>support@faithandfast.com</strong> with the following details:
+        <strong>{contactConfig.contact_details.email}</strong> with the following details:
         <ol className="list-decimal ml-5 mt-2">
           <li>Steps to reproduce the bug/issue.</li>
           <li>Your web browser/mobile browser’s name and version.</li>
@@ -91,7 +92,7 @@ const faqs = [
     question: "How do I contact customer support?",
     answer: (
       <>
-        You can reach us via email at <strong>support@faithandfast.com</strong>.
+        You can reach us via email at <strong>{contactConfig.contact_details.email}</strong>.
       </>
     ),
   },

@@ -6,7 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import {
   deleteWishListItem,
   getWishListItems,
-} from "@/store/add-to-wishList/addToWishList";
+} from "@/store/add-to-wishlist/addToWishList";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import WishlistSkeleton from "../components/skeletons/WishlistSkeleton";

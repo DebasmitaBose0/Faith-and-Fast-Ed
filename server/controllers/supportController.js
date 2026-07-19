@@ -1,47 +1,17 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import SupportMessageModel from "../models/supportModel.js";
 import sendEmail from "../config/sendEmail.js";
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { validateSupportMessage } from "../utils/supportValidator.js";
 
 export const submitContactMessage = catchAsyncErrors(async (req, res) => {
   const { name, email, phone, message } = req.body;
 
-  if (!name || !name.trim()) {
+  const validation = validateSupportMessage({ name, email, phone, message });
+  if (!validation.valid) {
+    const firstError = Object.values(validation.errors)[0];
     return res.status(400).json({
-      message: "Name is required",
-      error: true,
-      success: false,
-    });
-  }
-
-  if (!email || !email.trim()) {
-    return res.status(400).json({
-      message: "Email is required",
-      error: true,
-      success: false,
-    });
-  }
-
-  if (!EMAIL_REGEX.test(email.trim())) {
-    return res.status(400).json({
-      message: "Please provide a valid email address",
-      error: true,
-      success: false,
-    });
-  }
-
-  if (!message || !message.trim()) {
-    return res.status(400).json({
-      message: "Message is required",
-      error: true,
-      success: false,
-    });
-  }
-
-  if (message.trim().length > 2000) {
-    return res.status(400).json({
-      message: "Message cannot exceed 2000 characters",
+      message: firstError,
+      errors: validation.errors,
       error: true,
       success: false,
     });

@@ -1,27 +1,55 @@
+import { AsyncLocalStorage } from "async_hooks";
+
+export const requestContextStore = new AsyncLocalStorage();
+
 const logger = {
   info(message, meta) {
-    const timestamp = new Date().toISOString();
-    const metaStr = meta ? ` ${JSON.stringify(meta)}` : "";
-    console.log(`[INFO] ${timestamp} ${message}${metaStr}`);
+    const store = requestContextStore.getStore() || {};
+    const logObj = {
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message,
+      requestId: store.requestId,
+      userId: store.userId,
+      ...meta,
+    };
+    console.log(JSON.stringify(logObj));
   },
 
   error(message, errorObj) {
-    const timestamp = new Date().toISOString();
-    let output = `[ERROR] ${timestamp} ${message}`;
+    const store = requestContextStore.getStore() || {};
+    const logObj = {
+      level: "error",
+      timestamp: new Date().toISOString(),
+      message,
+      requestId: store.requestId,
+      userId: store.userId,
+    };
+
     if (errorObj) {
       if (errorObj instanceof Error) {
-        output += ` | ${errorObj.message}\n${errorObj.stack}`;
+        logObj.error = {
+          message: errorObj.message,
+          stack: errorObj.stack,
+        };
       } else {
-        output += ` ${JSON.stringify(errorObj)}`;
+        logObj.error = errorObj;
       }
     }
-    console.error(output);
+    console.error(JSON.stringify(logObj));
   },
 
   warn(message, meta) {
-    const timestamp = new Date().toISOString();
-    const metaStr = meta ? ` ${JSON.stringify(meta)}` : "";
-    console.warn(`[WARN] ${timestamp} ${message}${metaStr}`);
+    const store = requestContextStore.getStore() || {};
+    const logObj = {
+      level: "warn",
+      timestamp: new Date().toISOString(),
+      message,
+      requestId: store.requestId,
+      userId: store.userId,
+      ...meta,
+    };
+    console.warn(JSON.stringify(logObj));
   },
 };
 

@@ -5,7 +5,7 @@ import {
   deleteWishListItemQtyController,
   getWishListItemController,
   updateWishListItemQtyController,
-} from "../controllers/wishListController.js";
+} from "../controllers/wishlistController.js";
 
 const wishListRouter = express.Router();
 

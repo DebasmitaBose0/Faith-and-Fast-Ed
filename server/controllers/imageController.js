@@ -1,7 +1,4 @@
 import { uploadImage, deleteImage } from "../utils/cloudinary.js";
-import { validateImageFile } from "../utils/cloudinaryValidator.js";
-import Product from "../models/productModel.js";
-l;
 
 const uploadImageController = async (req, res) => {
   try {

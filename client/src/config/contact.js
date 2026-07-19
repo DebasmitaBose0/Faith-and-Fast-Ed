@@ -16,3 +16,5 @@ export const contactConfig = {
       "Reach out to Faith AND Fast for any inquiries, support, or collaborations. Contact us via phone, email, or WhatsApp.",
   },
 };
+
+export default contactConfig;
