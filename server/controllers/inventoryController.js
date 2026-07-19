@@ -1,5 +1,6 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import ProductModel from "../models/productModel.js";
+import { writeAuditLog } from "../utils/auditLogger.js";
 
 /**
  * Admin Inventory Management
@@ -21,7 +22,8 @@ export const getInventoryOverview = catchAsyncErrors(async (req, res) => {
 
   // Pull only the fields the inventory view needs — keeps the payload lean.
   const products = await ProductModel.find()
-    .select("name category price stock images")
+    .select("name category price stock images lastUpdatedBy")
+    .populate("lastUpdatedBy", "name email")
     .sort({ stock: 1 }); // lowest stock first — the items needing attention
 
   // Compute health buckets and totals in a single pass.
@@ -56,6 +58,7 @@ export const getInventoryOverview = catchAsyncErrors(async (req, res) => {
       stock,
       status,
       image: p.images?.[0]?.url || "",
+      lastUpdatedBy: p.lastUpdatedBy,
     };
   });
 
@@ -125,8 +128,19 @@ export const bulkUpdateStock = catchAsyncErrors(async (req, res) => {
 
   // -------- Phase 2: all valid — apply every update --------
   for (const { product, stock } of validated) {
+    const beforeStock = product.stock;
     product.stock = stock;
+    product.lastUpdatedBy = req.user.id || req.user._id;
     await product.save({ validateBeforeSave: false });
+
+    await writeAuditLog({
+      actorId: req.user.id || req.user._id,
+      actionType: "INVENTORY_UPDATE",
+      targetType: "Product",
+      targetId: product._id,
+      beforeSnapshot: { stock: beforeStock },
+      afterSnapshot: { stock: stock },
+    });
   }
 
   return res.status(200).json({

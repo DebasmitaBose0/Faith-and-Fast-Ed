@@ -9,7 +9,7 @@ import MetaData from "../extras/MetaData";
 import { Alert, CircularProgress } from "@mui/material";
 import { FaCheck } from "react-icons/fa6";
 import { toast } from "react-toastify";
-import ConfirmationModal from "../extras/ConfirmationModel";
+import ConfirmationModal from "../extras/ConfirmationModal";
 import { format } from "date-fns";
 
 const statusOrder = ["PENDING", "SHIPPED", "DELIVERED"];

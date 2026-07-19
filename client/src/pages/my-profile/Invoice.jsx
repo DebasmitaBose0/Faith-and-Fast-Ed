@@ -7,6 +7,7 @@ import { Download, ArrowLeft } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { getSingleOrder } from "@/store/order-slice/order";
 import MetaData from "../extras/MetaData";
+import { calculateInvoiceSummary } from "../../utils/invoiceCalculator";
 
 const Invoice = () => {
   const { Id } = useParams();
@@ -26,12 +27,7 @@ const Invoice = () => {
         })
       : "—";
 
-  // Subtotal = sum of line totals before any order-level discount. Each line
-  // already stores its own totalPrice (unit price * quantity) on the order.
-  const subtotal = (order?.products || []).reduce(
-    (sum, item) => sum + (item.totalPrice || 0),
-    0
-  );
+  const { subtotal } = calculateInvoiceSummary(order?.products || []);
   const discount = order?.discountAmount || 0;
 
   const handleDownloadPDF = () => {

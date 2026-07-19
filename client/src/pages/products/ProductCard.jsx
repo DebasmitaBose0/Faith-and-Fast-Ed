@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FaRightLong } from "react-icons/fa6";
+import StockBadge from "../components/StockBadge";
 
 const ProductCard = ({ product }) => {
   const imageUrl = product.images?.[0]?.url || "/fallback-image.jpg";
@@ -10,8 +11,9 @@ const ProductCard = ({ product }) => {
     <motion.div
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className="border rounded-lg overflow-hidden shadow-md bg-white dark:bg-gray-800 hover:shadow-xl transition duration-300"
+      className="relative border rounded-lg overflow-hidden shadow-md bg-white dark:bg-gray-800 hover:shadow-xl transition duration-300"
     >
+      <StockBadge stock={product.stock ?? 10} />
       <Link to={`/product/${product._id}`} className="block">
         <img
           src={imageUrl}

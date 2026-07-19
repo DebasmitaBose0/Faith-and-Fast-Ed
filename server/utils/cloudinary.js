@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 
-const uploadImage = async (image) => {
+const uploadImage = async (image, options = {}) => {
   try {
     if (!image || !image.buffer) {
       throw new Error("No image buffer provided for upload.");
@@ -11,8 +11,9 @@ const uploadImage = async (image) => {
     const uploadResult = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          folder: "ff",
-          resource_type: "auto",
+          folder: options.folder || "ff",
+          resource_type: options.resource_type || "auto",
+          ...(options.transformation && { transformation: options.transformation }),
         },
         (error, result) => {
           if (error) {

@@ -1,6 +1,7 @@
+import PropTypes from "prop-types";
 import ProductCard from "../products/ProductCard";
 
-const RecentlyViewed = ({ products }) => {
+const RecentlyViewedProducts = ({ products }) => {
   if (!products || products.length === 0) return null;
 
   return (
@@ -18,4 +19,8 @@ const RecentlyViewed = ({ products }) => {
   );
 };
 
-export default RecentlyViewed;
+RecentlyViewedProducts.propTypes = {
+  products: PropTypes.arrayOf(PropTypes.object).isRequired,
+};
+
+export default RecentlyViewedProducts;

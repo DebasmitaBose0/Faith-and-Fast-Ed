@@ -12,7 +12,7 @@ import {
 } from "@/store/product-slice/productDetails";
 import ImageSlider from "./ImageSlider";
 import ProductCard from "./ProductCard";
-import RecentlyViewed from "../components/RecentlyViewed";
+import RecentlyViewed from "../components/RecentlyViewedProducts";
 import RecommendationSection from "../components/RecommendationSection";
 import ProductDetailsSkeleton from "../components/skeletons/ProductDetailsSkeleton";
 import MetaData from "../extras/MetaData";
@@ -21,7 +21,7 @@ import { Heart, ShoppingCartIcon } from "lucide-react";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import { addToCart } from "@/store/add-to-cart/addToCart";
-import { addToWishList } from "@/store/add-to-wishList/addToWishList";
+import { addToWishList } from "@/store/add-to-wishlist/addToWishList";
 
 const ProductDetails = ({ products }) => {
   const { productId } = useParams();

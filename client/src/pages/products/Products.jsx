@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import { Search, ShoppingCart, X, Heart, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Typewriter from "typewriter-effect";
@@ -6,14 +7,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { getProductByFilter } from "@/store/product-slice/productSlice";
 import { Pagination } from "@mui/material";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { addToWishList } from "@/store/add-to-wishList/addToWishList";
+import { addToWishList } from "@/store/add-to-wishlist/addToWishList";
 import { toast } from "react-toastify";
 import categories from "./Categories";
-import colors from "../extras/Colors";
-import sizes from "../extras/Size";
+import colors from "../extras/ProductColorOptions";
+import sizes from "../extras/ProductSizeSelector";
 import PropTypes from "prop-types";
 import MetaData from "../extras/MetaData";
 import ProductSkeleton from "../components/skeletons/ProductSkeleton";
+import useDebounce from "@/utils/useDebounce";
+
 
 const FilterSection = ({ title, items, selected, onSelect, children }) => (
   <motion.div
@@ -54,7 +57,9 @@ const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
-  const searchQuery = searchParams.get("search") || "";
+  const searchQueryFromUrl = searchParams.get("search") || "";
+  const searchQuery = localSearchInput;
+
   const selectedCategories = searchParams.get("category") ? searchParams.get("category").split(",") : [];
   const selectedSubcategories = searchParams.get("subcategory") ? searchParams.get("subcategory").split(",") : [];
   const selectedColors = searchParams.get("color") ? searchParams.get("color").split(",") : [];
@@ -76,11 +81,22 @@ const Products = () => {
     (state) => state.product
   );
 
+  const [localSearchInput, setLocalSearchInput] = useState(searchQueryFromUrl);
+  const debouncedSearchInput = useDebounce(localSearchInput, 400);
+
   const [localMaxPrice, setLocalMaxPrice] = useState(maxPrice);
+
+
 
   useEffect(() => {
     setLocalMaxPrice(maxPrice);
   }, [maxPrice]);
+
+  useEffect(() => {
+    // Keep local input in sync if user navigates with URL changes
+    setLocalSearchInput(searchQueryFromUrl);
+  }, [searchQueryFromUrl]);
+
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -91,8 +107,20 @@ const Products = () => {
     return () => clearTimeout(delayDebounce);
   }, [localMaxPrice]);
 
+  useEffect(() => {
+    // Debounced update for the URL search param
+    // Avoid extra requests while typing.
+    if (debouncedSearchInput !== searchQueryFromUrl) {
+      updateSearchParams({ search: debouncedSearchInput });
+    }
+    // Reset pagination when search changes
+    // (done via updateSearchParams logic setting page=1)
+  }, [debouncedSearchInput]);
+
+
   const updateSearchParams = (updates) => {
     const newParams = new URLSearchParams(searchParams);
+
     if (!updates.hasOwnProperty("page")) {
       newParams.set("page", "1");
     }
@@ -146,8 +174,9 @@ const Products = () => {
 
   const handleClearFilters = () => {
     const newParams = new URLSearchParams();
-    if (searchQuery) {
-      newParams.set("search", searchQuery);
+    // Keep current debounced search term (already reflected in URL)
+    if (searchQueryFromUrl) {
+      newParams.set("search", searchQueryFromUrl);
     }
     setSearchParams(newParams);
   };
@@ -176,32 +205,30 @@ const Products = () => {
   };
 
   useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      dispatch(
-        getProductByFilter({
-          page,
-          limit: 20,
-          searchQuery,
-          selectedCategories,
-          selectedSubcategories,
-          selectedColors,
-          selectedColorOptions,
-          selectedSizes,
-          selectedSizeOptions,
-          sortBy,
-          priceRange,
-          rating,
-          availability,
-          discount,
-        })
-      );
-    }, 500);
+    dispatch(
+      getProductByFilter({
+        page,
+        limit: 20,
+        searchQuery: searchQueryFromUrl,
 
-    return () => clearTimeout(delayDebounce);
+        selectedCategories,
+        selectedSubcategories,
+        selectedColors,
+        selectedColorOptions,
+        selectedSizes,
+        selectedSizeOptions,
+        sortBy,
+        priceRange,
+        rating,
+        availability,
+        discount,
+      })
+    );
   }, [
     dispatch,
     page,
-    searchQuery,
+    searchQueryFromUrl,
+
     selectedCategories,
     selectedSubcategories,
     selectedColors,
@@ -267,13 +294,13 @@ const Products = () => {
           <Search className="w-6 h-6 text-gray-500 dark:text-gray-400" />
           <input
             type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={localSearchInput}
+            onChange={(e) => setLocalSearchInput(e.target.value)}
             className="w-full ml-3 bg-transparent focus:outline-none text-gray-800 dark:text-gray-100 text-sm sm:text-lg"
             placeholder=" "
           />
-          <div className="absolute pointer-events-none ml-10 text-gray-500 dark:text-gray-400">
-            {!searchQuery && (
+            <div className="absolute pointer-events-none ml-10 text-gray-500 dark:text-gray-400">
+            {!localSearchInput && (
               <Typewriter
                 options={{
                   strings: [

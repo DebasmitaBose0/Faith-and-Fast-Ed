@@ -15,6 +15,7 @@ const discountSchema = new mongoose.Schema(
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     isActive: { type: Boolean, default: true },
+    lastUpdatedBy: { type: mongoose.Schema.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

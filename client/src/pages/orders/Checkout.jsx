@@ -63,6 +63,23 @@ const CreateOrder = () => {
     totalAmount: finalTotal.toFixed(2),
   });
 
+  // Idempotency key to make double-click / retry safe.
+  // Persist for the lifetime of this checkout page (sessionStorage), so that
+  // if the network retries we send the same key.
+  const getCheckoutIdempotencyKey = () => {
+    const key = "checkout:idempotencyKey";
+    const existing = sessionStorage.getItem(key);
+    if (existing) return existing;
+
+    const uuid =
+      (typeof crypto !== "undefined" && crypto.randomUUID && crypto.randomUUID()) ||
+      `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+    sessionStorage.setItem(key, uuid);
+    return uuid;
+  };
+
+
   useEffect(() => {
     dispatch(userAddress());
     dispatch(getProducts());
@@ -198,6 +215,9 @@ const CreateOrder = () => {
 
     try {
       let payload = { ...orderData, paymentMethod: method };
+      // Attach idempotencyKey for duplicate-order prevention on retries.
+      payload = { ...payload, idempotencyKey: getCheckoutIdempotencyKey() };
+
 
       if (method === "ONLINE") {
         if (!screenshotFile) {

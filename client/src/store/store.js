@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import authPersistMiddleware from "../middleware/authPersist";
 import darkModeReducer from "./extra-slice/darkModeSlice";
 import authReducer from "./auth-slice/user";
 import productReducer from "./product-slice/productSlice";
@@ -8,7 +9,7 @@ import productDetailsSlice from "./product-slice/productDetails";
 import otpSlice from "./auth-slice/otpSlice";
 import adminProductSlice from "./product-slice/AdminProduct";
 import cartReducer from "./add-to-cart/addToCart";
-import wishListReducer from "./add-to-wishList/addToWishList";
+import wishListReducer from "./add-to-wishlist/addToWishList";
 import orderReducer from "./order-slice/order";
 import discountReducer from "./extra-slice/discount";
 import onlineReducer from "./order-slice/order";
@@ -39,6 +40,8 @@ const store = configureStore({
     contact: contactReducer,
     inventory: inventoryReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(authPersistMiddleware),
 });
 
 export default store;

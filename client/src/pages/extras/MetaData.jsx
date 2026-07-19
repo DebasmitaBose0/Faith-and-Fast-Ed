@@ -21,11 +21,11 @@ MetaData.propTypes = {
 };
 
 MetaData.defaultProps = {
-  title: "Nandani Jewellers - Exquisite Gold & Diamond Jewelry",
+  title: "Faith AND Fast - Premium E-commerce Destination",
   description:
     "Discover the latest fashion trends, accessories, and best-selling products at Faith AND Fast. Shop now for exclusive deals!",
   keywords:
-    "fashion, accessories, Faith AND Fast, trending fashion, online shopping",
+    "fashion, accessories, Faith AND Fast, online shopping, ecommerce",
 };
 
 export default MetaData;

@@ -28,6 +28,10 @@ const cartProductSchema = new mongoose.Schema(
   }
 );
 
+cartProductSchema.index({ userId: 1 });
+cartProductSchema.index({ productId: 1 });
+cartProductSchema.index({ userId: 1, productId: 1 });
+
 const CartProductModel = mongoose.model("cartProduct", cartProductSchema);
 
 export default CartProductModel;
