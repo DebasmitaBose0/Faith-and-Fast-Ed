@@ -3,6 +3,7 @@ import OrderModel from "../models/orderModel.js";
 import ProductModel from "../models/productModel.js";
 import UserModel from "../models/userModel.js";
 import DiscountModel from "../models/discountModel.js";
+import { broadcastNotification } from "../utils/sseManager.js";
 import { writeAuditLog } from "../utils/auditLogger.js";
 import sendEmail from "../config/sendEmail.js";
 import generateReceiptHTML from "../utils/generateReceipt.js";
@@ -200,6 +201,12 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
     // for COD we set paymentStatus COMPLETED at placement, so retried calls
     // return the existing order early above.
 
+
+    broadcastNotification("new_order", {
+      orderId: populatedOrder._id,
+      totalAmount: populatedOrder.totalAmount,
+      customerName: populatedOrder.user?.name || "Guest"
+    });
 
     res.status(201).json({ success: true, order: populatedOrder });
   } catch (error) {

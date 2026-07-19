@@ -34,6 +34,7 @@ import CreateOrder from "./pages/orders/Checkout";
 import ProductUpdatePage from "./pages/admin/AdminUpdateProduct";
 import AdminDiscount from "./pages/admin/AdminDiscount";
 import PromoBanner from "./pages/components/PromoBanner";
+import NotificationCenter from "./pages/components/NotificationCenter";
 import { useEffect } from "react";
 import { getCartItems } from "./store/add-to-cart/addToCart";
 import { getWishListItems } from "./store/add-to-wishlist/addToWishList";
@@ -66,6 +67,7 @@ const App = () => {
       <ErrorBoundary>
       {/* <DiscountHeader /> */}
       <PromoBanner />
+      <NotificationCenter />
       <Header />
       <WhatsAppButton />
 

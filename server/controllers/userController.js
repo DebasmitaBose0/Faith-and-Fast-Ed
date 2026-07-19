@@ -5,7 +5,7 @@ import verifyEmailTemplate from "../utils/verifyEmailTemplate.js";
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import { deleteImage, uploadImage } from "../utils/cloudinary.js";
 import forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
-import generatedOtp from "../utils/generatedOtp.js";
+import generatedOtp from "../utils/otpHelper.js";
 import sendToken from "../utils/jwtToken.js";
 
 export const registerUser = catchAsyncErrors(async (req, res) => {

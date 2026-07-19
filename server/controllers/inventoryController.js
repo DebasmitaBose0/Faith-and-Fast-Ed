@@ -1,6 +1,7 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import ProductModel from "../models/productModel.js";
 import { writeAuditLog } from "../utils/auditLogger.js";
+import { broadcastNotification } from "../utils/sseManager.js";
 
 /**
  * Admin Inventory Management
@@ -132,6 +133,14 @@ export const bulkUpdateStock = catchAsyncErrors(async (req, res) => {
     product.stock = stock;
     product.lastUpdatedBy = req.user.id || req.user._id;
     await product.save({ validateBeforeSave: false });
+
+    if (stock <= 5) {
+      broadcastNotification("low_stock", {
+        productId: product._id,
+        name: product.name,
+        stock: stock,
+      });
+    }
 
     await writeAuditLog({
       actorId: req.user.id || req.user._id,

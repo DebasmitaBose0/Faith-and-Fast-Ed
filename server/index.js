@@ -82,6 +82,8 @@ app.get("/ready", (req, res) => {
 import addressRouter from "./route/addressRoute.js";
 import cartRouter from "./route/cartRoute.js";
 import categoryRouter from "./route/categoryRoute.js";
+import sessionRouter from "./route/sessionRoute.js";
+import notificationRouter from "./route/notificationRoute.js";
 import discountRouter from "./route/discountRoute.js";
 import inventoryRouter from "./route/inventoryRoute.js";
 import orderRouter from "./route/orderRoute.js";
@@ -109,6 +111,7 @@ app.use("/api/support", supportRouter);
 app.use("/api/user", userRouter);
 app.use("/api/wishlist", wishListRouter);
 app.use("/api/review", reviewRouter);
+app.use("/api/notification", notificationRouter);
 
 app.use(errorMiddleware);
 
