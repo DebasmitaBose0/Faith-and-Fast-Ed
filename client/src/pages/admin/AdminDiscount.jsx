@@ -19,6 +19,7 @@ import {
   clearMessages,
 } from "@/store/extra-slice/discount";
 import { getAllUsers } from "@/store/auth-slice/user";
+import { hasPermission } from "@/utils/permissions";
 
 const EMPTY_FORM = {
   name: "",
@@ -67,7 +68,8 @@ const AdminDiscount = () => {
   const { discounts, loading, error, successMessage } = useSelector(
     (state) => state.discount
   );
-  const { totalUsers } = useSelector((state) => state.auth);
+  const { totalUsers, user } = useSelector((state) => state.auth);
+  const canWrite = hasPermission(user, "discounts:write");
 
   const [discountData, setDiscountData] = useState(EMPTY_FORM);
   const [openModal, setOpenModal] = useState(false);
@@ -164,14 +166,16 @@ const AdminDiscount = () => {
         Admin Coupon &amp; Discount Management
       </Typography>
 
-      <Button
-        onClick={openCreateModal}
-        variant="contained"
-        fullWidth
-        className="bg-blue-500 text-white hover:bg-blue-600 mt-4"
-      >
-        Create New Discount
-      </Button>
+      {canWrite && (
+        <Button
+          onClick={openCreateModal}
+          variant="contained"
+          fullWidth
+          className="bg-blue-500 text-white hover:bg-blue-600 mt-4"
+        >
+          Create New Discount
+        </Button>
+      )}
 
       {successMessage && (
         <Typography variant="body1" className="text-green-500 text-center">
@@ -242,26 +246,34 @@ const AdminDiscount = () => {
                         <span className="font-medium">Usage:</span> {usedCount} /{" "}
                         {discount.totalUsersAllowed} redeemed
                       </p>
+                      <p>
+                        <span className="font-medium">Updated By:</span>{" "}
+                        {discount.lastUpdatedBy ? discount.lastUpdatedBy.name : "System"}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex gap-2 shrink-0">
-                    <Button
-                      onClick={() => openEditModal(discount)}
-                      variant="outlined"
-                      size="small"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      onClick={() => setConfirmDeleteId(discount._id)}
-                      variant="contained"
-                      color="error"
-                      size="small"
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                  {canWrite ? (
+                    <div className="flex gap-2 shrink-0">
+                      <Button
+                        onClick={() => openEditModal(discount)}
+                        variant="outlined"
+                        size="small"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        onClick={() => setConfirmDeleteId(discount._id)}
+                        variant="contained"
+                        color="error"
+                        size="small"
+                      >
+                        Delete
+                      </Button>
+                    </div>
+                  ) : (
+                    <span className="text-gray-500 dark:text-gray-400 text-sm shrink-0 self-center">—</span>
+                  )}
                 </div>
               </motion.div>
             );

@@ -1,4 +1,5 @@
 import DiscountModel from "../models/discountModel.js";
+import { writeAuditLog } from "../utils/auditLogger.js";
 
 // Admin
 export const createDiscount = async (req, res) => {
@@ -57,9 +58,25 @@ export const createDiscount = async (req, res) => {
       totalUsersAllowed,
       startDate,
       endDate,
+      lastUpdatedBy: req.user.id || req.user._id,
     });
 
     await newDiscount.save();
+
+    await writeAuditLog({
+      actorId: req.user.id || req.user._id,
+      actionType: "DISCOUNT_CREATE",
+      targetType: "Discount",
+      targetId: newDiscount._id,
+      beforeSnapshot: null,
+      afterSnapshot: {
+        name: newDiscount.name,
+        discountType: newDiscount.discountType,
+        discountValue: newDiscount.discountValue,
+        isActive: newDiscount.isActive,
+      },
+    });
+
     res.status(201).json({
       success: true,
       message: "Discount Created Successfully",
@@ -84,6 +101,13 @@ export const updateDiscount = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Discount not found" });
     }
+
+    const beforeSnapshot = {
+      name: discount.name,
+      discountType: discount.discountType,
+      discountValue: discount.discountValue,
+      isActive: discount.isActive,
+    };
 
     const {
       name,
@@ -143,7 +167,23 @@ export const updateDiscount = async (req, res) => {
     if (endDate !== undefined) discount.endDate = endDate;
     if (isActive !== undefined) discount.isActive = Boolean(isActive);
 
+    discount.lastUpdatedBy = req.user.id || req.user._id;
+
     await discount.save();
+
+    await writeAuditLog({
+      actorId: req.user.id || req.user._id,
+      actionType: "DISCOUNT_UPDATE",
+      targetType: "Discount",
+      targetId: discount._id,
+      beforeSnapshot,
+      afterSnapshot: {
+        name: discount.name,
+        discountType: discount.discountType,
+        discountValue: discount.discountValue,
+        isActive: discount.isActive,
+      },
+    });
 
     res.status(200).json({
       success: true,
@@ -228,10 +268,9 @@ export const applyDiscount = async (req, res) => {
 // Admin
 export const getAllDiscounts = async (req, res) => {
   try {
-    const discounts = await DiscountModel.find().populate(
-      "applicableProducts",
-      "name price"
-    );
+    const discounts = await DiscountModel.find()
+      .populate("applicableProducts", "name price")
+      .populate("lastUpdatedBy", "name email");
     res.status(200).json({ success: true, discounts });
   } catch (error) {
     console.error("Error fetching discounts:", error);
@@ -256,6 +295,20 @@ export const deleteDiscount = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Discount not found" });
     }
+
+    await writeAuditLog({
+      actorId: req.user.id || req.user._id,
+      actionType: "DISCOUNT_DELETE",
+      targetType: "Discount",
+      targetId: discount._id,
+      beforeSnapshot: {
+        name: discount.name,
+        discountType: discount.discountType,
+        discountValue: discount.discountValue,
+        isActive: discount.isActive,
+      },
+      afterSnapshot: null,
+    });
 
     res
       .status(200)

@@ -10,9 +10,9 @@ if (!process.env.MONGODB_URL) {
 async function connectDB() {
   try {
     await mongoose.connect(process.env.MONGODB_URL);
-    logger.info("MongoDB connected successfully");
+    logger.info("Database connected successfully");
   } catch (error) {
-    logger.error("MongoDB connection error", { message: error.message });
+    logger.error("Database connection error", error);
     process.exit(1);
   }
 }

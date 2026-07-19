@@ -1,6 +1,7 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import ProductModel from "../models/productModel.js";
 import { deleteImage, uploadImage } from "../utils/cloudinary.js";
+import { writeAuditLog } from "../utils/auditLogger.js";
 
 // Admin
 export const createProduct = catchAsyncErrors(async (req, res, next) => {
@@ -56,9 +57,25 @@ export const createProduct = catchAsyncErrors(async (req, res, next) => {
       stock: stock || 0,
       discount: discount || 0,
       images: uploadedImages,
+      user: req.user.id || req.user._id,
+      lastUpdatedBy: req.user.id || req.user._id,
     });
 
     const savedProduct = await product.save();
+
+    await writeAuditLog({
+      actorId: req.user.id || req.user._id,
+      actionType: "PRODUCT_CREATE",
+      targetType: "Product",
+      targetId: savedProduct._id,
+      beforeSnapshot: null,
+      afterSnapshot: {
+        name: savedProduct.name,
+        price: savedProduct.price,
+        stock: savedProduct.stock,
+        category: savedProduct.category,
+      },
+    });
 
     return res.status(201).json({
       message: "Product Created Successfully",
@@ -95,7 +112,8 @@ export const getProduct = catchAsyncErrors(async (req, res) => {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .populate("category"),
+        .populate("category")
+        .populate("lastUpdatedBy", "name email"),
       ProductModel.countDocuments(query),
     ]);
 
@@ -121,35 +139,20 @@ export const getProductDetails = catchAsyncErrors(async (req, res) => {
     const { productId } = req.params;
 
     if (!productId) {
-      return res.status(400).json({
-        message: "Product ID is required",
-        error: true,
-        success: false,
-      });
+      return res.sendError(400, "VALIDATION_ERROR", "Product ID is required");
     }
 
-    const product = await ProductModel.findById(productId).populate("category");
+    const product = await ProductModel.findById(productId)
+      .populate("category")
+      .populate("lastUpdatedBy", "name email");
 
     if (!product) {
-      return res.status(404).json({
-        message: "Product not found",
-        error: true,
-        success: false,
-      });
+      return res.sendError(404, "PRODUCT_NOT_FOUND", "Product not found");
     }
 
-    return res.json({
-      message: "Product details",
-      data: product,
-      error: false,
-      success: true,
-    });
+    return res.sendSuccess(product, { message: "Product details" });
   } catch (error) {
-    return res.status(500).json({
-      message: error.message || error,
-      error: true,
-      success: false,
-    });
+    return res.sendError(500, "SERVER_ERROR", error.message || error);
   }
 });
 
@@ -205,6 +208,13 @@ export const updateProductDetails = catchAsyncErrors(async (req, res) => {
       );
     }
 
+    const beforeSnapshot = {
+      name: existingProduct.name,
+      price: existingProduct.price,
+      stock: existingProduct.stock,
+      category: existingProduct.category,
+    };
+
     const updateData = {
       ...(name && { name }),
       ...(description && { description }),
@@ -228,9 +238,10 @@ export const updateProductDetails = catchAsyncErrors(async (req, res) => {
           ? [sizeoptions]
           : [],
       }),
-      ...(stock !== undefined && { stock: Number(stock) }),
+      ...(stock !== undefined && { stock: Math.max(0, Number(stock)) }),
       ...(discount !== undefined && { discount: Number(discount) }),
       images: newImages,
+      lastUpdatedBy: req.user.id || req.user._id,
     };
 
     const updatedProduct = await ProductModel.findByIdAndUpdate(
@@ -241,6 +252,20 @@ export const updateProductDetails = catchAsyncErrors(async (req, res) => {
         runValidators: true,
       }
     );
+
+    await writeAuditLog({
+      actorId: req.user.id || req.user._id,
+      actionType: "PRODUCT_UPDATE",
+      targetType: "Product",
+      targetId: updatedProduct._id,
+      beforeSnapshot,
+      afterSnapshot: {
+        name: updatedProduct.name,
+        price: updatedProduct.price,
+        stock: updatedProduct.stock,
+        category: updatedProduct.category,
+      },
+    });
 
     return res.json({
       message: "Product updated successfully",
@@ -286,6 +311,20 @@ export const deleteProduct = catchAsyncErrors(async (req, res) => {
         product.images.map((img) => deleteImage(img.public_id))
       );
     }
+
+    await writeAuditLog({
+      actorId: req.user.id || req.user._id,
+      actionType: "PRODUCT_DELETE",
+      targetType: "Product",
+      targetId: product._id,
+      beforeSnapshot: {
+        name: product.name,
+        price: product.price,
+        stock: product.stock,
+        category: product.category,
+      },
+      afterSnapshot: null,
+    });
 
     return res.json({
       message: "Product deleted successfully.",
@@ -354,12 +393,18 @@ export const getProductByFilter = catchAsyncErrors(async (req, res) => {
       sortBy = "relevant",
       minPrice = 0,
       maxPrice = 20000,
+      rating = "",
+      availability = "",
+      discount = "",
     } = req.query;
 
     const query = {};
 
     if (search) {
-      query.name = { $regex: search, $options: "i" };
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
     }
 
     if (category) {
@@ -370,29 +415,85 @@ export const getProductByFilter = catchAsyncErrors(async (req, res) => {
       query.subcategory = { $in: subcategory.split(",") };
     }
 
-    if (color) {
-      query.color = { $in: color.split(",") };
-    }
+    // Color group mapping to handle solid colors, gradient colors, etc.
+    const colorGroupMap = {
+      "solid colors": ["red", "blue", "green", "black", "white", "yellow", "purple", "pink", "orange"],
+      "gradient colors": ["red to yellow", "blue to green", "purple to pink", "black to white"],
+      "patterned colors": ["stripes (blue, white)", "plaid (red, black)", "polka dots (white on black)", "floral (pink, green)"],
+      "multi-colored": ["rainbow", "color block (red, blue, green)", "neon mix (neon green, pink)"],
+      "customizable colors": ["custom shade 1", "custom shade 2", "custom shade 3"],
+      "textured colors": ["matte black", "glossy red", "metallic gold", "satin silver"],
+      "limited edition colors": ["holiday red", "summer blue", "autumn orange"],
+      "neon colors": ["neon green", "neon yellow", "neon pink", "neon orange"],
+      "neutral & earthy tones": ["beige", "grey", "brown", "olive", "cream"]
+    };
 
+    let targetColors = [];
+    if (color) {
+      color.split(",").forEach(c => {
+        const lowerC = c.toLowerCase().trim();
+        if (colorGroupMap[lowerC]) {
+          targetColors.push(...colorGroupMap[lowerC]);
+        } else {
+          targetColors.push(c);
+        }
+      });
+    }
     if (coloroptions) {
-      query.coloroptions = { $in: coloroptions.split(",") };
+      targetColors.push(...coloroptions.split(","));
+    }
+    targetColors = [...new Set(targetColors.map(c => c.trim()))];
+
+    if (targetColors.length > 0) {
+      query.coloroptions = { $in: targetColors.map(c => new RegExp(`^${c}$`, "i")) };
     }
 
     if (size) {
-      query.size = { $in: size.split(",") };
+      query.size = { $in: size.split(",").map(s => new RegExp(`^${s}$`, "i")) };
     }
 
     if (sizeoptions) {
-      query.sizeoptions = { $in: sizeoptions.split(",") };
+      query.sizeoptions = { $in: sizeoptions.split(",").map(s => new RegExp(`^${s}$`, "i")) };
     }
 
-    query.price = { $gte: parseInt(minPrice), $lte: parseInt(maxPrice) };
+    if (rating) {
+      query.ratings = { $gte: parseFloat(rating) };
+    }
+
+    if (availability) {
+      if (availability === "in-stock") {
+        query.stock = { $gt: 0 };
+      } else if (availability === "out-of-stock") {
+        query.stock = { $eq: 0 };
+      }
+    }
+
+    if (discount) {
+      query.discount = { $gte: parseInt(discount, 10) };
+    }
+
+    const lo = Number.parseInt(minPrice, 10);
+    const hi = Number.parseInt(maxPrice, 10);
+    if (Number.isFinite(lo) || Number.isFinite(hi)) {
+      query.price = {};
+      if (Number.isFinite(lo)) query.price.$gte = lo;
+      if (Number.isFinite(hi)) query.price.$lte = hi;
+    }
 
     let sortQuery = {};
     if (sortBy === "price-low-high") {
       sortQuery.price = 1;
     } else if (sortBy === "price-high-low") {
       sortQuery.price = -1;
+    } else if (sortBy === "newest") {
+      sortQuery.createdAt = -1;
+    } else if (sortBy === "rating-high-low") {
+      sortQuery.ratings = -1;
+    } else if (sortBy === "popular") {
+      sortQuery.numOfReviews = -1;
+    } else {
+      // Default / Relevant
+      sortQuery.createdAt = -1;
     }
 
     const pageNumber = parseInt(page, 10);
@@ -443,6 +544,48 @@ export const getSimilarProducts = catchAsyncErrors(async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+});
+
+export const getTopReviews = catchAsyncErrors(async (req, res) => {
+  try {
+    const products = await ProductModel.find({ "reviews.0": { $exists: true } })
+      .limit(10)
+      .select("name images price reviews");
+
+    const topReviews = [];
+
+    products.forEach((product) => {
+      product.reviews.forEach((review) => {
+        if (review.rating >= 4) {
+          topReviews.push({
+            productId: product._id,
+            productName: product.name,
+            productImage: product.images?.[0]?.url || "",
+            price: product.price,
+            reviewId: review._id,
+            userName: review.name || "Anonymous",
+            rating: review.rating,
+            comment: review.comment,
+            createdAt: review.createdAt || new Date(),
+          });
+        }
+      });
+    });
+
+    topReviews.sort((a, b) => b.rating - a.rating);
+    const sorted = topReviews.slice(0, 6);
+
+    return res.status(200).json({
+      success: true,
+      reviews: sorted,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || "Internal Server Error",
       error: true,
       success: false,
     });

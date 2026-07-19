@@ -30,6 +30,9 @@ export const getProductByFilter = createAsyncThunk(
       selectedSizeOptions = [],
       sortBy = "relevant",
       priceRange = [0, 20000],
+      rating = "",
+      availability = "",
+      discount = "",
     },
     { rejectWithValue }
   ) => {
@@ -61,6 +64,9 @@ export const getProductByFilter = createAsyncThunk(
           sortBy,
           minPrice: priceRange?.[0] ?? 0,
           maxPrice: priceRange?.[1] ?? 20000,
+          rating: rating || undefined,
+          availability: availability || undefined,
+          discount: discount || undefined,
         },
       });
 

@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { AsyncLocalStorage } from "async_hooks";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const logDir = path.resolve(__dirname, "../../logs");
@@ -9,53 +10,91 @@ if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir, { recursive: true });
 }
 
+export const requestContextStore = new AsyncLocalStorage();
+
 const LOG_LEVELS = { error: 0, warn: 1, info: 2, debug: 3 };
 const CURRENT_LEVEL = process.env.LOG_LEVEL || "debug";
-
-function formatTimestamp() {
-  return new Date().toISOString();
-}
-
-function writeToFile(level, message, meta) {
-  const entry = {
-    timestamp: formatTimestamp(),
-    level,
-    message,
-    ...(meta && Object.keys(meta).length ? { meta } : {}),
-  };
-  const line = JSON.stringify(entry) + "\n";
-  const date = new Date().toISOString().slice(0, 10);
-  const filePath = path.join(logDir, `${date}.log`);
-  fs.appendFileSync(filePath, line, "utf-8");
-}
 
 function shouldLog(level) {
   return LOG_LEVELS[level] <= LOG_LEVELS[CURRENT_LEVEL];
 }
 
+function writeToFile(logObj) {
+  const line = JSON.stringify(logObj) + "\n";
+  const date = new Date().toISOString().slice(0, 10);
+  const filePath = path.join(logDir, `${date}.log`);
+  fs.appendFileSync(filePath, line, "utf-8");
+}
+
 const logger = {
-  error(msg, meta) {
-    if (!shouldLog("error")) return;
-    console.error(`[ERROR] ${msg}`, meta || "");
-    writeToFile("error", msg, meta);
-  },
-
-  warn(msg, meta) {
-    if (!shouldLog("warn")) return;
-    console.warn(`[WARN] ${msg}`, meta || "");
-    writeToFile("warn", msg, meta);
-  },
-
-  info(msg, meta) {
+  info(message, meta) {
     if (!shouldLog("info")) return;
-    console.log(`[INFO] ${msg}`, meta || "");
-    writeToFile("info", msg, meta);
+    const store = requestContextStore.getStore() || {};
+    const logObj = {
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message,
+      requestId: store.requestId,
+      userId: store.userId,
+      ...meta,
+    };
+    console.log(JSON.stringify(logObj));
+    writeToFile(logObj);
   },
 
-  debug(msg, meta) {
+  error(message, errorObj) {
+    if (!shouldLog("error")) return;
+    const store = requestContextStore.getStore() || {};
+    const logObj = {
+      level: "error",
+      timestamp: new Date().toISOString(),
+      message,
+      requestId: store.requestId,
+      userId: store.userId,
+    };
+
+    if (errorObj) {
+      if (errorObj instanceof Error) {
+        logObj.error = {
+          message: errorObj.message,
+          stack: errorObj.stack,
+        };
+      } else {
+        logObj.error = errorObj;
+      }
+    }
+    console.error(JSON.stringify(logObj));
+    writeToFile(logObj);
+  },
+
+  warn(message, meta) {
+    if (!shouldLog("warn")) return;
+    const store = requestContextStore.getStore() || {};
+    const logObj = {
+      level: "warn",
+      timestamp: new Date().toISOString(),
+      message,
+      requestId: store.requestId,
+      userId: store.userId,
+      ...meta,
+    };
+    console.warn(JSON.stringify(logObj));
+    writeToFile(logObj);
+  },
+
+  debug(message, meta) {
     if (!shouldLog("debug")) return;
-    console.log(`[DEBUG] ${msg}`, meta || "");
-    writeToFile("debug", msg, meta);
+    const store = requestContextStore.getStore() || {};
+    const logObj = {
+      level: "debug",
+      timestamp: new Date().toISOString(),
+      message,
+      requestId: store.requestId,
+      userId: store.userId,
+      ...meta,
+    };
+    console.log(JSON.stringify(logObj));
+    writeToFile(logObj);
   },
 };
 

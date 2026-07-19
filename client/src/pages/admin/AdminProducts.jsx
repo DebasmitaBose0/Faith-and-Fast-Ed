@@ -15,6 +15,8 @@ import {
 import { Search, View } from "lucide-react";
 import { debounce } from "lodash";
 import { deleteProduct } from "@/store/product-slice/AdminProduct";
+import { hasPermission } from "@/utils/permissions";
+import { useSelector } from "react-redux";
 
 const AdminProducts = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,6 +26,8 @@ const AdminProducts = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+  const canWrite = hasPermission(user, "products:write");
 
   const {
     product = [],
@@ -87,14 +91,16 @@ const AdminProducts = () => {
         Admin - Product List
       </motion.h2>
 
-      <button
-        className="bg-yellow-500 dark:bg-red-600 px-10 py-2 mb-5 rounded-full text-white cursor-pointer"
-        onClick={() => {
-          navigate("/admin/create/product");
-        }}
-      >
-        Create Product
-      </button>
+      {canWrite && (
+        <button
+          className="bg-yellow-500 dark:bg-red-600 px-10 py-2 mb-5 rounded-full text-white cursor-pointer"
+          onClick={() => {
+            navigate("/admin/create/product");
+          }}
+        >
+          Create Product
+        </button>
+      )}
 
       <div className="mb-6">
         <motion.div
@@ -136,6 +142,7 @@ const AdminProducts = () => {
                   <th className="p-4 text-left">Category</th>
                   <th className="p-4 text-left">Price</th>
                   <th className="p-4 text-left">Stock</th>
+                  <th className="p-4 text-left">Updated By</th>
                   <th className="p-4 text-left">View</th>
                   <th className="p-4 text-center">Actions</th>
                 </tr>
@@ -161,6 +168,9 @@ const AdminProducts = () => {
                         ₹{prod.price}
                       </td>
                       <td className="p-4 text-blue-500">{prod.stock}</td>
+                      <td className="p-4 text-gray-700 dark:text-gray-300">
+                        {prod.lastUpdatedBy ? prod.lastUpdatedBy.name : "System"}
+                      </td>
                       <td className="p-4 text-green-600 font-bold">
                         <Link
                           to={`/product/${prod._id}`}
@@ -170,18 +180,24 @@ const AdminProducts = () => {
                         </Link>
                       </td>
                       <td className="p-4 text-center">
-                        <button
-                          onClick={() => handleUpdate(prod._id)}
-                          className="text-blue-500 hover:underline mr-4"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteDialogOpen(prod._id)}
-                          className="text-red-500 hover:underline"
-                        >
-                          Delete
-                        </button>
+                        {canWrite ? (
+                          <>
+                            <button
+                              onClick={() => handleUpdate(prod._id)}
+                              className="text-blue-500 hover:underline mr-4"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteDialogOpen(prod._id)}
+                              className="text-red-500 hover:underline"
+                            >
+                              Delete
+                            </button>
+                          </>
+                        ) : (
+                          <span className="text-gray-500 dark:text-gray-400">—</span>
+                        )}
                       </td>
                     </motion.tr>
                   ))

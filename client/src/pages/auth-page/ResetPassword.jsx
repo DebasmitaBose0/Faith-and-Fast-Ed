@@ -27,15 +27,18 @@ const ResetPassword = () => {
   // Email comes from the verified forgot-password step (router state first,
   // redux as fallback).
   const email = location.state?.email || storedEmail;
+  // The OTP proven in the verify step is threaded via router state and must be
+  // re-sent to the reset endpoint, which now verifies it server-side.
+  const otp = location.state?.otp;
 
   // Guard: this page is only reachable after OTP verification. Without an email
-  // there is nothing to reset, so send the user back to start the flow.
+  // and OTP there is nothing to reset, so send the user back to start the flow.
   useEffect(() => {
-    if (!email) {
+    if (!email || !otp) {
       toast.error("Please verify your email before resetting your password.");
       navigate("/forgot-password");
     }
-  }, [email, navigate]);
+  }, [email, otp, navigate]);
 
   // Surface errors.
   useEffect(() => {
@@ -71,7 +74,7 @@ const ResetPassword = () => {
     }
 
     dispatch(
-      updatePassword({ email, newPassword: password, confirmPassword })
+      updatePassword({ email, otp, newPassword: password, confirmPassword })
     );
   };
 

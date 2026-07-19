@@ -8,21 +8,29 @@ import {
   updateCategory,
 } from "../controllers/categoryController.js";
 import admin from "../middleware/Admin.js";
+import { cacheMiddleware, invalidateCache } from "../utils/cache.js";
 
 const categoryRouter = express.Router();
+
+const clearCategoriesCache = async (req, res, next) => {
+  await invalidateCache("categories:*");
+  await invalidateCache("products:*");
+  next();
+};
 
 categoryRouter.post(
   "/create",
   auth,
   admin,
+  clearCategoriesCache,
   upload.single("image"),
   AddCategory
 );
 
-categoryRouter.get("/get", getCategory);
+categoryRouter.get("/get", cacheMiddleware("categories:get", 300), getCategory);
 
-categoryRouter.put("/update", updateCategory);
+categoryRouter.put("/update", clearCategoriesCache, updateCategory);
 
-categoryRouter.delete("/delete", deleteCategory);
+categoryRouter.delete("/delete", clearCategoriesCache, deleteCategory);
 
 export default categoryRouter;

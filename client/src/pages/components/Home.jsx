@@ -6,6 +6,7 @@ import ProductCategory from "./ProductCategory.jsx";
 import { CircleArrowRightIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ContactUs from "./ContactUs";
+import ProductReviews from "./ReviewSection";
 import MetaData from "../extras/MetaData";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "@/store/product-slice/productSlice";
@@ -98,6 +99,7 @@ const Home = () => {
         <CircleArrowRightIcon className="w-6 h-6" />
       </button>
 
+      <ProductReviews />
       <ContactUs />
     </motion.div>
   );

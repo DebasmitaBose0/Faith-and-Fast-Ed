@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchDiscounts } from "@/store/extra-slice/discount";
-import ConfirmationModal from "../extras/ConfirmationModel";
+import ConfirmationModal from "../extras/ConfirmationModal";
 
 const DiscountHeader = () => {
   const dispatch = useDispatch();

@@ -44,9 +44,9 @@ const ForgotPassword = () => {
   // Once the OTP is verified, move to the reset step carrying the email.
   useEffect(() => {
     if (otpVerified) {
-      navigate("/reset-password", { state: { email } });
+      navigate("/reset-password", { state: { email, otp } });
     }
-  }, [otpVerified, navigate, email]);
+  }, [otpVerified, navigate, email, otp]);
 
   const handleEmailSubmit = (e) => {
     e.preventDefault();

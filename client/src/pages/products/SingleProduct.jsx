@@ -12,7 +12,7 @@ import {
 } from "@/store/product-slice/productDetails";
 import ImageSlider from "./ImageSlider";
 import ProductCard from "./ProductCard";
-import RecentlyViewed from "../components/RecentlyViewed";
+import RecentlyViewed from "../components/RecentlyViewedProducts";
 import RecommendationSection from "../components/RecommendationSection";
 import ProductDetailsSkeleton from "../components/skeletons/ProductDetailsSkeleton";
 import MetaData from "../extras/MetaData";
@@ -21,7 +21,7 @@ import { Heart, ShoppingCartIcon } from "lucide-react";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import { addToCart } from "@/store/add-to-cart/addToCart";
-import { addToWishList } from "@/store/add-to-wishList/addToWishList";
+import { addToWishList } from "@/store/add-to-wishlist/addToWishList";
 
 const ProductDetails = ({ products }) => {
   const { productId } = useParams();
@@ -122,8 +122,13 @@ const ProductDetails = ({ products }) => {
 
   useEffect(() => {
     if (product && product._id) {
-      let viewedProducts =
-        JSON.parse(localStorage.getItem("recentlyViewed")) || [];
+      let viewedProducts = [];
+      try {
+        const raw = JSON.parse(localStorage.getItem("recentlyViewed"));
+        if (Array.isArray(raw)) viewedProducts = raw;
+      } catch {
+        /* ignore corrupt or non-array value */
+      }
 
       viewedProducts = viewedProducts.filter(
         (item) => item._id !== product._id

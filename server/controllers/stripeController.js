@@ -164,6 +164,7 @@ export const createPaymentIntent = catchAsyncErrors(async (req, res) => {
       automatic_payment_methods: { enabled: true },
       metadata: {
         userId: String(userId),
+        discountAmount: String(Number(discountAmount) || 0),
       },
     });
 
@@ -196,15 +197,7 @@ export const confirmStripePayment = catchAsyncErrors(async (req, res) => {
   }
 
   try {
-    const {
-      paymentIntentId,
-      userId,
-      addressId,
-      products,
-      totalAmount,
-      couponCode,
-      discountAmount,
-    } = req.body;
+    const { paymentIntentId, addressId, products, couponCode } = req.body;
 
     if (!paymentIntentId) {
       return res
@@ -234,17 +227,59 @@ export const confirmStripePayment = catchAsyncErrors(async (req, res) => {
       });
     }
 
+    // The PaymentIntent is the source of truth for who paid and how much; the
+    // request body is attacker-controllable and must not be trusted for these.
+    // Verify the authenticated user matches the user the intent was created for
+    // (createPaymentIntent stores it in metadata.userId).
+    const authUserId = req.user?._id || req.user?.id;
+    if (
+      !authUserId ||
+      String(paymentIntent.metadata?.userId || "") !== String(authUserId)
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "This payment does not belong to the authenticated user",
+      });
+    }
+
+    // Authoritative amount actually charged by Stripe, converted back from the
+    // smallest currency unit.
+    const verifiedAmount = paymentIntent.amount / 100;
+
+    // Re-validate the submitted line items against the charge using the same
+    // server-side pricing that created the intent, with the discount taken from
+    // the intent's metadata (not the request body, which could be inflated to
+    // make mismatched items add up). If the items don't reproduce the amount
+    // actually charged, reject rather than storing forged line items.
+    const verifiedDiscount =
+      Number(paymentIntent.metadata?.discountAmount) || 0;
+    let recomputedAmount;
+    try {
+      recomputedAmount = await computeServerAmount(products, verifiedDiscount);
+    } catch {
+      return res.status(400).json({
+        success: false,
+        message: "Order items are invalid or do not match the payment",
+      });
+    }
+    if (recomputedAmount !== verifiedAmount) {
+      return res.status(400).json({
+        success: false,
+        message: "Order items do not match the amount that was paid",
+      });
+    }
+
     const createdAt = new Date();
     const deliveryDate = new Date(createdAt);
     deliveryDate.setDate(createdAt.getDate() + 5);
 
     const newOrder = new OrderModel({
-      user: userId,
+      user: authUserId,
       address: addressId,
       products,
-      totalAmount,
+      totalAmount: verifiedAmount,
       couponCode: couponCode || "",
-      discountAmount: discountAmount || 0,
+      discountAmount: verifiedDiscount,
       paymentMethod: "STRIPE",
       stripePaymentIntentId: paymentIntentId,
       orderStatus: "PENDING",
@@ -263,7 +298,7 @@ export const confirmStripePayment = catchAsyncErrors(async (req, res) => {
     // out immediately (same as COD), unlike the manual-UPI flow which waits for
     // admin verification.
     try {
-      const user = await UserModel.findById(userId);
+      const user = await UserModel.findById(authUserId);
       if (user?.email) {
         const receiptHTML = generateReceiptHTML(populatedOrder);
         sendEmail({

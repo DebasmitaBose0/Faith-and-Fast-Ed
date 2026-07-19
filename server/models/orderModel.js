@@ -91,11 +91,23 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    // Payment flow: COD introduces a controlled status transition.
+    // We keep `paymentStatus` as a payment outcome marker and `orderStatus` as
+    // the fulfillment lifecycle marker.
     orderStatus: {
       type: String,
-      enum: ["PENDING", "SHIPPED", "DELIVERED", "CANCELLED"],
+      enum: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"],
       default: "PENDING",
     },
+
+    // Idempotency key supplied by the frontend to prevent duplicate order
+    // creation (e.g. double-click / network retries).
+    idempotencyKey: {
+      type: String,
+      required: false,
+      index: false,
+    },
+
     orderHistory: {
       type: [
         {
@@ -127,6 +139,10 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    lastUpdatedBy: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
   },
   {
     timestamps: true,
@@ -139,8 +155,11 @@ orderSchema.pre("save", function (next) {
   next();
 });
 
-orderSchema.index({ user: 1 });
-orderSchema.index({ orderStatus: 1 });
+orderSchema.index({ user: 1, createdAt: -1 });
+orderSchema.index({ orderStatus: 1, createdAt: -1 });
+orderSchema.index({ paymentStatus: 1 });
+orderSchema.index({ createdAt: -1 });
+orderSchema.index({ user: 1, paymentStatus: 1 });
 
 const OrderModel = mongoose.model("Order", orderSchema);
 

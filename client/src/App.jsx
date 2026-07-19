@@ -36,8 +36,8 @@ import AdminDiscount from "./pages/admin/AdminDiscount";
 import PromoBanner from "./pages/components/PromoBanner";
 import { useEffect } from "react";
 import { getCartItems } from "./store/add-to-cart/addToCart";
-import { getWishListItems } from "./store/add-to-wishList/addToWishList";
-import NotFoundPage from "./pages/extras/NotFoundPage ";
+import { getWishListItems } from "./store/add-to-wishlist/addToWishList";
+import NotFoundPage from "./pages/extras/NotFoundPage";
 import FAQPage from "./pages/extras/FAQPage";
 import PrivacyPolicy from "./pages/extras/PrivacyPolicy";
 import TermsAndServices from "./pages/extras/TermsAndServices";
@@ -62,12 +62,13 @@ const App = () => {
   return (
     <div className="flex flex-col bg-white dark:bg-black text-black dark:text-white">
       <ToastContainer position="top-center" />
+
+      <ErrorBoundary>
       {/* <DiscountHeader /> */}
       <PromoBanner />
       <Header />
       <WhatsAppButton />
 
-      <ErrorBoundary>
       <Routes>
         {/* User routes */}
         <Route path="/" element={<Home />} />
@@ -191,10 +192,9 @@ const App = () => {
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-      </ErrorBoundary>
-
       <ScrollToTop />
       <Footer />
+      </ErrorBoundary>
     </div>
   );
 };

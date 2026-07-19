@@ -93,14 +93,30 @@ Create a `.env` file in the `client` directory:
 VITE_BACKEND_URL=http://localhost:5000
 ```
 
-### 4. Run the Project
-```bash
-# Start Backend (server/)
-npm run dev
+### Prerequisite Software
+Ensure you have the following installed on your machine:
+- **Node.js**: v18.x or v20.x (Recommended)
+- **npm**: v9.x or higher
+- **MongoDB**: Local community server or Atlas Account
 
-# Start Frontend (client/)
+### 4. Run the Project
+Open two separate terminal windows or run in background:
+
+**Window 1: Start Backend (server/)**
+```bash
+cd server
+npm install
 npm run dev
 ```
+By default, the server will start listening at `http://localhost:5000`.
+
+**Window 2: Start Frontend (client/)**
+```bash
+cd client
+npm install
+npm run dev
+```
+By default, the client Vite application will run at `http://localhost:5173`. Make sure the frontend `VITE_BACKEND_URL` points exactly to the port used by the server backend.
 
 ## Cash on Delivery (COD) Payment Flow
 
@@ -181,6 +197,9 @@ Issue → Assignment → Development → PR to `elusoc` → Review → Merge
 
 ## Contributing
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) and [FAITH_FAST_ISSUES.md](FAITH_FAST_ISSUES.md) for more details.
+
+## Security
+For security issues or vulnerability reporting, please review our [Security Policy](SECURITY.md).
 
 ## License
 This project is licensed under the ISC License.

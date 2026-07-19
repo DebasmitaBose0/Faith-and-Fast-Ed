@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { getOrderAnalytics } from "@/store/order-slice/analyticsSlice";
 import MetaData from "../extras/MetaData";
+import AnalyticsCharts from "./AnalyticsCharts";
 
 // Palette for the status pie / bars (kept small and readable on dark + light).
 const STATUS_COLORS = {
@@ -374,6 +375,10 @@ const AdminAnalytics = () => {
               value={formatNumber(summary?.totalUnits)}
               accent="bg-amber-500"
             />
+          </div>
+
+          <div className="my-6">
+            <AnalyticsCharts data={orderGrowth} />
           </div>
 
           {/* Charts grid */}

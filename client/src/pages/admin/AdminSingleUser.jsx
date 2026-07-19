@@ -10,10 +10,9 @@ import {
   updateUserRole,
   updateUserStatus,
 } from "@/store/auth-slice/user";
-import Spinner from "../extras/Spinner";
-import ConfirmationModal from "../extras/ConfirmationModel";
+import ConfirmationModal from "../extras/ConfirmationModal";
 import { toast } from "react-toastify";
-import { ArrowLeft, Delete, Edit } from "lucide-react";
+import { ArrowLeft, Delete, Edit, Loader } from "lucide-react";
 import { Update } from "@mui/icons-material";
 import PropTypes from "prop-types";
 
@@ -78,7 +77,7 @@ const SingleUser = () => {
   if (loading)
     return (
       <div className="flex justify-center items-center h-64">
-        <Spinner size="lg" className="text-yellow-600 dark:text-red-600" />
+        <Loader size="lg" className="text-yellow-600 dark:text-red-600" />
       </div>
     );
   if (error) return <div className="text-red-500 p-4">{error}</div>;

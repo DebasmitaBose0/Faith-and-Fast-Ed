@@ -1,6 +1,7 @@
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
 import wishListProductModel from "../models/wishlistModel.js";
 import UserModel from "../models/userModel.js";
+import Product from "../models/productModel.js";
 
 export const addToWishListItemController = catchAsyncErrors(
   async (req, res) => {
@@ -11,6 +12,22 @@ export const addToWishListItemController = catchAsyncErrors(
       if (!productId) {
         return res.status(400).json({
           message: "Please provide productId",
+          error: true,
+          success: false,
+        });
+      }
+
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
+          error: true,
+          success: false,
+        });
+      }
+      if (product.stock <= 0) {
+        return res.status(400).json({
+          message: "Product is currently out of stock and cannot be added to wishlist",
           error: true,
           success: false,
         });
