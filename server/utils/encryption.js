@@ -10,7 +10,13 @@ const KEY = (() => {
       "Generate one with: node -e \"console.log(require('crypto').randomBytes(32).toString('hex'))\""
     );
   }
-  const normalized = raw.length === 32 ? raw : crypto.createHash("sha256").update(raw).digest("hex");
+  // aes-256-cbc needs a key of exactly 32 bytes. Deriving it with SHA-256 always produces that,
+  // whatever the supplied value looks like — a 64-character hex string, a passphrase, anything.
+  // The previous version passed a 32-character value straight to Buffer.from(raw, "hex"), which
+  // decodes to 16 bytes (or fewer, when the value isn't valid hex), so createCipheriv failed with
+  // "Invalid key length" for exactly the key length the setup docs steer people towards. Values
+  // that already worked derive to the same key as before, so existing ciphertext still decrypts.
+  const normalized = crypto.createHash("sha256").update(raw).digest("hex");
   return Buffer.from(normalized, "hex");
 })();
 
