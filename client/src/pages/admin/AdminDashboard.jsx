@@ -10,6 +10,7 @@ import {
   Tag,
   CreditCard,
   Boxes,
+  HelpCircle,
 } from "lucide-react";
 import AdminUsers from "./AdminUsers";
 import { useNavigate } from "react-router-dom";
@@ -20,6 +21,7 @@ import AdminOrdersPage from "./AdminOrdersPage";
 import AdminAnalytics from "./AdminAnalytics";
 import AdminPaymentSettings from "./AdminPaymentSettings";
 import AdminInventory from "./AdminInventory";
+import AdminFAQ from "./AdminFAQ";
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -59,6 +61,8 @@ const AdminDashboard = () => {
         return <AdminAnalytics />;
       case "Payment Settings":
         return <AdminPaymentSettings />;
+      case "FAQs":
+        return <AdminFAQ />;
 
       default:
         return null;
@@ -90,6 +94,7 @@ const AdminDashboard = () => {
             { icon: BarChart3, text: "Analytics" },
             { icon: Tag, text: "Discounts", path: "/admin/discounts" },
             { icon: CreditCard, text: "Payment Settings" },
+            { icon: HelpCircle, text: "FAQs" },
           ].map((item) => (
             <button
               key={item.text}
