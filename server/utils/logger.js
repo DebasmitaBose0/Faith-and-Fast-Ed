@@ -55,12 +55,9 @@ const logger = {
 
     if (errorObj) {
       if (errorObj instanceof Error) {
-        logObj.error = {
-          message: errorObj.message,
-          stack: errorObj.stack,
-        };
+        output += ` | ${errorObj.message}\n${errorObj.stack}`;
       } else {
-        logObj.error = errorObj;
+        output += ` ${JSON.stringify(errorObj)}`;
       }
     }
     console.error(JSON.stringify(logObj));
