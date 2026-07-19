@@ -3,6 +3,7 @@ import OrderModel from "../models/orderModel.js";
 import ProductModel from "../models/productModel.js";
 import UserModel from "../models/userModel.js";
 import DiscountModel from "../models/discountModel.js";
+import ReferralModel from "../models/referralModel.js";
 import { writeAuditLog } from "../utils/auditLogger.js";
 import sendEmail from "../config/sendEmail.js";
 import generateReceiptHTML from "../utils/generateReceipt.js";
@@ -16,6 +17,7 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
       products,
       paymentMethod,
       couponCode,
+      referralCode,
       upiReference,
       paymentScreenshot,
       idempotencyKey,
@@ -131,7 +133,22 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
       }
     }
 
-    const totalAmount = Math.max(0, itemsTotal - discountAmount);
+    let referralDiscountAmount = 0;
+    let appliedReferralCode = "";
+    if (referralCode && String(referralCode).trim()) {
+      const referral = await ReferralModel.findOne({
+        referralCode: String(referralCode).trim().toUpperCase(),
+        isActive: true,
+      });
+      if (referral) {
+        referralDiscountAmount = (itemsTotal * referral.rewardPercentage) / 100;
+        appliedReferralCode = referral.referralCode;
+        referral.usagesCount += 1;
+        await referral.save();
+      }
+    }
+
+    const totalAmount = Math.max(0, itemsTotal - discountAmount - referralDiscountAmount);
 
     // Stock hardening: fail fast if any line item is out of stock.
     for (const item of orderItems) {
@@ -157,6 +174,8 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
       totalAmount,
       couponCode: appliedCouponCode,
       discountAmount,
+      referralCode: appliedReferralCode,
+      referralDiscountAmount,
       paymentMethod: method,
       idempotencyKey: idempotencyKey && String(idempotencyKey).trim() ? String(idempotencyKey).trim() : "",
       upiReference: method === "ONLINE" ? upiReference || "" : "",

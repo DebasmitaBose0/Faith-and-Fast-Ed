@@ -7,7 +7,7 @@ import { Download, ArrowLeft } from "lucide-react";
 import { jsPDF } from "jspdf";
 import { getSingleOrder } from "@/store/order-slice/order";
 import MetaData from "../extras/MetaData";
-import { calculateInvoiceSummary } from "../../utils/invoiceCalculator";
+import { calculateInvoiceSummary } from "../../utils/checkoutCalculator";
 
 const Invoice = () => {
   const { Id } = useParams();

@@ -35,6 +35,8 @@ const CreateOrder = () => {
     (state) => state.discount
   );
   const [couponCode, setCouponCode] = useState("");
+  const [referralCodeInput, setReferralCodeInput] = useState("");
+  const [referralDiscount, setReferralDiscount] = useState(0);
   const { user, loading: authLoading } = useSelector((state) => state.auth);
   const { address } = useSelector((state) => state.address);
   const { product: products = [], loading: productLoading } = useSelector(
@@ -137,15 +139,18 @@ const CreateOrder = () => {
           ? appliedDiscount.newPrice
           : finalTotal;
 
+      const finalPayable = Math.max(0, Number(payable) - (Number(finalTotal) * referralDiscount / 100));
+
       setOrderData((prev) => ({
         ...prev,
         products: formattedProducts,
-        totalAmount: Number(payable).toFixed(2),
+        totalAmount: Number(finalPayable).toFixed(2),
         couponCode: appliedDiscount?.name || "",
         discountAmount: appliedDiscount?.discountAmount || 0,
+        referralCode: referralCodeInput,
       }));
     }
-  }, [cartItems, products, appliedDiscount, finalTotal]);
+  }, [cartItems, products, appliedDiscount, finalTotal, referralDiscount, referralCodeInput]);
 
   const handleChange = (e) => {
     setOrderData({ ...orderData, [e.target.name]: e.target.value });
@@ -194,6 +199,36 @@ const CreateOrder = () => {
     dispatch(clearAppliedDiscount());
     setCouponCode("");
     toast.info("Coupon removed");
+  };
+
+  const handleApplyReferral = async () => {
+    const code = referralCodeInput.trim();
+    if (!code) {
+      toast.error("Please enter a referral code");
+      return;
+    }
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:5000'}/api/referral/validate/${code}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setReferralDiscount(data.rewardPercentage);
+        toast.success(`Referral code applied! Got ${data.rewardPercentage}% discount.`);
+      } else {
+        toast.error(data.message || "Invalid referral code");
+      }
+    } catch (err) {
+      toast.error("Failed to validate referral code");
+    }
+  };
+
+  const handleRemoveReferral = () => {
+    setReferralCodeInput("");
+    setReferralDiscount(0);
+    toast.info("Referral code removed");
   };
 
   const handleSubmit = async (e) => {
@@ -672,26 +707,90 @@ const CreateOrder = () => {
 
           <motion.div variants={itemVariants} className="space-y-4">
             <label className="block text-lg font-semibold text-gray-800 dark:text-gray-200">
+              Referral Code
+            </label>
+            <motion.div
+              variants={itemVariants}
+              className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl shadow-md"
+            >
+              {referralDiscount > 0 ? (
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-green-600 dark:text-green-400 font-semibold">
+                      Referral Code &quot;{referralCodeInput}&quot; applied
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Discount: {referralDiscount}%
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveReferral}
+                    className="text-red-500 hover:text-red-700 font-medium text-sm"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="text"
+                    value={referralCodeInput}
+                    onChange={(e) => setReferralCodeInput(e.target.value)}
+                    placeholder="Enter referral code"
+                    className="flex-1 p-3 bg-transparent border border-gray-300 dark:border-gray-600 rounded-lg text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 uppercase"
+                    aria-label="Referral code"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleApplyReferral}
+                    sx={{
+                      background: "linear-gradient(to right, #10b981, #059669)",
+                      color: "white",
+                      padding: "8px 24px",
+                      borderRadius: "9999px",
+                      fontWeight: "bold",
+                      "&:hover": {
+                        background: "linear-gradient(to right, #059669, #047857)",
+                      },
+                    }}
+                  >
+                    Apply
+                  </Button>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="space-y-4">
+            <label className="block text-lg font-semibold text-gray-800 dark:text-gray-200">
               Total Amount
             </label>
             <motion.div
               variants={itemVariants}
               className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl shadow-md space-y-2"
             >
+              {(appliedDiscount?.discountAmount > 0 || referralDiscount > 0) && (
+                <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">
+                  <span>Subtotal</span>
+                  <span>₹{Number(finalTotal).toFixed(2)}</span>
+                </div>
+              )}
               {appliedDiscount?.discountAmount > 0 && (
-                <>
-                  <div className="flex items-center justify-between text-gray-600 dark:text-gray-400">
-                    <span>Subtotal</span>
-                    <span>₹{Number(finalTotal).toFixed(2)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-green-600 dark:text-green-400">
-                    <span>Coupon Discount</span>
-                    <span>
-                      -₹
-                      {Number(appliedDiscount.discountAmount || 0).toFixed(2)}
-                    </span>
-                  </div>
-                </>
+                <div className="flex items-center justify-between text-green-600 dark:text-green-400">
+                  <span>Coupon Discount</span>
+                  <span>
+                    -₹{Number(appliedDiscount.discountAmount || 0).toFixed(2)}
+                  </span>
+                </div>
+              )}
+              {referralDiscount > 0 && (
+                <div className="flex items-center justify-between text-green-600 dark:text-green-400">
+                  <span>Referral Discount ({referralDiscount}%)</span>
+                  <span>
+                    -₹{Number(finalTotal * referralDiscount / 100).toFixed(2)}
+                  </span>
+                </div>
               )}
               <div className="flex items-center justify-between border-t border-gray-300 dark:border-gray-600 pt-2">
                 <span className="text-xl font-bold text-gray-800 dark:text-gray-200">
