@@ -6,4 +6,9 @@ export const healthConfig = {
   readinessEndpoint: "/api/readiness",
 };
 
-export default healthConfig;
+export const backupConfig = {
+  backupDirectory: "./backups",
+  maxBackupsKept: 5,
+};
+
+export default { healthConfig, backupConfig };
