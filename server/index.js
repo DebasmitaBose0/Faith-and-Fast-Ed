@@ -16,6 +16,10 @@ import connectDB from "./config/connectDB.js";
 import validateEnv from "./config/validateEnv.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 import { generalLimiter } from "./middleware/rateLimiter.js";
+import requestLogger from "./middleware/requestLogger.js";
+import logger from "./utils/logger.js";
+import responseWrapper from "./middleware/responseWrapper.js";
+
 dotenv.config();
 validateEnv();
 
@@ -57,6 +61,7 @@ app.use(
   })
 );
 app.use(generalLimiter);
+app.use(requestLogger);
 app.use(morgan("combined"));
 app.use(errorMiddleware);
 app.disable("x-powered-by");
@@ -108,7 +113,6 @@ app.use("/api/product", productRouter);
 app.use("/api/support", supportRouter);
 app.use("/api/user", userRouter);
 app.use("/api/wishlist", wishListRouter);
-app.use("/api/review", reviewRouter);
 
 app.use(errorMiddleware);
 
@@ -116,22 +120,22 @@ connectDB().then(() => {
   startMonitoring(healthConfig.monitoringInterval);
 
   const server = app.listen(PORT, () =>
-    console.log(`Server is running on port ${PORT}`)
+    logger.info(`Server is running on port ${PORT}`)
   );
 
   const shutdown = (reason, code = 1) => {
-    console.error(`[shutdown] reason=${reason} code=${code}`);
+    logger.error(`Server shutting down: reason=${reason} code=${code}`);
     server.close(() => process.exit(code));
     setTimeout(() => process.exit(code), 10_000).unref();
   };
 
   process.on("unhandledRejection", (err) => {
-    console.error(`[unhandledRejection] ${err?.message ?? err}`);
+    logger.error(`Unhandled rejection: ${err?.message ?? err}`, { stack: err?.stack });
     shutdown("unhandledRejection");
   });
 
   process.on("uncaughtException", (err) => {
-    console.error(`[uncaughtException] ${err?.message ?? err}`);
+    logger.error(`Uncaught exception: ${err?.message ?? err}`, { stack: err?.stack });
     shutdown("uncaughtException");
   });
 

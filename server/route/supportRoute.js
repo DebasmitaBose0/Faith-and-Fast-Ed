@@ -4,7 +4,7 @@ import admin from "../middleware/Admin.js";
 import {
   submitContactMessage,
   getContactMessages,
-} from "../controllers/contactController.js";
+} from "../controllers/supportController.js";
 import { contactLimiter } from "../middleware/rateLimiter.js";
 
 const supportRouter = express.Router();
