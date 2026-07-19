@@ -20,6 +20,8 @@ import AdminOrdersPage from "./AdminOrdersPage";
 import AdminAnalytics from "./AdminAnalytics";
 import AdminPaymentSettings from "./AdminPaymentSettings";
 import AdminInventory from "./AdminInventory";
+import AdminTickets from "./AdminTickets";
+import { LifeBuoy } from "lucide-react";
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -59,6 +61,8 @@ const AdminDashboard = () => {
         return <AdminAnalytics />;
       case "Payment Settings":
         return <AdminPaymentSettings />;
+      case "Tickets":
+        return <AdminTickets />;
 
       default:
         return null;
@@ -90,6 +94,7 @@ const AdminDashboard = () => {
             { icon: BarChart3, text: "Analytics" },
             { icon: Tag, text: "Discounts", path: "/admin/discounts" },
             { icon: CreditCard, text: "Payment Settings" },
+            { icon: LifeBuoy, text: "Tickets" },
           ].map((item) => (
             <button
               key={item.text}

@@ -8,7 +8,7 @@ import {
   submitContactMessage,
   resetContactState,
 } from "@/store/extra-slice/contactSlice";
-import { contactConfig } from "../../config/contact";
+import { supportConfig as contactConfig } from "../../config/supportConfig";
 import { validateContactForm } from "../../utils/contactValidation";
 import ContactSkeleton from "./skeletons/ContactSkeleton";
 import MetaData from "../extras/MetaData";
