@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import ContactUs from "./ContactUs";
 import ProductReviews from "./ReviewSection";
 import MetaData from "../extras/MetaData";
+import SmartRecommendations from "./SmartRecommendations";
 import { useDispatch, useSelector } from "react-redux";
 import { getProducts } from "@/store/product-slice/productSlice";
 
@@ -100,6 +101,7 @@ const Home = () => {
       </button>
 
       <ProductReviews />
+      <SmartRecommendations />
       <ContactUs />
     </motion.div>
   );
