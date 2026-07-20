@@ -97,8 +97,9 @@ import supportRouter from "./route/supportRoute.js";
 import userRouter from "./route/userRoute.js";
 import wishListRouter from "./route/wishListRoute.js";
 import healthRouter from "./route/healthRoute.js";
+import backupRouter from "./route/backupRoute.js";
 import { startMonitoring } from "./utils/systemMonitor.js";
-import healthConfig from "./config/healthConfig.js";
+import { healthConfig } from "./config/healthAndBackupConfig.js";
 
 app.use("/api/health", healthRouter);
 app.use("/api/address", addressRouter);
@@ -113,6 +114,8 @@ app.use("/api/product", productRouter);
 app.use("/api/support", supportRouter);
 app.use("/api/user", userRouter);
 app.use("/api/wishlist", wishListRouter);
+app.use("/api/review", reviewRouter);
+app.use("/api/backup", backupRouter);
 
 app.use(errorMiddleware);
 
