@@ -112,7 +112,6 @@ export const getProduct = catchAsyncErrors(async (req, res) => {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .populate("category")
         .populate("lastUpdatedBy", "name email"),
       ProductModel.countDocuments(query),
     ]);
@@ -143,7 +142,6 @@ export const getProductDetails = catchAsyncErrors(async (req, res) => {
     }
 
     const product = await ProductModel.findById(productId)
-      .populate("category")
       .populate("lastUpdatedBy", "name email");
 
     if (!product) {
@@ -354,8 +352,7 @@ export const searchProduct = catchAsyncErrors(async (req, res) => {
       ProductModel.find(query)
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit)
-        .populate("category"),
+        .limit(limit),
       ProductModel.countDocuments(query),
     ]);
 
