@@ -79,6 +79,13 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 BREVO_API_KEY=your_brevo_key
 FRONTEND_URL=http://localhost:5173
+ENCRYPTION_KEY=your_generated_encryption_key
+```
+
+`ENCRYPTION_KEY` is required — the server exits on startup without it. Generate one with:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 #### MongoDB Atlas Setup
