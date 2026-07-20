@@ -109,7 +109,14 @@ CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
 BREVO_API_KEY=your_brevo_key
 FRONTEND_URL=http://localhost:5173
+ENCRYPTION_KEY=your_generated_encryption_key
 ```
+
+> **`ENCRYPTION_KEY` is required — the server exits on startup without it.** Generate one with:
+>
+> ```bash
+> node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+> ```
 
 Create a `.env` file inside the `client/` directory:
 
@@ -153,6 +160,7 @@ Visit `http://localhost:5173` in your browser.
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret | Cloudinary dashboard → Settings |
 | `BREVO_API_KEY` | Brevo API key for sending emails | Brevo dashboard → SMTP & API |
 | `FRONTEND_URL` | URL of the running frontend | `http://localhost:5173` for local dev |
+| `ENCRYPTION_KEY` | Encrypts stored payment credentials. **Required** — the server exits without it | Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
 
 ### Client `.env`
 

@@ -12,7 +12,7 @@ async function connectDB() {
     await mongoose.connect(process.env.MONGODB_URL);
     logger.info("Database connected successfully");
   } catch (error) {
-    logger.error("Mongodb connect error", error);
+    logger.error("Database connection error", error);
     process.exit(1);
   }
 }
