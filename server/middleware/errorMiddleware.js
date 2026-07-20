@@ -9,30 +9,26 @@ const errorMiddleware = (err, req, res, next) => {
 
   logger.error(`${req.method} ${req.originalUrl} ${err.statusCode}`, err);
 
-  // Wrong Mongodb Id error
   if (err.name === "CastError") {
     const message = `Resource not found. Invalid: ${err.path}`;
     err = new ErrorHandler(message, 400);
     code = "RESOURCE_NOT_FOUND";
   }
 
-  // Mongoose duplicate key error
   if (err.code === 11000) {
     const message = `Duplicate ${Object.keys(err.keyValue)} Entered`;
     err = new ErrorHandler(message, 400);
     code = "DUPLICATE_KEY_ERROR";
   }
 
-  // Wrong JWT error
   if (err.name === "JsonWebTokenError") {
-    const message = `Json Web Token is invalid, Try again `;
+    const message = "Json Web Token is invalid, Try again";
     err = new ErrorHandler(message, 400);
     code = "AUTH_INVALID_TOKEN";
   }
 
-  // JWT EXPIRE error
   if (err.name === "TokenExpiredError") {
-    const message = `Json Web Token is Expired, Try again `;
+    const message = "Json Web Token is Expired, Try again";
     err = new ErrorHandler(message, 400);
     code = "AUTH_TOKEN_EXPIRED";
   }
@@ -41,6 +37,13 @@ const errorMiddleware = (err, req, res, next) => {
   if (code === "INTERNAL_SERVER_ERROR" || typeof code === "number") {
     code = mapMessageToErrorCode(err.message);
   }
+
+  logger.error(`Error: ${err.message}`, {
+    statusCode: err.statusCode,
+    stack: err.stack,
+    url: req.originalUrl,
+    method: req.method,
+  });
 
   res.status(err.statusCode).json({
     success: false,
