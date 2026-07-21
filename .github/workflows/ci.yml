@@ -2,12 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [main, elusoc]
+    branches:
+      - main
   pull_request:
-    branches: [main, elusoc]
+    branches:
+      - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,24 +23,16 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          cache-dependency-path: client/package-lock.json
+          cache-dependency-path: package-lock.json
 
-      - name: Install client dependencies
-        run: npm ci
-        working-directory: client
+      - name: Install dependencies
+        run: npm run install:all
 
-      - name: Install server dependencies
-        run: npm ci
-        working-directory: server
+      - name: Run linter
+        run: npm run lint:client
 
-      - name: Syntax check server
-        run: node --check index.js
-        working-directory: server
+      - name: Run formatter check
+        run: npm run format:check
 
-      - name: Build frontend
-        run: npm run build
-        working-directory: client
-
-      - name: Lint frontend
-        run: npm run lint -- --max-warnings 0
-        working-directory: client
+      - name: Run test suite
+        run: npm test
