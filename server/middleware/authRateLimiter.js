@@ -1,4 +1,4 @@
-import rateLimit from "express-rate-limit";
+import rateLimit from 'express-rate-limit';
 
 // Configuration for rate limits. Default is 5 requests per 15 minutes.
 const windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000;
@@ -15,11 +15,13 @@ const authRateLimiter = rateLimit({
       `[RATE_LIMIT_BLOCKED] IP: ${req.ip} | Route: ${req.originalUrl} | Time: ${new Date().toISOString()}`
     );
 
-    let retryMessage = "Too many attempts. Please try again later.";
-    
+    let retryMessage = 'Too many attempts. Please try again later.';
+
     // Calculate time left in seconds
     if (req.rateLimit && req.rateLimit.resetTime) {
-      const secondsLeft = Math.ceil((req.rateLimit.resetTime.getTime() - Date.now()) / 1000);
+      const secondsLeft = Math.ceil(
+        (req.rateLimit.resetTime.getTime() - Date.now()) / 1000
+      );
       if (secondsLeft > 0) {
         const minutes = Math.floor(secondsLeft / 60);
         const seconds = secondsLeft % 60;

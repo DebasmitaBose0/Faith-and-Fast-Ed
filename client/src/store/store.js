@@ -1,23 +1,23 @@
-import { configureStore } from "@reduxjs/toolkit";
-import authPersistMiddleware from "../middleware/authPersist";
-import darkModeReducer from "./extra-slice/darkModeSlice";
-import authReducer from "./auth-slice/user";
-import productReducer from "./product-slice/productSlice";
-import addressReducer from "./address-slice/addressSlice";
-import updatePassSlice from "./auth-slice/updatePasswordSlice";
-import productDetailsSlice from "./product-slice/productDetails";
-import otpSlice from "./auth-slice/otpSlice";
-import adminProductSlice from "./product-slice/AdminProduct";
-import cartReducer from "./add-to-cart/addToCart";
-import wishListReducer from "./add-to-wishlist/addToWishList";
-import orderReducer from "./order-slice/order";
-import discountReducer from "./extra-slice/discount";
-import onlineReducer from "./order-slice/order";
-import adminOrdersReducer from "./order-slice/AdminOrderSlice";
-import adminAnalyticsReducer from "./order-slice/analyticsSlice";
-import paymentSettingsReducer from "./extra-slice/paymentSettingsSlice";
-import contactReducer from "./extra-slice/contactSlice";
-import inventoryReducer from "./extra-slice/inventorySlice";
+import { configureStore } from '@reduxjs/toolkit';
+import authPersistMiddleware from '../middleware/authPersist';
+import darkModeReducer from './extra-slice/darkModeSlice';
+import authReducer from './auth-slice/user';
+import productReducer from './product-slice/productSlice';
+import addressReducer from './address-slice/addressSlice';
+import updatePassSlice from './auth-slice/updatePasswordSlice';
+import productDetailsSlice from './product-slice/productDetails';
+import otpSlice from './auth-slice/otpSlice';
+import adminProductSlice from './product-slice/AdminProduct';
+import cartReducer from './add-to-cart/addToCart';
+import wishListReducer from './add-to-wishlist/addToWishList';
+import orderReducer from './order-slice/order';
+import discountReducer from './extra-slice/discount';
+import onlineReducer from './order-slice/order';
+import adminOrdersReducer from './order-slice/AdminOrderSlice';
+import adminAnalyticsReducer from './order-slice/analyticsSlice';
+import paymentSettingsReducer from './extra-slice/paymentSettingsSlice';
+import contactReducer from './extra-slice/contactSlice';
+import inventoryReducer from './extra-slice/inventorySlice';
 
 const store = configureStore({
   reducer: {

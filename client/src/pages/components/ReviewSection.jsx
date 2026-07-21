@@ -1,7 +1,7 @@
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import axiosInstance from "@/api";
-import ReviewCard from "./ReviewCard";
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import axiosInstance from '@/api';
+import ReviewCard from './ReviewCard';
 
 const ProductReviews = () => {
   const [reviews, setReviews] = useState([]);
@@ -9,14 +9,14 @@ const ProductReviews = () => {
 
   useEffect(() => {
     axiosInstance
-      .get("/api/product/top-reviews")
+      .get('/api/product/top-reviews')
       .then((res) => {
         if (res.data && res.data.success) {
           setReviews(res.data.reviews || []);
         }
       })
       .catch((err) => {
-        console.error("Failed to fetch top reviews:", err);
+        console.error('Failed to fetch top reviews:', err);
       })
       .finally(() => {
         setLoading(false);

@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import ProductModel from "../models/productModel.js";
-import OrderModel from "../models/orderModel.js";
+import mongoose from 'mongoose';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import ProductModel from '../models/productModel.js';
+import OrderModel from '../models/orderModel.js';
 
 /**
  * Rule-based Product Recommendation Engine
@@ -19,9 +19,8 @@ import OrderModel from "../models/orderModel.js";
  */
 
 export const getTrendingProducts = catchAsyncErrors(async (req, res) => {
-  const limit = parseInt(req.query.limit, 10) > 0
-    ? parseInt(req.query.limit, 10)
-    : 8;
+  const limit =
+    parseInt(req.query.limit, 10) > 0 ? parseInt(req.query.limit, 10) : 8;
 
   // Popularity score = ratings * log-ish weight of review count. Sorting by
   // ratings then numOfReviews gives a stable, intuitive ordering without
@@ -31,7 +30,7 @@ export const getTrendingProducts = catchAsyncErrors(async (req, res) => {
     .limit(limit);
 
   return res.status(200).json({
-    message: "Trending products fetched successfully",
+    message: 'Trending products fetched successfully',
     error: false,
     success: true,
     count: trending.length,
@@ -42,13 +41,12 @@ export const getTrendingProducts = catchAsyncErrors(async (req, res) => {
 export const getFrequentlyBoughtTogether = catchAsyncErrors(
   async (req, res) => {
     const { productId } = req.params;
-    const limit = parseInt(req.query.limit, 10) > 0
-      ? parseInt(req.query.limit, 10)
-      : 4;
+    const limit =
+      parseInt(req.query.limit, 10) > 0 ? parseInt(req.query.limit, 10) : 4;
 
     if (!productId) {
       return res.status(400).json({
-        message: "productId is required",
+        message: 'productId is required',
         error: true,
         success: false,
       });
@@ -59,20 +57,20 @@ export const getFrequentlyBoughtTogether = catchAsyncErrors(
     const coOccurring = await OrderModel.aggregate([
       {
         $match: {
-          orderStatus: { $ne: "CANCELLED" },
-          "products.product": new mongoose.Types.ObjectId(productId),
+          orderStatus: { $ne: 'CANCELLED' },
+          'products.product': new mongoose.Types.ObjectId(productId),
         },
       },
-      { $unwind: "$products" },
+      { $unwind: '$products' },
       {
         // Drop the product itself — we only want companions.
         $match: {
-          "products.product": { $ne: new mongoose.Types.ObjectId(productId) },
+          'products.product': { $ne: new mongoose.Types.ObjectId(productId) },
         },
       },
       {
         $group: {
-          _id: "$products.product",
+          _id: '$products.product',
           count: { $sum: 1 },
         },
       },
@@ -89,9 +87,7 @@ export const getFrequentlyBoughtTogether = catchAsyncErrors(
     });
 
     // Preserve the co-occurrence ordering (Mongo $in doesn't guarantee order).
-    const orderMap = new Map(
-      productIds.map((id, idx) => [id.toString(), idx])
-    );
+    const orderMap = new Map(productIds.map((id, idx) => [id.toString(), idx]));
     products.sort(
       (a, b) =>
         (orderMap.get(a._id.toString()) ?? 0) -
@@ -99,7 +95,7 @@ export const getFrequentlyBoughtTogether = catchAsyncErrors(
     );
 
     return res.status(200).json({
-      message: "Frequently bought together products fetched successfully",
+      message: 'Frequently bought together products fetched successfully',
       error: false,
       success: true,
       count: products.length,

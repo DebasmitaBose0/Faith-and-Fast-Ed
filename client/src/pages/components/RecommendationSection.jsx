@@ -1,6 +1,6 @@
-import PropTypes from "prop-types";
-import { motion } from "framer-motion";
-import ProductCard from "../products/ProductCard";
+import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
+import ProductCard from '../products/ProductCard';
 
 /**
  * A titled grid of recommended products. Renders nothing when there are no

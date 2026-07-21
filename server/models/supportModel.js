@@ -1,29 +1,29 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const supportMessageSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Name is required"],
+      required: [true, 'Name is required'],
       trim: true,
-      maxlength: [100, "Name cannot exceed 100 characters"],
+      maxlength: [100, 'Name cannot exceed 100 characters'],
     },
     email: {
       type: String,
-      required: [true, "Email is required"],
+      required: [true, 'Email is required'],
       trim: true,
       lowercase: true,
     },
     phone: {
       type: String,
       trim: true,
-      default: "",
+      default: '',
     },
     message: {
       type: String,
-      required: [true, "Message is required"],
+      required: [true, 'Message is required'],
       trim: true,
-      maxlength: [2000, "Message cannot exceed 2000 characters"],
+      maxlength: [2000, 'Message cannot exceed 2000 characters'],
     },
     isResolved: {
       type: Boolean,
@@ -37,6 +37,9 @@ const supportMessageSchema = new mongoose.Schema(
 
 supportMessageSchema.index({ createdAt: -1 });
 
-const SupportMessageModel = mongoose.model("SupportMessage", supportMessageSchema);
+const SupportMessageModel = mongoose.model(
+  'SupportMessage',
+  supportMessageSchema
+);
 
 export default SupportMessageModel;

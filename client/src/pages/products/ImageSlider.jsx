@@ -1,10 +1,10 @@
-import PropTypes from "prop-types";
-import { motion } from "framer-motion";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
+import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const ImageSlider = ({ images }) => {
   const slideVariants = {
@@ -61,7 +61,7 @@ const ImageSlider = ({ images }) => {
                 loading="lazy"
                 width={1000}
                 height={450}
-                onError={(e) => (e.target.src = "/fallback-image.jpg")}
+                onError={(e) => (e.target.src = '/fallback-image.jpg')}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             </motion.div>

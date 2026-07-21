@@ -1,18 +1,18 @@
-import axiosInstance from "@/api";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from '@/api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-const API_URL = "/api/discount";
+const API_URL = '/api/discount';
 
 // Fetch all discounts
 export const fetchDiscounts = createAsyncThunk(
-  "discount/fetchAll",
+  'discount/fetchAll',
   async (_, thunkAPI) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/all`);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error fetching discounts"
+        error.response?.data || 'Error fetching discounts'
       );
     }
   }
@@ -20,7 +20,7 @@ export const fetchDiscounts = createAsyncThunk(
 
 // Create a discount
 export const createDiscount = createAsyncThunk(
-  "discount/create",
+  'discount/create',
   async (discountData, thunkAPI) => {
     try {
       const response = await axiosInstance.post(
@@ -30,7 +30,7 @@ export const createDiscount = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error creating discount"
+        error.response?.data || 'Error creating discount'
       );
     }
   }
@@ -38,7 +38,7 @@ export const createDiscount = createAsyncThunk(
 
 // Update an existing discount
 export const updateDiscount = createAsyncThunk(
-  "discount/update",
+  'discount/update',
   async ({ discountId, discountData }, thunkAPI) => {
     try {
       const response = await axiosInstance.put(
@@ -48,7 +48,7 @@ export const updateDiscount = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error updating discount"
+        error.response?.data || 'Error updating discount'
       );
     }
   }
@@ -56,7 +56,7 @@ export const updateDiscount = createAsyncThunk(
 
 // Apply a discount
 export const applyDiscount = createAsyncThunk(
-  "discount/apply",
+  'discount/apply',
   async (discountData, thunkAPI) => {
     try {
       const response = await axiosInstance.post(
@@ -66,7 +66,7 @@ export const applyDiscount = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error applying discount"
+        error.response?.data || 'Error applying discount'
       );
     }
   }
@@ -74,7 +74,7 @@ export const applyDiscount = createAsyncThunk(
 
 // Delete a discount
 export const deleteDiscount = createAsyncThunk(
-  "discount/delete",
+  'discount/delete',
   async (discountId, thunkAPI) => {
     try {
       const response = await axiosInstance.delete(
@@ -83,14 +83,14 @@ export const deleteDiscount = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data || "Error deleting discount"
+        error.response?.data || 'Error deleting discount'
       );
     }
   }
 );
 
 const discountSlice = createSlice({
-  name: "discount",
+  name: 'discount',
   initialState: {
     discounts: [],
     appliedDiscount: null,
@@ -156,7 +156,7 @@ const discountSlice = createSlice({
         state.successMessage = action.payload.message;
       })
       .addMatcher(
-        (action) => action.type.endsWith("/rejected"),
+        (action) => action.type.endsWith('/rejected'),
         (state, action) => {
           state.loading = false;
           state.error = action.payload;

@@ -12,7 +12,7 @@ export const safeSetItem = (key, value) => {
     localStorage.setItem(key, value);
     return true;
   } catch (e) {
-    if (e instanceof DOMException && e.name === "QuotaExceededError") {
+    if (e instanceof DOMException && e.name === 'QuotaExceededError') {
       console.warn(`[storage] localStorage quota exceeded for key "${key}"`);
     }
     return false;
@@ -43,7 +43,7 @@ export const safeSetJSON = (key, value) => {
     localStorage.setItem(key, JSON.stringify(value));
     return true;
   } catch (e) {
-    if (e instanceof DOMException && e.name === "QuotaExceededError") {
+    if (e instanceof DOMException && e.name === 'QuotaExceededError') {
       console.warn(`[storage] localStorage quota exceeded for key "${key}"`);
     }
     return false;

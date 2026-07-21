@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { Search, Heart, ShoppingCart, Menu, X, User } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { logoutUser } from "@/store/auth-slice/user";
-import { toast } from "react-toastify";
-import DarkModeToggle from "../extras/DarkModeToggle";
-import logoLight from "../../assets/logo-light.png";
-import logo from "../../assets/logoLight.png";
-import PropTypes from "prop-types";
+import { useState, useEffect } from 'react';
+import { Search, Heart, ShoppingCart, Menu, X, User } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '@/store/auth-slice/user';
+import { toast } from 'react-toastify';
+import DarkModeToggle from '../extras/DarkModeToggle';
+import logoLight from '../../assets/logo-light.png';
+import logo from '../../assets/logoLight.png';
+import PropTypes from 'prop-types';
 
 export default function Header() {
   const [darkMode, setDarkMode] = useState(false);
@@ -23,26 +23,26 @@ export default function Header() {
 
   const handleLogout = () => {
     dispatch(logoutUser());
-    toast.success("Logged out successfully!");
-    navigate("/");
+    toast.success('Logged out successfully!');
+    navigate('/');
   };
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme === "dark") {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
       setDarkMode(true);
-      document.documentElement.classList.add("dark");
+      document.documentElement.classList.add('dark');
     }
   }, []);
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
     if (!darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
     } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
   };
 
@@ -75,17 +75,17 @@ export default function Header() {
       </div>
 
       <nav className="hidden md:flex space-x-6 lg:space-x-10 font-semibold text-gray-700 dark:text-gray-300 lg:ml-50">
-        {["/", "/products", "/about", "/contactus"].map((path, index) => {
+        {['/', '/products', '/about', '/contactus'].map((path, index) => {
           const label =
-            path === "/"
-              ? "Home"
-              : path === "/products"
-              ? "Products"
-              : path === "/about"
-              ? "About"
-              : path === "/contactus"
-              ? "Contact Us"
-              : "";
+            path === '/'
+              ? 'Home'
+              : path === '/products'
+                ? 'Products'
+                : path === '/about'
+                  ? 'About'
+                  : path === '/contactus'
+                    ? 'Contact Us'
+                    : '';
 
           return (
             <a
@@ -93,8 +93,8 @@ export default function Header() {
               href={path}
               className={`relative group px-3 py-2 rounded-lg transition-all duration-300 ${
                 isActiveRoute(path)
-                  ? "text-red-600 dark:text-red-400 border-b-2 border-red-600 dark:border-red-400"
-                  : "hover:text-red-600 dark:hover:text-white"
+                  ? 'text-red-600 dark:text-red-400 border-b-2 border-red-600 dark:border-red-400'
+                  : 'hover:text-red-600 dark:hover:text-white'
               }`}
             >
               {label}
@@ -143,7 +143,7 @@ export default function Header() {
             <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden z-50 dropdown-content">
               {isAuthenticated ? (
                 <>
-                  {user.role === "ADMIN" && (
+                  {user.role === 'ADMIN' && (
                     <DropdownLink
                       href="/admin/dashboard"
                       text="Admin Dashboard"
@@ -180,17 +180,17 @@ export default function Header() {
 
       {menuOpen && (
         <nav className="absolute top-16 left-0 w-full bg-yellow-500 dark:bg-gray-900 md:hidden flex flex-col items-center space-y-4 py-4 shadow-lg">
-          {["/", "/products", "/about", "/contactus"].map((path, index) => {
+          {['/', '/products', '/about', '/contactus'].map((path, index) => {
             const label =
-              path === "/"
-                ? "Home"
-                : path === "/products"
-                ? "Products"
-                : path === "/about"
-                ? "About"
-                : path === "/contactus"
-                ? "Contact Us"
-                : "";
+              path === '/'
+                ? 'Home'
+                : path === '/products'
+                  ? 'Products'
+                  : path === '/about'
+                    ? 'About'
+                    : path === '/contactus'
+                      ? 'Contact Us'
+                      : '';
 
             return (
               <a
@@ -198,8 +198,8 @@ export default function Header() {
                 href={path}
                 className={`text-lg font-bold transition-transform ${
                   isActiveRoute(path)
-                    ? "text-red-600 dark:text-red-400"
-                    : "hover:text-red-600 dark:hover:text-white"
+                    ? 'text-red-600 dark:text-red-400'
+                    : 'hover:text-red-600 dark:hover:text-white'
                 }`}
               >
                 {label}

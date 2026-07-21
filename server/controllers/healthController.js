@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import os from "os";
-import process from "process";
+import mongoose from 'mongoose';
+import os from 'os';
+import process from 'process';
 
 function getUptime() {
   const uptime = process.uptime();
@@ -13,33 +13,33 @@ function getUptime() {
 export const getHealth = async (req, res) => {
   const dbState = mongoose.connection.readyState;
   const dbStatus = {
-    0: "disconnected",
-    1: "connected",
-    2: "connecting",
-    3: "disconnecting",
+    0: 'disconnected',
+    1: 'connected',
+    2: 'connecting',
+    3: 'disconnecting',
   };
 
   const healthData = {
-    status: dbState === 1 ? "healthy" : "unhealthy",
+    status: dbState === 1 ? 'healthy' : 'unhealthy',
     timestamp: new Date().toISOString(),
     uptime: getUptime(),
     database: {
-      status: dbStatus[dbState] || "unknown",
+      status: dbStatus[dbState] || 'unknown',
       state: dbState,
     },
     system: {
       memory: {
-        free: Math.round(os.freemem() / 1024 / 1024) + "MB",
-        total: Math.round(os.totalmem() / 1024 / 1024) + "MB",
+        free: Math.round(os.freemem() / 1024 / 1024) + 'MB',
+        total: Math.round(os.totalmem() / 1024 / 1024) + 'MB',
         usagePercent: Math.round(
           ((os.totalmem() - os.freemem()) / os.totalmem()) * 100
         ),
       },
-      cpu: os.cpus().length + " cores",
+      cpu: os.cpus().length + ' cores',
       platform: os.platform(),
-      uptime: Math.floor(os.uptime() / 3600) + "h",
+      uptime: Math.floor(os.uptime() / 3600) + 'h',
     },
-    environment: process.env.NODE_ENV || "development",
+    environment: process.env.NODE_ENV || 'development',
   };
 
   const statusCode = dbState === 1 ? 200 : 503;
