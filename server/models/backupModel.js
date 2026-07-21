@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const backupSchema = new mongoose.Schema(
   {
@@ -12,13 +12,13 @@ const backupSchema = new mongoose.Schema(
     },
     triggeredBy: {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     status: {
       type: String,
-      enum: ["SUCCESS", "FAILED"],
-      default: "SUCCESS",
+      enum: ['SUCCESS', 'FAILED'],
+      default: 'SUCCESS',
     },
     collectionsBackedUp: [
       {
@@ -35,5 +35,5 @@ const backupSchema = new mongoose.Schema(
   }
 );
 
-const BackupModel = mongoose.model("Backup", backupSchema);
+const BackupModel = mongoose.model('Backup', backupSchema);
 export default BackupModel;

@@ -8,13 +8,13 @@ notifications. This guide covers the configuration required for reliable deliver
 
 Add these to your server `.env` file:
 
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `BREVO_API_KEY` | **Yes** | — | Brevo transactional API key (`xkeysib-...`). Without it, all OTP emails fail. |
-| `BREVO_SENDER_EMAIL` | No | `support@faithandfast.com` | The "from" address. **Must be a verified sender in Brevo** (see step 2). |
-| `BREVO_SENDER_NAME` | No | `Faith AND Fast` | Display name shown to recipients. |
-| `EMAIL_MAX_RETRIES` | No | `2` | How many times to attempt each send before giving up. |
-| `EMAIL_RETRY_DELAY_MS` | No | `1000` | Delay (ms) between retry attempts. |
+| Variable               | Required | Default                    | Description                                                                   |
+| ---------------------- | -------- | -------------------------- | ----------------------------------------------------------------------------- |
+| `BREVO_API_KEY`        | **Yes**  | —                          | Brevo transactional API key (`xkeysib-...`). Without it, all OTP emails fail. |
+| `BREVO_SENDER_EMAIL`   | No       | `support@faithandfast.com` | The "from" address. **Must be a verified sender in Brevo** (see step 2).      |
+| `BREVO_SENDER_NAME`    | No       | `Faith AND Fast`           | Display name shown to recipients.                                             |
+| `EMAIL_MAX_RETRIES`    | No       | `2`                        | How many times to attempt each send before giving up.                         |
+| `EMAIL_RETRY_DELAY_MS` | No       | `1000`                     | Delay (ms) between retry attempts.                                            |
 
 On startup, the server logs a clear error if `BREVO_API_KEY` is missing, so
 misconfiguration is caught immediately instead of failing silently at registration.
@@ -37,6 +37,7 @@ Brevo → **Settings → SMTP & API → API Keys → Generate a new API key**. C
 ## 4. How the OTP flow works
 
 **Registration**
+
 1. User submits the signup form.
 2. The server generates a 6-digit OTP (15-minute expiry), emails it, and creates the
    account with `verifyEmail: false`. No login token is issued yet.
@@ -57,9 +58,9 @@ Brevo → **Settings → SMTP & API → API Keys → Generate a new API key**. C
 
 ## 6. Troubleshooting
 
-| Symptom | Likely cause | Fix |
-|---|---|---|
-| Startup log: `BREVO_API_KEY is not set` | Missing env var | Set `BREVO_API_KEY` and restart |
-| `401`/unauthorized in email logs | Invalid API key | Regenerate the key in Brevo |
-| Sends succeed but mail never arrives | Unverified sender | Verify `BREVO_SENDER_EMAIL` in Brevo (step 2) |
-| OTP arrives but verification fails | OTP expired (15 min) | Use **Resend OTP** on the verify page |
+| Symptom                                 | Likely cause         | Fix                                           |
+| --------------------------------------- | -------------------- | --------------------------------------------- |
+| Startup log: `BREVO_API_KEY is not set` | Missing env var      | Set `BREVO_API_KEY` and restart               |
+| `401`/unauthorized in email logs        | Invalid API key      | Regenerate the key in Brevo                   |
+| Sends succeed but mail never arrives    | Unverified sender    | Verify `BREVO_SENDER_EMAIL` in Brevo (step 2) |
+| OTP arrives but verification fails      | OTP expired (15 min) | Use **Resend OTP** on the verify page         |

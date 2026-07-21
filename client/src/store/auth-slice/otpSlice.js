@@ -1,11 +1,11 @@
-import axiosInstance from "@/api";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from '@/api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const verifyEmailOtp = createAsyncThunk(
-  "otp/verifyEmailOtp",
+  'otp/verifyEmailOtp',
   async ({ email, otp }, { rejectWithValue }) => {
     try {
-      const { data } = await axiosInstance.post("api/user/verify-email", {
+      const { data } = await axiosInstance.post('api/user/verify-email', {
         email,
         otp,
       });
@@ -17,10 +17,10 @@ export const verifyEmailOtp = createAsyncThunk(
 );
 
 export const resendOtp = createAsyncThunk(
-  "otp/resendOtp",
+  'otp/resendOtp',
   async (email, { rejectWithValue }) => {
     try {
-      const { data } = await axiosInstance.post("/api/user/resend-otp", {
+      const { data } = await axiosInstance.post('/api/user/resend-otp', {
         email,
       });
       return data;
@@ -31,10 +31,10 @@ export const resendOtp = createAsyncThunk(
 );
 
 const otpSlice = createSlice({
-  name: "otp",
+  name: 'otp',
   initialState: {
-    email: "",
-    otp: "",
+    email: '',
+    otp: '',
     verifyEmail: false,
     loading: false,
     error: null,
@@ -59,7 +59,7 @@ const otpSlice = createSlice({
         state.loading = false;
         state.verifyEmail = true;
         state.successMessage = action.payload.message;
-        localStorage.setItem("verifyEmail", action.payload.verifyEmail);
+        localStorage.setItem('verifyEmail', action.payload.verifyEmail);
       })
       .addCase(verifyEmailOtp.rejected, (state, action) => {
         state.loading = false;

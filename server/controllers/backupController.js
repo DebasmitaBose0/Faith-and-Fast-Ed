@@ -1,9 +1,9 @@
-import fs from "fs";
-import path from "path";
-import BackupModel from "../models/backupModel.js";
-import ProductModel from "../models/productModel.js";
-import UserModel from "../models/userModel.js";
-import OrderModel from "../models/orderModel.js";
+import fs from 'fs';
+import path from 'path';
+import BackupModel from '../models/backupModel.js';
+import ProductModel from '../models/productModel.js';
+import UserModel from '../models/userModel.js';
+import OrderModel from '../models/orderModel.js';
 
 export const triggerBackup = async (req, res) => {
   try {
@@ -18,7 +18,7 @@ export const triggerBackup = async (req, res) => {
       orders,
     };
 
-    const backupDir = path.resolve("./backups");
+    const backupDir = path.resolve('./backups');
     if (!fs.existsSync(backupDir)) {
       fs.mkdirSync(backupDir, { recursive: true });
     }
@@ -27,7 +27,7 @@ export const triggerBackup = async (req, res) => {
     const filePath = path.join(backupDir, backupName);
 
     const jsonStr = JSON.stringify(backupData, null, 2);
-    fs.writeFileSync(filePath, jsonStr, "utf-8");
+    fs.writeFileSync(filePath, jsonStr, 'utf-8');
 
     const fileSizeKb = Math.round(jsonStr.length / 1024);
 
@@ -35,8 +35,8 @@ export const triggerBackup = async (req, res) => {
       backupName,
       filePath,
       triggeredBy: req.userId || req.user?._id,
-      status: "SUCCESS",
-      collectionsBackedUp: ["Product", "User", "Order"],
+      status: 'SUCCESS',
+      collectionsBackedUp: ['Product', 'User', 'Order'],
       fileSizeKb,
     });
 
@@ -44,13 +44,13 @@ export const triggerBackup = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Database backup created successfully.",
+      message: 'Database backup created successfully.',
       data: backupRecord,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || "Failed to create database backup.",
+      message: error.message || 'Failed to create database backup.',
     });
   }
 };
@@ -58,7 +58,7 @@ export const triggerBackup = async (req, res) => {
 export const getBackupsList = async (req, res) => {
   try {
     const backups = await BackupModel.find({})
-      .populate("triggeredBy", "name email")
+      .populate('triggeredBy', 'name email')
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -68,7 +68,7 @@ export const getBackupsList = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: error.message || "Failed to fetch backups list.",
+      message: error.message || 'Failed to fetch backups list.',
     });
   }
 };

@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const cartProductSchema = new mongoose.Schema(
   {
     productId: {
       type: mongoose.Schema.ObjectId,
-      ref: "Product",
+      ref: 'Product',
     },
     quantity: {
       type: Number,
@@ -12,7 +12,7 @@ const cartProductSchema = new mongoose.Schema(
     },
     userId: {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
     selectedColor: {
       type: String,
@@ -32,6 +32,6 @@ cartProductSchema.index({ userId: 1 });
 cartProductSchema.index({ productId: 1 });
 cartProductSchema.index({ userId: 1, productId: 1 });
 
-const CartProductModel = mongoose.model("cartProduct", cartProductSchema);
+const CartProductModel = mongoose.model('cartProduct', cartProductSchema);
 
 export default CartProductModel;

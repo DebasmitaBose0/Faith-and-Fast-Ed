@@ -1,5 +1,5 @@
-import PropTypes from "prop-types";
-import { motion, AnimatePresence } from "framer-motion";
+import PropTypes from 'prop-types';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message }) => {
   return (
@@ -19,7 +19,9 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message }) => {
           >
             <h3 className="text-lg font-bold mb-4 dark:text-white">{title}</h3>
 
-            <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm leading-relaxed">{message}</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm leading-relaxed">
+              {message}
+            </p>
 
             <div className="flex justify-end gap-3">
               <button

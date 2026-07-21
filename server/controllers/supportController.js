@@ -1,7 +1,7 @@
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import SupportMessageModel from "../models/supportModel.js";
-import sendEmail from "../config/sendEmail.js";
-import { validateSupportMessage } from "../utils/supportValidator.js";
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import SupportMessageModel from '../models/supportModel.js';
+import sendEmail from '../config/sendEmail.js';
+import { validateSupportMessage } from '../utils/supportValidator.js';
 
 export const submitContactMessage = catchAsyncErrors(async (req, res) => {
   const { name, email, phone, message } = req.body;
@@ -20,7 +20,7 @@ export const submitContactMessage = catchAsyncErrors(async (req, res) => {
   const contactMessage = await SupportMessageModel.create({
     name: name.trim(),
     email: email.trim(),
-    phone: phone ? String(phone).trim() : "",
+    phone: phone ? String(phone).trim() : '',
     message: message.trim(),
   });
 
@@ -32,7 +32,7 @@ export const submitContactMessage = catchAsyncErrors(async (req, res) => {
         <h2>New Customer Support Message</h2>
         <p><strong>Name:</strong> ${contactMessage.name}</p>
         <p><strong>Email:</strong> ${contactMessage.email}</p>
-        <p><strong>Phone:</strong> ${contactMessage.phone || "Not provided"}</p>
+        <p><strong>Phone:</strong> ${contactMessage.phone || 'Not provided'}</p>
         <p><strong>Message:</strong></p>
         <p>${contactMessage.message}</p>
       `,
@@ -40,7 +40,8 @@ export const submitContactMessage = catchAsyncErrors(async (req, res) => {
   }
 
   return res.status(201).json({
-    message: "Your message has been sent successfully. We'll get back to you soon!",
+    message:
+      "Your message has been sent successfully. We'll get back to you soon!",
     error: false,
     success: true,
     data: {
@@ -54,7 +55,7 @@ export const getContactMessages = catchAsyncErrors(async (req, res) => {
   const messages = await SupportMessageModel.find().sort({ createdAt: -1 });
 
   return res.status(200).json({
-    message: "Contact messages fetched successfully",
+    message: 'Contact messages fetched successfully',
     error: false,
     success: true,
     count: messages.length,

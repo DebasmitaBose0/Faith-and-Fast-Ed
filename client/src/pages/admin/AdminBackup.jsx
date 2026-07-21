@@ -1,7 +1,13 @@
-import { useState, useEffect } from "react";
-import { toast } from "react-toastify";
-import { Database, Download, CheckCircle, AlertTriangle, Play } from "lucide-react";
-import axiosInstance from "@/api";
+import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import {
+  Database,
+  Download,
+  CheckCircle,
+  AlertTriangle,
+  Play,
+} from 'lucide-react';
+import axiosInstance from '@/api';
 
 const AdminBackup = () => {
   const [backups, setBackups] = useState([]);
@@ -11,12 +17,14 @@ const AdminBackup = () => {
   const fetchBackups = async () => {
     try {
       setLoading(true);
-      const { data } = await axiosInstance.get("/api/backup/list");
+      const { data } = await axiosInstance.get('/api/backup/list');
       if (data.success) {
         setBackups(data.backups || []);
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to fetch backups list");
+      toast.error(
+        err.response?.data?.message || 'Failed to fetch backups list'
+      );
     } finally {
       setLoading(false);
     }
@@ -29,13 +37,13 @@ const AdminBackup = () => {
   const handleTriggerBackup = async () => {
     try {
       setTriggering(true);
-      const { data } = await axiosInstance.post("/api/backup/trigger");
+      const { data } = await axiosInstance.post('/api/backup/trigger');
       if (data.success) {
-        toast.success("Database backup generated successfully!");
+        toast.success('Database backup generated successfully!');
         fetchBackups();
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to trigger backup");
+      toast.error(err.response?.data?.message || 'Failed to trigger backup');
     } finally {
       setTriggering(false);
     }
@@ -49,7 +57,8 @@ const AdminBackup = () => {
             <Database className="text-yellow-500" /> Database Backup Manager
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Generate and manage backups of users, products, and order collections.
+            Generate and manage backups of users, products, and order
+            collections.
           </p>
         </div>
         <button
@@ -58,7 +67,7 @@ const AdminBackup = () => {
           className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-yellow-500 to-orange-500 dark:from-red-600 dark:to-red-700 text-white font-semibold rounded-xl shadow-md hover:opacity-90 disabled:opacity-60 transition-all duration-200 text-sm"
         >
           <Play className="h-4 w-4 fill-white" />
-          {triggering ? "Creating Backup..." : "Trigger Backup Now"}
+          {triggering ? 'Creating Backup...' : 'Trigger Backup Now'}
         </button>
       </div>
 
@@ -90,16 +99,23 @@ const AdminBackup = () => {
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                 {backups.map((bk) => (
-                  <tr key={bk._id} className="hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors">
-                    <td className="p-4 font-mono font-medium text-gray-800 dark:text-gray-200">{bk.backupName}</td>
+                  <tr
+                    key={bk._id}
+                    className="hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors"
+                  >
+                    <td className="p-4 font-mono font-medium text-gray-800 dark:text-gray-200">
+                      {bk.backupName}
+                    </td>
                     <td className="p-4">
                       <span className="px-2 py-0.5 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400 rounded-md text-xs font-semibold mr-1">
-                        {bk.collectionsBackedUp?.join(", ") || "All"}
+                        {bk.collectionsBackedUp?.join(', ') || 'All'}
                       </span>
                     </td>
-                    <td className="p-4">{bk.triggeredBy?.name || "System"}</td>
+                    <td className="p-4">{bk.triggeredBy?.name || 'System'}</td>
                     <td className="p-4">{bk.fileSizeKb} KB</td>
-                    <td className="p-4">{new Date(bk.createdAt).toLocaleString()}</td>
+                    <td className="p-4">
+                      {new Date(bk.createdAt).toLocaleString()}
+                    </td>
                     <td className="p-4">
                       <span className="flex items-center gap-1 text-green-600 dark:text-green-400 font-semibold">
                         <CheckCircle className="h-4 w-4" /> SUCCESS

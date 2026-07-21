@@ -1,12 +1,12 @@
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { getAllUsers } from "@/store/auth-slice/user";
-import { InvoiceSpinner as Spinner } from "../extras/InvoiceSpinner.jsx";
-import { ArrowLeft, ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
-import MetaData from "../extras/MetaData.jsx";
-import { toast } from "react-toastify";
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { getAllUsers } from '@/store/auth-slice/user';
+import { InvoiceSpinner as Spinner } from '../extras/InvoiceSpinner.jsx';
+import { ArrowLeft, ArrowLeftCircle, ArrowRightCircle } from 'lucide-react';
+import MetaData from '../extras/MetaData.jsx';
+import { toast } from 'react-toastify';
 
 const AdminUsers = () => {
   const dispatch = useDispatch();
@@ -17,7 +17,7 @@ const AdminUsers = () => {
     totalPages,
   } = useSelector((state) => state.auth);
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     dispatch(getAllUsers({ page, search }));
@@ -34,12 +34,12 @@ const AdminUsers = () => {
   };
 
   const handleStatus = (status) => {
-    if (status === "Active") {
-      return "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100";
-    } else if (status === "Inactive") {
-      return "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100";
+    if (status === 'Active') {
+      return 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-100';
+    } else if (status === 'Inactive') {
+      return 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100';
     } else {
-      return "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100";
+      return 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-100';
     }
   };
 
@@ -103,7 +103,7 @@ const AdminUsers = () => {
               <table className="min-w-full bg-white dark:bg-gray-800">
                 <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    {["Name", "Email", "Role", "Status", "Actions"].map(
+                    {['Name', 'Email', 'Role', 'Status', 'Actions'].map(
                       (header, idx) => (
                         <th
                           key={idx}
@@ -141,7 +141,7 @@ const AdminUsers = () => {
                           {user.email}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {user.role === "ADMIN" ? (
+                          {user.role === 'ADMIN' ? (
                             <span className="px-2.5 py-0.5 text-xs font-medium rounded-full bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-100">
                               {user.role}
                             </span>

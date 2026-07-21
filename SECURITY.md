@@ -64,16 +64,16 @@ We maintain a Hall of Fame for researchers who responsibly disclose vulnerabilit
 
 This project implements the following HTTP security headers via Helmet middleware:
 
-| Header | Value |
-| ------ | ----- |
-| `Content-Security-Policy` | Restrictive CSP (see middleware/security.js) |
-| `Strict-Transport-Security` | 2 years, includeSubDomains, preload |
-| `X-Content-Type-Options` | nosniff |
-| `X-Frame-Options` | DENY |
-| `X-XSS-Protection` | 1; mode=block |
-| `Referrer-Policy` | strict-origin-when-cross-origin |
-| `Permissions-Policy` | camera=(), microphone=(), geolocation=(), payment=(self) |
-| `Cross-Origin-Opener-Policy` | same-origin |
+| Header                       | Value                                                    |
+| ---------------------------- | -------------------------------------------------------- |
+| `Content-Security-Policy`    | Restrictive CSP (see middleware/security.js)             |
+| `Strict-Transport-Security`  | 2 years, includeSubDomains, preload                      |
+| `X-Content-Type-Options`     | nosniff                                                  |
+| `X-Frame-Options`            | DENY                                                     |
+| `X-XSS-Protection`           | 1; mode=block                                            |
+| `Referrer-Policy`            | strict-origin-when-cross-origin                          |
+| `Permissions-Policy`         | camera=(), microphone=(), geolocation=(), payment=(self) |
+| `Cross-Origin-Opener-Policy` | same-origin                                              |
 
 ## Dependency Management
 
@@ -81,4 +81,4 @@ Dependencies are audited regularly. Known vulnerabilities are tracked via `npm a
 
 ---
 
-*This policy is maintained by the Faith & Fast security team. Last updated: 2026-07-08.*
+_This policy is maintained by the Faith & Fast security team. Last updated: 2026-07-08._

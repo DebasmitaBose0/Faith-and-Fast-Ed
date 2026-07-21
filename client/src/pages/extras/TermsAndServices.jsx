@@ -1,10 +1,14 @@
-import { motion } from "framer-motion";
-import PropTypes from "prop-types";
+import { motion } from 'framer-motion';
+import PropTypes from 'prop-types';
 
 const TermsAndServices = () => {
   const containerVariants = {
     hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: 'easeOut' },
+    },
   };
 
   return (
@@ -73,13 +77,13 @@ const TermsAndServices = () => {
             title="8. Privacy & Data Security"
             content={
               <>
-                We value your privacy. Please review our{" "}
+                We value your privacy. Please review our{' '}
                 <a
                   href="/privacy-policy"
                   className="text-yellow-500 dark:text-red-600 font-medium hover:underline transition-colors duration-200"
                 >
                   Privacy Policy
-                </a>{" "}
+                </a>{' '}
                 for more details on how we handle your data.
               </>
             }
@@ -89,7 +93,7 @@ const TermsAndServices = () => {
             title="9. Contact Us"
             content={
               <>
-                If you have any questions, feel free to{" "}
+                If you have any questions, feel free to{' '}
                 <a
                   href="/contactus"
                   className="text-yellow-500 dark:text-red-600 font-medium hover:underline transition-colors duration-200"
@@ -109,7 +113,11 @@ const TermsAndServices = () => {
 const Section = ({ title, content }) => {
   const sectionVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: 'easeOut' },
+    },
   };
 
   return (

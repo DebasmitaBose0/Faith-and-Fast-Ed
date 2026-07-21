@@ -1,12 +1,12 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
 // Public — checkout reads the UPI ID + QR to show online-payment instructions.
 export const getPaymentSettings = createAsyncThunk(
-  "paymentSettings/get",
+  'paymentSettings/get',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/api/payment-settings");
+      const response = await axiosInstance.get('/api/payment-settings');
       return response.data.settings;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -16,19 +16,19 @@ export const getPaymentSettings = createAsyncThunk(
 
 // Admin — set/replace UPI ID and/or upload a new QR image (multipart).
 export const updatePaymentSettings = createAsyncThunk(
-  "paymentSettings/update",
+  'paymentSettings/update',
   async ({ upiId, qrCode }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const formData = new FormData();
       if (upiId !== undefined && upiId !== null) {
-        formData.append("upiId", upiId);
+        formData.append('upiId', upiId);
       }
       if (qrCode) {
-        formData.append("qrCode", qrCode);
+        formData.append('qrCode', qrCode);
       }
       const response = await axiosInstance.put(
-        "/api/payment-settings/admin/update",
+        '/api/payment-settings/admin/update',
         formData,
         {
           headers: {
@@ -45,7 +45,7 @@ export const updatePaymentSettings = createAsyncThunk(
 );
 
 const paymentSettingsSlice = createSlice({
-  name: "paymentSettings",
+  name: 'paymentSettings',
   initialState: {
     settings: null,
     loading: false,

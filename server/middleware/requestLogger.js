@@ -1,10 +1,10 @@
-import logger from "../utils/logger.js";
+import logger from '../utils/logger.js';
 
 function requestLogger(req, res, next) {
   const start = Date.now();
   const { method, originalUrl } = req;
 
-  res.on("finish", () => {
+  res.on('finish', () => {
     const duration = Date.now() - start;
     const { statusCode } = res;
 
