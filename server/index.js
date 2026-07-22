@@ -114,7 +114,7 @@ app.use('/api/product', productRouter);
 app.use('/api/support', supportRouter);
 app.use('/api/user', userRouter);
 app.use('/api/wishlist', wishListRouter);
-app.use('/api/review', reviewRouter);
+// app.use('/api/review', reviewRouter);
 app.use('/api/backup', backupRouter);
 
 app.use(errorMiddleware);
