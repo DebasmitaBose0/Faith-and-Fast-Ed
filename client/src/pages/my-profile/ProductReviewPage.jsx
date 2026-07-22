@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -25,7 +26,6 @@ const ProductReviewPage = () => {
 
     loading,
     error,
-    reviewPosting,
   } = useSelector((state) => state.productDetails);
 
   const [rating, setRating] = useState(0);
@@ -98,23 +98,6 @@ const ProductReviewPage = () => {
     return review.user?.toString() === userId;
   };
 
-  // Star rating component (custom, without MUI)
-  const StarRating = ({ value, onChange }) => {
-    const stars = Array.from({ length: 5 }, (_, index) => (
-      <span
-        key={index}
-        className={`cursor-pointer text-2xl ${
-          index < value
-            ? 'text-yellow-500'
-            : 'text-gray-300 dark:text-gray-600 hover:text-yellow-400'
-        }`}
-        onClick={() => onChange(index + 1)}
-      >
-        ★
-      </span>
-    ));
-    return <div className="flex space-x-1">{stars}</div>;
-  };
 
   return (
     <motion.div
@@ -304,6 +287,12 @@ const StarRating = ({ value, onChange, readOnly = false }) => {
     </span>
   ));
   return <div className="flex space-x-1">{stars}</div>;
+};
+
+StarRating.propTypes = {
+  value: PropTypes.number.isRequired,
+  onChange: PropTypes.func.isRequired,
+  readOnly: PropTypes.bool,
 };
 
 export default ProductReviewPage;

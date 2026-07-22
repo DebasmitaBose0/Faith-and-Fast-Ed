@@ -54,6 +54,7 @@ ProductCard.propTypes = {
     name: PropTypes.string,
     price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     discount: PropTypes.number,
+    stock: PropTypes.number,
     images: PropTypes.arrayOf(
       PropTypes.shape({
         url: PropTypes.string.isRequired,

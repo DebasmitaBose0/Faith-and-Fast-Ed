@@ -57,33 +57,32 @@ const Products = () => {
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
   const searchQueryFromUrl = searchParams.get('search') || '';
-  const searchQuery = localSearchInput;
 
-  const selectedCategories = searchParams.get('category')
+  const selectedCategories = useMemo(() => searchParams.get('category')
     ? searchParams.get('category').split(',')
-    : [];
-  const selectedSubcategories = searchParams.get('subcategory')
+    : [], [searchParams]);
+  const selectedSubcategories = useMemo(() => searchParams.get('subcategory')
     ? searchParams.get('subcategory').split(',')
-    : [];
-  const selectedColors = searchParams.get('color')
+    : [], [searchParams]);
+  const selectedColors = useMemo(() => searchParams.get('color')
     ? searchParams.get('color').split(',')
-    : [];
-  const selectedColorOptions = searchParams.get('coloroptions')
+    : [], [searchParams]);
+  const selectedColorOptions = useMemo(() => searchParams.get('coloroptions')
     ? searchParams.get('coloroptions').split(',')
-    : [];
-  const selectedSizes = searchParams.get('size')
+    : [], [searchParams]);
+  const selectedSizes = useMemo(() => searchParams.get('size')
     ? searchParams.get('size').split(',')
-    : [];
-  const selectedSizeOptions = searchParams.get('sizeoptions')
+    : [], [searchParams]);
+  const selectedSizeOptions = useMemo(() => searchParams.get('sizeoptions')
     ? searchParams.get('sizeoptions').split(',')
-    : [];
+    : [], [searchParams]);
   const minPrice = searchParams.get('minPrice')
     ? Number(searchParams.get('minPrice'))
     : 0;
   const maxPrice = searchParams.get('maxPrice')
     ? Number(searchParams.get('maxPrice'))
     : 20000;
-  const priceRange = [minPrice, maxPrice];
+  const priceRange = useMemo(() => [minPrice, maxPrice], [minPrice, maxPrice]);
   const sortBy = searchParams.get('sortBy') || 'relevant';
   const rating = searchParams.get('rating') || '';
   const availability = searchParams.get('availability') || '';
@@ -119,6 +118,7 @@ const Products = () => {
       }
     }, 300);
     return () => clearTimeout(delayDebounce);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localMaxPrice]);
 
   useEffect(() => {
@@ -129,12 +129,13 @@ const Products = () => {
     }
     // Reset pagination when search changes
     // (done via updateSearchParams logic setting page=1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearchInput]);
 
   const updateSearchParams = (updates) => {
     const newParams = new URLSearchParams(searchParams);
 
-    if (!updates.hasOwnProperty('page')) {
+    if (!Object.prototype.hasOwnProperty.call(updates, 'page')) {
       newParams.set('page', '1');
     }
 
@@ -1001,7 +1002,7 @@ const Products = () => {
               <Pagination
                 count={totalPages}
                 page={page}
-                onChange={(e, value) => setPage(value)}
+                onChange={(e, value) => updateSearchParams({ page: value })}
                 color="primary"
                 className="[&>.MuiPagination-ul]:gap-2 [&>.MuiPaginationItem-root]:bg-white [&>.MuiPaginationItem-root]:dark:bg-gray-800 [&>.Mui-selected]:bg-yellow-500 [&>.Mui-selected]:text-white"
               />
