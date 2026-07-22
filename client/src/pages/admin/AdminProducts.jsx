@@ -16,7 +16,6 @@ import { Search, View } from 'lucide-react';
 import { debounce } from 'lodash';
 import { deleteProduct } from '@/store/product-slice/AdminProduct';
 import { hasPermission } from '@/utils/permissions';
-import { useSelector } from 'react-redux';
 
 const AdminProducts = () => {
   const [searchQuery, setSearchQuery] = useState('');
