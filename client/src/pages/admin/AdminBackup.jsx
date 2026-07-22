@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import {
-  Database,
-  CheckCircle,
-  Play,
-} from 'lucide-react';
+import { Database, CheckCircle, Play } from 'lucide-react';
 import axiosInstance from '@/api';
 
 const AdminBackup = () => {

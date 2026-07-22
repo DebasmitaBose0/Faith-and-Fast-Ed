@@ -58,24 +58,43 @@ const Products = () => {
 
   const searchQueryFromUrl = searchParams.get('search') || '';
 
-  const selectedCategories = useMemo(() => searchParams.get('category')
-    ? searchParams.get('category').split(',')
-    : [], [searchParams]);
-  const selectedSubcategories = useMemo(() => searchParams.get('subcategory')
-    ? searchParams.get('subcategory').split(',')
-    : [], [searchParams]);
-  const selectedColors = useMemo(() => searchParams.get('color')
-    ? searchParams.get('color').split(',')
-    : [], [searchParams]);
-  const selectedColorOptions = useMemo(() => searchParams.get('coloroptions')
-    ? searchParams.get('coloroptions').split(',')
-    : [], [searchParams]);
-  const selectedSizes = useMemo(() => searchParams.get('size')
-    ? searchParams.get('size').split(',')
-    : [], [searchParams]);
-  const selectedSizeOptions = useMemo(() => searchParams.get('sizeoptions')
-    ? searchParams.get('sizeoptions').split(',')
-    : [], [searchParams]);
+  const selectedCategories = useMemo(
+    () =>
+      searchParams.get('category')
+        ? searchParams.get('category').split(',')
+        : [],
+    [searchParams]
+  );
+  const selectedSubcategories = useMemo(
+    () =>
+      searchParams.get('subcategory')
+        ? searchParams.get('subcategory').split(',')
+        : [],
+    [searchParams]
+  );
+  const selectedColors = useMemo(
+    () =>
+      searchParams.get('color') ? searchParams.get('color').split(',') : [],
+    [searchParams]
+  );
+  const selectedColorOptions = useMemo(
+    () =>
+      searchParams.get('coloroptions')
+        ? searchParams.get('coloroptions').split(',')
+        : [],
+    [searchParams]
+  );
+  const selectedSizes = useMemo(
+    () => (searchParams.get('size') ? searchParams.get('size').split(',') : []),
+    [searchParams]
+  );
+  const selectedSizeOptions = useMemo(
+    () =>
+      searchParams.get('sizeoptions')
+        ? searchParams.get('sizeoptions').split(',')
+        : [],
+    [searchParams]
+  );
   const minPrice = searchParams.get('minPrice')
     ? Number(searchParams.get('minPrice'))
     : 0;
