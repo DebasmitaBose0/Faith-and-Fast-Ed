@@ -34,13 +34,13 @@ npm ls                # Verify no missing dependencies
 
 ## 2. Frontend Deployment (Vercel)
 
-| Setting              | Value                      |
-|----------------------|----------------------------|
-| Root Directory       | `client`                   |
-| Build Command        | `npm run build`            |
-| Output Directory     | `dist`                     |
-| Node.js Version      | 20.x (or project default)  |
-| Environment Variables| See §4 below               |
+| Setting               | Value                     |
+| --------------------- | ------------------------- |
+| Root Directory        | `client`                  |
+| Build Command         | `npm run build`           |
+| Output Directory      | `dist`                    |
+| Node.js Version       | 20.x (or project default) |
+| Environment Variables | See §4 below              |
 
 **SPA Routing** — a `client/vercel.json` rewrites all paths to `/`:
 
@@ -59,13 +59,13 @@ npm ls                # Verify no missing dependencies
 
 ## 3. Backend Deployment (Render / Railway)
 
-| Setting              | Value                            |
-|----------------------|----------------------------------|
-| Root Directory       | `server`                         |
-| Start Command        | `node index.js`                  |
-| Build Command        | _(none — leave empty)_           |
-| Node.js Version      | 20.x                             |
-| Environment Variables| See §4 below                     |
+| Setting               | Value                  |
+| --------------------- | ---------------------- |
+| Root Directory        | `server`               |
+| Start Command         | `node index.js`        |
+| Build Command         | _(none — leave empty)_ |
+| Node.js Version       | 20.x                   |
+| Environment Variables | See §4 below           |
 
 **Steps (Render):**
 
@@ -89,35 +89,35 @@ npm ls                # Verify no missing dependencies
 
 ### Frontend (`client`)
 
-| Variable                     | Description                                |
-|------------------------------|--------------------------------------------|
-| `VITE_BACKEND_URL`           | Production API URL (e.g. `https://api.example.com`) |
-| `VITE_STRIPE_PUBLISHABLE_KEY`| Stripe publishable key for card payments    |
+| Variable                      | Description                                         |
+| ----------------------------- | --------------------------------------------------- |
+| `VITE_BACKEND_URL`            | Production API URL (e.g. `https://api.example.com`) |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | Stripe publishable key for card payments            |
 
 ### Backend (`server`)
 
-| Variable                    | Description                                |
-|-----------------------------|--------------------------------------------|
-| `NODE_ENV`                  | Set to `production` in deployment          |
-| `PORT`                      | Internal port (Render/Railway sets this)   |
-| `MONGODB_URL`               | Production MongoDB connection string       |
-| `JWT_SECRET`                | Secret key for signing JWT tokens          |
-| `JWT_EXPIRE`                | JWT expiry duration (e.g. `5d`)            |
-| `COOKIE_EXPIRE`             | Cookie expiry in days                      |
-| `SECRET_KEY_ACCESS_TOKEN`   | Access token signing secret                |
-| `SECRET_KEY_REFRESH_TOKEN`  | Refresh token signing secret               |
-| `FRONTEND_URL`              | Vercel production domain                   |
-| `FRONTEND_WWW_URL`          | Alternate frontend URL (if applicable)     |
-| `BACKEND_URL`               | Self-referencing backend URL               |
-| `CASHFREE_APP_ID`           | Cashfree payment gateway app ID            |
-| `CASHFREE_SECRET_KEY`       | Cashfree payment gateway secret            |
-| `STRIPE_SECRET_KEY`         | Stripe secret key                          |
-| `BREVO_API_KEY`             | Brevo (Sendinblue) transactional email API |
-| `BREVO_SENDER_EMAIL`        | Sender email address for Brevo             |
-| `BREVO_SENDER_NAME`         | Sender display name                        |
-| `CLOUDINARY_NAME`           | Cloudinary cloud name                      |
-| `CLOUDINARY_API_KEY`        | Cloudinary API key                         |
-| `CLOUDINARY_API_SECRET`     | Cloudinary API secret                      |
+| Variable                   | Description                                |
+| -------------------------- | ------------------------------------------ |
+| `NODE_ENV`                 | Set to `production` in deployment          |
+| `PORT`                     | Internal port (Render/Railway sets this)   |
+| `MONGODB_URL`              | Production MongoDB connection string       |
+| `JWT_SECRET`               | Secret key for signing JWT tokens          |
+| `JWT_EXPIRE`               | JWT expiry duration (e.g. `5d`)            |
+| `COOKIE_EXPIRE`            | Cookie expiry in days                      |
+| `SECRET_KEY_ACCESS_TOKEN`  | Access token signing secret                |
+| `SECRET_KEY_REFRESH_TOKEN` | Refresh token signing secret               |
+| `FRONTEND_URL`             | Vercel production domain                   |
+| `FRONTEND_WWW_URL`         | Alternate frontend URL (if applicable)     |
+| `BACKEND_URL`              | Self-referencing backend URL               |
+| `CASHFREE_APP_ID`          | Cashfree payment gateway app ID            |
+| `CASHFREE_SECRET_KEY`      | Cashfree payment gateway secret            |
+| `STRIPE_SECRET_KEY`        | Stripe secret key                          |
+| `BREVO_API_KEY`            | Brevo (Sendinblue) transactional email API |
+| `BREVO_SENDER_EMAIL`       | Sender email address for Brevo             |
+| `BREVO_SENDER_NAME`        | Sender display name                        |
+| `CLOUDINARY_NAME`          | Cloudinary cloud name                      |
+| `CLOUDINARY_API_KEY`       | Cloudinary API key                         |
+| `CLOUDINARY_API_SECRET`    | Cloudinary API secret                      |
 
 ---
 

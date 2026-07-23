@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { getProductByFilter } from "@/store/product-slice/productSlice";
-import MetaData from "../extras/MetaData";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { getProductByFilter } from '@/store/product-slice/productSlice';
+import MetaData from '../extras/MetaData';
 import {
   CircularProgress,
   Pagination,
@@ -11,15 +11,14 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-} from "@mui/material";
-import { Search, View } from "lucide-react";
-import { debounce } from "lodash";
-import { deleteProduct } from "@/store/product-slice/AdminProduct";
-import { hasPermission } from "@/utils/permissions";
-import { useSelector } from "react-redux";
+} from '@mui/material';
+import { Search, View } from 'lucide-react';
+import { debounce } from 'lodash';
+import { deleteProduct } from '@/store/product-slice/AdminProduct';
+import { hasPermission } from '@/utils/permissions';
 
 const AdminProducts = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteProductId, setDeleteProductId] = useState(null);
@@ -27,7 +26,7 @@ const AdminProducts = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const canWrite = hasPermission(user, "products:write");
+  const canWrite = hasPermission(user, 'products:write');
 
   const {
     product = [],
@@ -60,7 +59,7 @@ const AdminProducts = () => {
         dispatch(getProductByFilter({ page, limit: 10, searchQuery }));
       })
       .catch((err) => {
-        console.log("Error deleting product:", err);
+        console.log('Error deleting product:', err);
       });
   };
 
@@ -95,7 +94,7 @@ const AdminProducts = () => {
         <button
           className="bg-yellow-500 dark:bg-red-600 px-10 py-2 mb-5 rounded-full text-white cursor-pointer"
           onClick={() => {
-            navigate("/admin/create/product");
+            navigate('/admin/create/product');
           }}
         >
           Create Product
@@ -157,7 +156,7 @@ const AdminProducts = () => {
                     >
                       <td className="p-4">
                         <img
-                          src={prod.images[0]?.url || "/default-product.png"}
+                          src={prod.images[0]?.url || '/default-product.png'}
                           alt={prod.name}
                           className="w-16 h-16 object-cover rounded-lg"
                         />
@@ -169,7 +168,9 @@ const AdminProducts = () => {
                       </td>
                       <td className="p-4 text-blue-500">{prod.stock}</td>
                       <td className="p-4 text-gray-700 dark:text-gray-300">
-                        {prod.lastUpdatedBy ? prod.lastUpdatedBy.name : "System"}
+                        {prod.lastUpdatedBy
+                          ? prod.lastUpdatedBy.name
+                          : 'System'}
                       </td>
                       <td className="p-4 text-green-600 font-bold">
                         <Link
@@ -196,7 +197,9 @@ const AdminProducts = () => {
                             </button>
                           </>
                         ) : (
-                          <span className="text-gray-500 dark:text-gray-400">—</span>
+                          <span className="text-gray-500 dark:text-gray-400">
+                            —
+                          </span>
                         )}
                       </td>
                     </motion.tr>

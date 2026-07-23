@@ -1,11 +1,11 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
 export const getOrderAnalytics = createAsyncThunk(
-  "adminAnalytics/getOrderAnalytics",
+  'adminAnalytics/getOrderAnalytics',
   async (params = {}, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const { startDate, endDate, interval } = params;
 
       const query = {};
@@ -13,7 +13,7 @@ export const getOrderAnalytics = createAsyncThunk(
       if (endDate) query.endDate = endDate;
       if (interval) query.interval = interval;
 
-      const response = await axiosInstance.get("/api/order/admin/analytics", {
+      const response = await axiosInstance.get('/api/order/admin/analytics', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -28,7 +28,7 @@ export const getOrderAnalytics = createAsyncThunk(
 );
 
 const adminAnalyticsSlice = createSlice({
-  name: "adminAnalytics",
+  name: 'adminAnalytics',
   initialState: {
     analytics: null,
     loading: false,

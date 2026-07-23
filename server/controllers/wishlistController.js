@@ -1,7 +1,7 @@
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import wishListProductModel from "../models/wishlistModel.js";
-import UserModel from "../models/userModel.js";
-import Product from "../models/productModel.js";
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import wishListProductModel from '../models/wishlistModel.js';
+import UserModel from '../models/userModel.js';
+import Product from '../models/productModel.js';
 
 export const addToWishListItemController = catchAsyncErrors(
   async (req, res) => {
@@ -11,7 +11,7 @@ export const addToWishListItemController = catchAsyncErrors(
 
       if (!productId) {
         return res.status(400).json({
-          message: "Please provide productId",
+          message: 'Please provide productId',
           error: true,
           success: false,
         });
@@ -20,14 +20,15 @@ export const addToWishListItemController = catchAsyncErrors(
       const product = await Product.findById(productId);
       if (!product) {
         return res.status(404).json({
-          message: "Product not found",
+          message: 'Product not found',
           error: true,
           success: false,
         });
       }
       if (product.stock <= 0) {
         return res.status(400).json({
-          message: "Product is currently out of stock and cannot be added to wishlist",
+          message:
+            'Product is currently out of stock and cannot be added to wishlist',
           error: true,
           success: false,
         });
@@ -40,7 +41,7 @@ export const addToWishListItemController = catchAsyncErrors(
 
       if (checkItemWishList) {
         return res.status(400).json({
-          message: "Item already in WishList",
+          message: 'Item already in WishList',
           error: true,
           success: false,
         });
@@ -60,7 +61,7 @@ export const addToWishListItemController = catchAsyncErrors(
 
       if (updateWishListUser.modifiedCount === 0) {
         return res.status(500).json({
-          message: "Failed to update user WishList",
+          message: 'Failed to update user WishList',
           error: true,
           success: false,
         });
@@ -68,20 +69,19 @@ export const addToWishListItemController = catchAsyncErrors(
 
       return res.json({
         data: savedWishListItem,
-        message: "Item added to WishList successfully",
+        message: 'Item added to WishList successfully',
         error: false,
         success: true,
       });
     } catch (error) {
       return res.status(500).json({
-        message: error.message || "Internal Server Error",
+        message: error.message || 'Internal Server Error',
         error: true,
         success: false,
       });
     }
   }
 );
-
 
 export const getWishListItemController = catchAsyncErrors(async (req, res) => {
   try {
@@ -91,11 +91,11 @@ export const getWishListItemController = catchAsyncErrors(async (req, res) => {
       .find({
         userId: userId,
       })
-      .populate("productId");
+      .populate('productId');
 
     if (WishListItems.length === 0) {
       return res.status(404).json({
-        message: "No items found in the WishList",
+        message: 'No items found in the WishList',
         error: true,
         success: false,
       });
@@ -108,7 +108,7 @@ export const getWishListItemController = catchAsyncErrors(async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message: error.message || "Internal Server Error",
+      message: error.message || 'Internal Server Error',
       error: true,
       success: false,
     });
@@ -123,7 +123,7 @@ export const updateWishListItemQtyController = catchAsyncErrors(
 
       if (!_id || !qty) {
         return res.status(400).json({
-          message: "Please provide _id and qty",
+          message: 'Please provide _id and qty',
           error: true,
           success: false,
         });
@@ -142,21 +142,21 @@ export const updateWishListItemQtyController = catchAsyncErrors(
 
       if (!updatedWishListItem) {
         return res.status(404).json({
-          message: "WishList item not found",
+          message: 'WishList item not found',
           error: true,
           success: false,
         });
       }
 
       return res.json({
-        message: "WishList updated successfully",
+        message: 'WishList updated successfully',
         success: true,
         error: false,
         data: updatedWishListItem,
       });
     } catch (error) {
       return res.status(500).json({
-        message: error.message || "Internal Server Error",
+        message: error.message || 'Internal Server Error',
         error: true,
         success: false,
       });
@@ -172,7 +172,7 @@ export const deleteWishListItemQtyController = catchAsyncErrors(
 
       if (!_id) {
         return res.status(400).json({
-          message: "Please provide _id",
+          message: 'Please provide _id',
           error: true,
           success: false,
         });
@@ -185,21 +185,21 @@ export const deleteWishListItemQtyController = catchAsyncErrors(
 
       if (deleteResult.deletedCount === 0) {
         return res.status(404).json({
-          message: "WishList item not found",
+          message: 'WishList item not found',
           error: true,
           success: false,
         });
       }
 
       return res.json({
-        message: "Item removed from WishList successfully",
+        message: 'Item removed from WishList successfully',
         error: false,
         success: true,
         data: deleteResult,
       });
     } catch (error) {
       return res.status(500).json({
-        message: error.message || "Internal Server Error",
+        message: error.message || 'Internal Server Error',
         error: true,
         success: false,
       });

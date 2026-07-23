@@ -1,10 +1,10 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
-export const InvoiceSpinner = ({ size = "md", className = "" }) => {
+export const InvoiceSpinner = ({ size = 'md', className = '' }) => {
   const sizes = {
-    sm: "h-4 w-4",
-    md: "h-6 w-6",
-    lg: "h-8 w-8",
+    sm: 'h-4 w-4',
+    md: 'h-6 w-6',
+    lg: 'h-8 w-8',
   };
 
   return (
@@ -32,7 +32,7 @@ export const InvoiceSpinner = ({ size = "md", className = "" }) => {
 };
 
 InvoiceSpinner.propTypes = {
-  size: PropTypes.oneOf(["sm", "md", "lg"]),
+  size: PropTypes.oneOf(['sm', 'md', 'lg']),
   className: PropTypes.string,
 };
 

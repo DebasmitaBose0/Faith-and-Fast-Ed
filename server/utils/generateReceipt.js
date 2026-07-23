@@ -9,12 +9,12 @@ const generateReceiptHTML = (order) => {
   } = order;
 
   const formatDateOnly = (date) => {
-    if (!date) return "To be delivered";
+    if (!date) return 'To be delivered';
     // Use toLocaleDateString with options for "Month Day, Year" format
-    return new Date(date).toLocaleDateString("en-US", {
-      month: "long",
-      day: "2-digit",
-      year: "numeric",
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'long',
+      day: '2-digit',
+      year: 'numeric',
     });
   };
 
@@ -25,7 +25,7 @@ const generateReceiptHTML = (order) => {
       const productImage =
         item.product.images && item.product.images.length > 0
           ? item.product.images[0].url
-          : "";
+          : '';
 
       return `
       <tr>
@@ -37,7 +37,7 @@ const generateReceiptHTML = (order) => {
       </tr>
     `;
     })
-    .join("");
+    .join('');
 
   return `
     <html>
@@ -123,7 +123,7 @@ const generateReceiptHTML = (order) => {
                   y += 10;
                 `;
                 })
-                .join("")}
+                .join('')}
               
               doc.save('receipt.pdf');
             });

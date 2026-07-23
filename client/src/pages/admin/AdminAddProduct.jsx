@@ -1,119 +1,119 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
-import { createProduct } from "@/store/product-slice/AdminProduct";
-import MetaData from "../extras/MetaData";
-import { XCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
+import { createProduct } from '@/store/product-slice/AdminProduct';
+import MetaData from '../extras/MetaData';
+import { XCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminAddProduct = () => {
   const [images, setImages] = useState(Array(10).fill(null));
   const [imagesPreview, setImagesPreview] = useState(Array(10).fill(null));
   const [isFormValid, setIsFormValid] = useState(false);
-  const [customColorInput, setCustomColorInput] = useState("");
-  const [customSizeInput, setCustomSizeInput] = useState("");
+  const [customColorInput, setCustomColorInput] = useState('');
+  const [customSizeInput, setCustomSizeInput] = useState('');
 
   const categories = [
-    "MEN",
-    "WOMEN",
-    "KIDS",
-    "CLOTHING",
-    "FOOTWEAR",
-    "SEASONAL WEAR",
-    "SPECIAL CATEGORIES",
+    'MEN',
+    'WOMEN',
+    'KIDS',
+    'CLOTHING',
+    'FOOTWEAR',
+    'SEASONAL WEAR',
+    'SPECIAL CATEGORIES',
   ];
 
   const subcategories = [
-    "T-Shirts & Polos",
-    "Shirts",
-    "Hoodies & Sweatshirts",
-    "Jackets & Coats",
-    "Sweaters & Cardigans",
-    "Pants & Trousers",
-    "Jeans",
-    "Shorts",
-    "Ethnic Wear (Kurtas, Sarees, Lehengas, etc.)",
-    "Innerwear & Loungewear",
-    "Activewear",
-    "Winter Wear (Thermals, Woolen Caps, Gloves, etc.)",
-    "Summer Wear (Cotton Clothes, Sleeveless Tops, etc.)",
-    "Rainwear (Raincoats, Waterproof Shoes)",
-    "Party Wear",
-    "Office/Formal Wear",
-    "Streetwear",
-    "Sportswear",
-    "Luxury/Fashion Brands",
-    "Sneakers",
-    "Formal Shoes",
-    "Casual Shoes",
-    "Sandals & Slippers",
-    "Boots",
-    "Sports Shoes",
+    'T-Shirts & Polos',
+    'Shirts',
+    'Hoodies & Sweatshirts',
+    'Jackets & Coats',
+    'Sweaters & Cardigans',
+    'Pants & Trousers',
+    'Jeans',
+    'Shorts',
+    'Ethnic Wear (Kurtas, Sarees, Lehengas, etc.)',
+    'Innerwear & Loungewear',
+    'Activewear',
+    'Winter Wear (Thermals, Woolen Caps, Gloves, etc.)',
+    'Summer Wear (Cotton Clothes, Sleeveless Tops, etc.)',
+    'Rainwear (Raincoats, Waterproof Shoes)',
+    'Party Wear',
+    'Office/Formal Wear',
+    'Streetwear',
+    'Sportswear',
+    'Luxury/Fashion Brands',
+    'Sneakers',
+    'Formal Shoes',
+    'Casual Shoes',
+    'Sandals & Slippers',
+    'Boots',
+    'Sports Shoes',
   ];
 
   const colorOptionss = [
-    "Red",
-    "Blue",
-    "Green",
-    "Black",
-    "White",
-    "Yellow",
-    "Purple",
-    "Pink",
-    "Orange",
-    "Rainbow",
-    "Beige",
-    "Grey",
-    "Brown",
-    "Olive",
-    "Cream",
+    'Red',
+    'Blue',
+    'Green',
+    'Black',
+    'White',
+    'Yellow',
+    'Purple',
+    'Pink',
+    'Orange',
+    'Rainbow',
+    'Beige',
+    'Grey',
+    'Brown',
+    'Olive',
+    'Cream',
   ];
 
   const sizes = [
-    "Standard Sizes",
-    "Kids Sizes",
-    "Footwear Sizes",
-    "Plus Sizes",
-    "Custom Sizes",
-    "Tall & Petite Sizes",
-    "Swimwear Sizes",
-    "Sleepwear Sizes",
-    "Maternity Sizes",
+    'Standard Sizes',
+    'Kids Sizes',
+    'Footwear Sizes',
+    'Plus Sizes',
+    'Custom Sizes',
+    'Tall & Petite Sizes',
+    'Swimwear Sizes',
+    'Sleepwear Sizes',
+    'Maternity Sizes',
   ];
 
   const sizeOptionss = [
-    "XS",
-    "S",
-    "M",
-    "L",
-    "XL",
-    "XXL",
-    "XXXL",
-    "4XL",
-    "5XL",
-    "26",
-    "28",
-    "30",
-    "32",
-    "34",
-    "36",
-    "38",
-    "40",
-    "42",
+    'XS',
+    'S',
+    'M',
+    'L',
+    'XL',
+    'XXL',
+    'XXXL',
+    '4XL',
+    '5XL',
+    '26',
+    '28',
+    '30',
+    '32',
+    '34',
+    '36',
+    '38',
+    '40',
+    '42',
   ];
 
   const [productData, setProductData] = useState({
-    name: "",
-    category: "MEN",
-    subcategory: "T-Shirts & Polos",
+    name: '',
+    category: 'MEN',
+    subcategory: 'T-Shirts & Polos',
     coloroptions: [],
     size: [],
     sizeoptions: [],
     stock: 0,
     price: 0,
     discount: 0,
-    description: "",
+    description: '',
   });
 
   const { loading } = useSelector((state) => state.adminProduct);
@@ -137,14 +137,14 @@ const AdminAddProduct = () => {
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setProductData((prevData) => {
-      if (type === "checkbox") {
+      if (type === 'checkbox') {
         return {
           ...prevData,
           [name]: checked
             ? [...(prevData[name] || []), value]
             : prevData[name].filter((item) => item !== value),
         };
-      } else if (type === "select-multiple") {
+      } else if (type === 'select-multiple') {
         return {
           ...prevData,
           [name]: Array.from(
@@ -163,7 +163,7 @@ const AdminAddProduct = () => {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("File size should be less than 5MB");
+      toast.error('File size should be less than 5MB');
       return;
     }
 
@@ -195,7 +195,7 @@ const AdminAddProduct = () => {
     e.preventDefault();
 
     if (images.every((img) => img === null)) {
-      toast.error("Please upload at least one product image");
+      toast.error('Please upload at least one product image');
       return;
     }
 
@@ -205,60 +205,60 @@ const AdminAddProduct = () => {
       !productData.price ||
       !images.some((img) => img !== null)
     ) {
-      toast.error("Please fill all required fields");
+      toast.error('Please fill all required fields');
       return;
     }
 
     const formData = new FormData();
-    formData.append("name", productData.name);
-    formData.append("category", productData.category);
-    formData.append("subcategory", productData.subcategory);
-    formData.append("description", productData.description);
-    formData.append("price", productData.price);
-    formData.append("stock", productData.stock);
-    formData.append("discount", productData.discount);
+    formData.append('name', productData.name);
+    formData.append('category', productData.category);
+    formData.append('subcategory', productData.subcategory);
+    formData.append('description', productData.description);
+    formData.append('price', productData.price);
+    formData.append('stock', productData.stock);
+    formData.append('discount', productData.discount);
     productData.coloroptions.forEach((color) =>
-      formData.append("coloroptions[]", color)
+      formData.append('coloroptions[]', color)
     );
-    productData.size.forEach((size) => formData.append("size[]", size));
+    productData.size.forEach((size) => formData.append('size[]', size));
     productData.sizeoptions.forEach((sizeoption) =>
-      formData.append("sizeoptions[]", sizeoption)
+      formData.append('sizeoptions[]', sizeoption)
     );
     images.forEach((image) => {
       if (image) {
-        formData.append("images", image);
+        formData.append('images', image);
       }
     });
 
     try {
       await dispatch(createProduct(formData)).unwrap();
-      toast.success("Product created successfully!");
+      toast.success('Product created successfully!');
       setProductData({
-        name: "",
-        price: "",
-        description: "",
-        category: "MEN",
-        subcategory: "T-Shirts & Polos",
+        name: '',
+        price: '',
+        description: '',
+        category: 'MEN',
+        subcategory: 'T-Shirts & Polos',
         coloroptions: [],
         size: [],
         sizeoptions: [],
-        discount: "",
-        stock: "",
+        discount: '',
+        stock: '',
       });
-      setCustomColorInput("");
-      setCustomSizeInput("");
+      setCustomColorInput('');
+      setCustomSizeInput('');
       setImages(Array(10).fill(null));
       setImagesPreview(Array(10).fill(null));
     } catch (error) {
-      console.error("Frontend error:", error);
-      toast.error(error || "An error occurred while creating the product.");
+      console.error('Frontend error:', error);
+      toast.error(error || 'An error occurred while creating the product.');
     }
   };
 
   const toggleOption = (field, option) => {
     setProductData((prevData) => {
       const capitalizedOption =
-        field === "coloroptions"
+        field === 'coloroptions'
           ? option.charAt(0).toUpperCase() + option.slice(1).toLowerCase()
           : option;
       if (prevData[field].includes(capitalizedOption)) {
@@ -287,7 +287,7 @@ const AdminAddProduct = () => {
         ...prevData,
         coloroptions: [...prevData.coloroptions, capitalizedColor],
       }));
-      setCustomColorInput("");
+      setCustomColorInput('');
     }
   };
 
@@ -299,7 +299,7 @@ const AdminAddProduct = () => {
         ...prevData,
         sizeoptions: [...prevData.sizeoptions, capitalizedSize],
       }));
-      setCustomSizeInput("");
+      setCustomSizeInput('');
     }
   };
 
@@ -318,7 +318,7 @@ const AdminAddProduct = () => {
       y: 0,
       transition: {
         duration: 0.5,
-        when: "beforeChildren",
+        when: 'beforeChildren',
         staggerChildren: 0.1,
       },
     },
@@ -464,14 +464,14 @@ const AdminAddProduct = () => {
                 <motion.button
                   key={option}
                   type="button"
-                  onClick={() => toggleOption("coloroptions", option)}
+                  onClick={() => toggleOption('coloroptions', option)}
                   variants={optionVariants}
                   initial="hidden"
                   animate="visible"
                   className={`px-4 py-2 rounded-full border transition-all duration-200 ${
                     productData.coloroptions.includes(option)
-                      ? "bg-yellow-600 dark:bg-red-600  text-white border-yellow-600 shadow-lg"
-                      : "bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-500"
+                      ? 'bg-yellow-600 dark:bg-red-600  text-white border-yellow-600 shadow-lg'
+                      : 'bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-500'
                   }`}
                 >
                   {option}
@@ -500,7 +500,7 @@ const AdminAddProduct = () => {
                   <motion.button
                     key={option}
                     type="button"
-                    onClick={() => removeOption("coloroptions", option)}
+                    onClick={() => removeOption('coloroptions', option)}
                     variants={optionVariants}
                     initial="hidden"
                     animate="visible"
@@ -527,14 +527,14 @@ const AdminAddProduct = () => {
                 <motion.button
                   key={option}
                   type="button"
-                  onClick={() => toggleOption("size", option)}
+                  onClick={() => toggleOption('size', option)}
                   variants={optionVariants}
                   initial="hidden"
                   animate="visible"
                   className={`px-4 py-2 rounded-full border transition-all duration-200 ${
                     productData.size.includes(option)
-                      ? "bg-yellow-600 dark:bg-red-600 text-white border-yellow-600 shadow-lg"
-                      : "bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-500"
+                      ? 'bg-yellow-600 dark:bg-red-600 text-white border-yellow-600 shadow-lg'
+                      : 'bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-500'
                   }`}
                 >
                   {option}
@@ -542,7 +542,7 @@ const AdminAddProduct = () => {
               ))}
             </div>
             <div className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-              Selected: {productData.size.join(", ")}
+              Selected: {productData.size.join(', ')}
             </div>
           </motion.div>
 
@@ -558,14 +558,14 @@ const AdminAddProduct = () => {
                 <motion.button
                   key={option}
                   type="button"
-                  onClick={() => toggleOption("sizeoptions", option)}
+                  onClick={() => toggleOption('sizeoptions', option)}
                   variants={optionVariants}
                   initial="hidden"
                   animate="visible"
                   className={`px-4 py-2 rounded-full border transition-all duration-200 ${
                     productData.sizeoptions.includes(option)
-                      ? "bg-yellow-600 dark:bg-red-600 text-white border-yellow-600 shadow-lg"
-                      : "bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-500"
+                      ? 'bg-yellow-600 dark:bg-red-600 text-white border-yellow-600 shadow-lg'
+                      : 'bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-500'
                   }`}
                 >
                   {option}
@@ -594,7 +594,7 @@ const AdminAddProduct = () => {
                   <motion.button
                     key={option}
                     type="button"
-                    onClick={() => removeOption("sizeoptions", option)}
+                    onClick={() => removeOption('sizeoptions', option)}
                     variants={optionVariants}
                     initial="hidden"
                     animate="visible"
@@ -666,7 +666,7 @@ const AdminAddProduct = () => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 10 }}
                         transition={{
-                          type: "spring",
+                          type: 'spring',
                           stiffness: 200,
                           damping: 20,
                         }}
@@ -700,7 +700,7 @@ const AdminAddProduct = () => {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 10 }}
                         transition={{
-                          type: "spring",
+                          type: 'spring',
                           stiffness: 200,
                           damping: 20,
                         }}
@@ -730,7 +730,7 @@ const AdminAddProduct = () => {
             disabled={!isFormValid || loading}
             className="w-full py-4 px-6 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-semibold rounded-full hover:from-yellow-600 hover:to-yellow-700 dark:hover:from-red-600 dark:hover:to-red-700 dark:from-red-600 dark:to-red-700 focus:ring-4 focus:ring-blue-300 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg"
           >
-            {loading ? "Creating..." : "Create Product"}
+            {loading ? 'Creating...' : 'Create Product'}
           </motion.button>
         </form>
       </motion.div>

@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   CircularProgress,
   Dialog,
@@ -14,50 +14,50 @@ import {
   InputLabel,
   FormControl,
   TextField,
-} from "@mui/material";
+} from '@mui/material';
 import {
   deleteOrder,
   getAllOrders,
   updateOrderStatus,
   deleteAllOrders,
   verifyPayment,
-} from "@/store/order-slice/AdminOrderSlice";
-import { Link } from "react-router-dom";
-import MetaData from "../extras/MetaData";
-import { hasPermission } from "@/utils/permissions";
+} from '@/store/order-slice/AdminOrderSlice';
+import { Link } from 'react-router-dom';
+import MetaData from '../extras/MetaData';
+import { hasPermission } from '@/utils/permissions';
 
 const AdminOrdersPage = () => {
   const dispatch = useDispatch();
   const { orders, loading, error } = useSelector((state) => state.adminOrders);
   const { user } = useSelector((state) => state.auth);
-  const canUpdate = hasPermission(user, "orders:update");
+  const canUpdate = hasPermission(user, 'orders:update');
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openDeleteAllDialog, setOpenDeleteAllDialog] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [updateStatus, setUpdateStatus] = useState("");
-  const [trackingId, setTrackingId] = useState("");
-  const [notes, setNotes] = useState("");
-  const [updatedDeliveryDate, setUpdatedDeliveryDate] = useState("");
+  const [updateStatus, setUpdateStatus] = useState('');
+  const [trackingId, setTrackingId] = useState('');
+  const [notes, setNotes] = useState('');
+  const [updatedDeliveryDate, setUpdatedDeliveryDate] = useState('');
   const [deleteOrderId, setDeleteOrderId] = useState(null);
 
   // Payment verification dialog state
   const [openVerifyDialog, setOpenVerifyDialog] = useState(false);
   const [verifyOrder, setVerifyOrder] = useState(null);
-  const [rejectionReason, setRejectionReason] = useState("");
+  const [rejectionReason, setRejectionReason] = useState('');
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [ordersPerPage] = useState(10);
 
   // Sorting state
-  const [sortField, setSortField] = useState("createdAt");
-  const [sortOrder, setSortOrder] = useState("desc");
+  const [sortField, setSortField] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
 
   // Filter state
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const [timeFilter, setTimeFilter] = useState("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [timeFilter, setTimeFilter] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     dispatch(getAllOrders());
@@ -66,12 +66,12 @@ const AdminOrdersPage = () => {
   const handleUpdateClick = (order) => {
     setSelectedOrder(order);
     setUpdateStatus(order.orderStatus);
-    setTrackingId(order.trackingId || "");
-    setNotes("");
+    setTrackingId(order.trackingId || '');
+    setNotes('');
     setUpdatedDeliveryDate(
       order.deliveryDate
-        ? new Date(order.deliveryDate).toISOString().split("T")[0]
-        : ""
+        ? new Date(order.deliveryDate).toISOString().split('T')[0]
+        : ''
     );
     setOpenUpdateDialog(true);
   };
@@ -85,13 +85,13 @@ const AdminOrdersPage = () => {
         notes,
         deliveryDate: updatedDeliveryDate || undefined,
       };
-      console.log("Sending Payload:", payload);
+      console.log('Sending Payload:', payload);
       dispatch(updateOrderStatus(payload)).then((result) => {
-        if (result.meta.requestStatus === "fulfilled") {
+        if (result.meta.requestStatus === 'fulfilled') {
           setOpenUpdateDialog(false);
           dispatch(getAllOrders());
         } else {
-          console.error("Update failed:", result.payload);
+          console.error('Update failed:', result.payload);
         }
       });
     }
@@ -124,21 +124,21 @@ const AdminOrdersPage = () => {
 
   const handleVerifyClick = (order) => {
     setVerifyOrder(order);
-    setRejectionReason("");
+    setRejectionReason('');
     setOpenVerifyDialog(true);
   };
 
   const handleVerifyAction = (action) => {
     if (!verifyOrder) return;
-    if (action === "reject" && !rejectionReason.trim()) return;
+    if (action === 'reject' && !rejectionReason.trim()) return;
     dispatch(
       verifyPayment({
         orderId: verifyOrder._id,
         action,
-        rejectionReason: action === "reject" ? rejectionReason.trim() : "",
+        rejectionReason: action === 'reject' ? rejectionReason.trim() : '',
       })
     ).then((result) => {
-      if (result.meta.requestStatus === "fulfilled") {
+      if (result.meta.requestStatus === 'fulfilled') {
         setOpenVerifyDialog(false);
         setVerifyOrder(null);
         dispatch(getAllOrders());
@@ -147,68 +147,68 @@ const AdminOrdersPage = () => {
   };
 
   const formatDeliveryDate = (date) => {
-    if (!date || date === "To be delivered") return "To be delivered";
+    if (!date || date === 'To be delivered') return 'To be delivered';
     const deliveryDate = new Date(date);
     const today = new Date();
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
 
     const options = {
-      month: "long",
-      day: "2-digit",
+      month: 'long',
+      day: '2-digit',
       year:
         deliveryDate.getFullYear() === today.getFullYear()
           ? undefined
-          : "numeric",
+          : 'numeric',
     };
 
     if (
       deliveryDate.toDateString() === today.toDateString() &&
       deliveryDate.getTime() > today.getTime()
     ) {
-      return "Arriving today by 10 PM";
+      return 'Arriving today by 10 PM';
     }
     if (deliveryDate.toDateString() === tomorrow.toDateString()) {
-      return "Arriving tomorrow by 10 PM";
+      return 'Arriving tomorrow by 10 PM';
     }
     if (deliveryDate > today) {
-      return `Expected on ${deliveryDate.toLocaleDateString("en-US", options)}`;
+      return `Expected on ${deliveryDate.toLocaleDateString('en-US', options)}`;
     }
     if (
       deliveryDate.getDate() === today.getDate() &&
       deliveryDate.getMonth() === today.getMonth() &&
       deliveryDate.getFullYear() === today.getFullYear()
     ) {
-      return `Delivered today, ${deliveryDate.toLocaleDateString("en-US", {
-        month: "long",
-        day: "2-digit",
+      return `Delivered today, ${deliveryDate.toLocaleDateString('en-US', {
+        month: 'long',
+        day: '2-digit',
       })}`;
     }
-    return `Delivered on ${deliveryDate.toLocaleDateString("en-US", options)}`;
+    return `Delivered on ${deliveryDate.toLocaleDateString('en-US', options)}`;
   };
 
   // Filter and sort logic
   const filterOrders = () => {
     let filtered = [...orders];
 
-    if (statusFilter !== "ALL") {
+    if (statusFilter !== 'ALL') {
       filtered = filtered.filter((order) => order.orderStatus === statusFilter);
     }
 
     const today = new Date();
-    if (timeFilter === "LAST_7_DAYS") {
+    if (timeFilter === 'LAST_7_DAYS') {
       const sevenDaysAgo = new Date(today);
       sevenDaysAgo.setDate(today.getDate() - 7);
       filtered = filtered.filter(
         (order) => new Date(order.createdAt) >= sevenDaysAgo
       );
-    } else if (timeFilter === "LAST_30_DAYS") {
+    } else if (timeFilter === 'LAST_30_DAYS') {
       const thirtyDaysAgo = new Date(today);
       thirtyDaysAgo.setDate(today.getDate() - 30);
       filtered = filtered.filter(
         (order) => new Date(order.createdAt) >= thirtyDaysAgo
       );
-    } else if (timeFilter !== "ALL") {
+    } else if (timeFilter !== 'ALL') {
       const year = parseInt(timeFilter, 10);
       filtered = filtered.filter(
         (order) => new Date(order.createdAt).getFullYear() === year
@@ -227,14 +227,14 @@ const AdminOrdersPage = () => {
 
     return filtered.sort((a, b) => {
       const fieldA =
-        sortField === "createdAt"
+        sortField === 'createdAt'
           ? new Date(a.createdAt)
           : new Date(a.deliveryDate || 0);
       const fieldB =
-        sortField === "createdAt"
+        sortField === 'createdAt'
           ? new Date(b.createdAt)
           : new Date(b.deliveryDate || 0);
-      return sortOrder === "asc" ? fieldA - fieldB : fieldB - fieldA;
+      return sortOrder === 'asc' ? fieldA - fieldB : fieldB - fieldA;
     });
   };
 
@@ -251,7 +251,7 @@ const AdminOrdersPage = () => {
 
   const toggleSort = (field) => {
     setSortField(field);
-    setSortOrder(sortField === field && sortOrder === "asc" ? "desc" : "asc");
+    setSortOrder(sortField === field && sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
   const uniqueYears = [
@@ -337,16 +337,19 @@ const AdminOrdersPage = () => {
               }}
               className="w-full sm:w-48 lg:w-64 dark:bg-gray-400 dark:text-white"
               InputProps={{
-                className: "dark:text-gray-300 text-sm sm:text-base",
+                className: 'dark:text-gray-300 text-sm sm:text-base',
               }}
-              InputLabelProps={{ className: "dark:text-gray-300" }}
+              InputLabelProps={{ className: 'dark:text-gray-300' }}
             />
           </div>
 
           {/* Action Buttons */}
           <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
             {canUpdate && (
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <Button
                   variant="contained"
                   onClick={handleDeleteAllClick}
@@ -360,19 +363,19 @@ const AdminOrdersPage = () => {
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 variant="outlined"
-                onClick={() => toggleSort("createdAt")}
+                onClick={() => toggleSort('createdAt')}
                 className="border-indigo-500 text-indigo-500 hover:bg-indigo-50 dark:border-indigo-400 dark:text-indigo-400 dark:hover:bg-gray-700 text-xs sm:text-sm lg:text-base w-full sm:w-auto"
               >
-                Order Date ({sortField === "createdAt" ? sortOrder : "desc"})
+                Order Date ({sortField === 'createdAt' ? sortOrder : 'desc'})
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
                 variant="outlined"
-                onClick={() => toggleSort("deliveryDate")}
+                onClick={() => toggleSort('deliveryDate')}
                 className="border-indigo-500 text-indigo-500 hover:bg-indigo-50 dark:border-indigo-400 dark:text-indigo-400 dark:hover:bg-gray-700 text-xs sm:text-sm lg:text-base w-full sm:w-auto"
               >
-                Delivery ({sortField === "deliveryDate" ? sortOrder : "desc"})
+                Delivery ({sortField === 'deliveryDate' ? sortOrder : 'desc'})
               </Button>
             </motion.div>
           </div>
@@ -422,7 +425,7 @@ const AdminOrdersPage = () => {
                     <th className="p-2 sm:p-3 lg:p-4 text-left text-xs sm:text-sm font-semibold">
                       Status
                     </th>
-                     <th className="p-2 sm:p-3 lg:p-4 text-left text-xs sm:text-sm font-semibold hidden md:table-cell">
+                    <th className="p-2 sm:p-3 lg:p-4 text-left text-xs sm:text-sm font-semibold hidden md:table-cell">
                       Tracking ID
                     </th>
                     <th className="p-2 sm:p-3 lg:p-4 text-left text-xs sm:text-sm font-semibold">
@@ -464,16 +467,16 @@ const AdminOrdersPage = () => {
                           <div>{order.paymentMethod}</div>
                           <span
                             className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                              order.paymentStatus === "COMPLETED"
-                                ? "bg-green-100 text-green-700"
-                                : order.paymentStatus === "FAILED"
-                                ? "bg-red-100 text-red-700"
-                                : "bg-yellow-100 text-yellow-700"
+                              order.paymentStatus === 'COMPLETED'
+                                ? 'bg-green-100 text-green-700'
+                                : order.paymentStatus === 'FAILED'
+                                  ? 'bg-red-100 text-red-700'
+                                  : 'bg-yellow-100 text-yellow-700'
                             }`}
                           >
                             {order.paymentStatus}
                           </span>
-                          {order.paymentMethod === "STRIPE" &&
+                          {order.paymentMethod === 'STRIPE' &&
                             order.stripePaymentIntentId && (
                               <div
                                 className="mt-1 text-[10px] text-gray-500 dark:text-gray-400 break-all"
@@ -484,12 +487,12 @@ const AdminOrdersPage = () => {
                             )}
                         </td>
                         <td className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">
-                          {new Date(order.createdAt).toLocaleString("en-IN", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
+                          {new Date(order.createdAt).toLocaleString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
                             hour12: true,
                           })}
                         </td>
@@ -499,11 +502,13 @@ const AdminOrdersPage = () => {
                         <td className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">
                           {order.orderStatus}
                         </td>
-                         <td className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">
-                          {order.trackingId || "N/A"}
+                        <td className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hidden md:table-cell">
+                          {order.trackingId || 'N/A'}
                         </td>
                         <td className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-                          {order.lastUpdatedBy ? order.lastUpdatedBy.name : "System"}
+                          {order.lastUpdatedBy
+                            ? order.lastUpdatedBy.name
+                            : 'System'}
                         </td>
                         <td className="p-2 sm:p-3 lg:p-4 text-xs sm:text-sm text-green-600 font-bold">
                           ₹{order.totalAmount.toFixed(2)}
@@ -521,11 +526,11 @@ const AdminOrdersPage = () => {
                             </Link>
                           </motion.div>
                         </td>
-                         <td className="p-2 sm:p-3 lg:p-4 text-center space-x-1 sm:space-x-2">
+                        <td className="p-2 sm:p-3 lg:p-4 text-center space-x-1 sm:space-x-2">
                           {canUpdate ? (
                             <>
-                              {order.orderStatus !== "DELIVERED" &&
-                                order.orderStatus !== "CANCELLED" && (
+                              {order.orderStatus !== 'DELIVERED' &&
+                                order.orderStatus !== 'CANCELLED' && (
                                   <Tooltip title="Update Order">
                                     <motion.button
                                       whileHover={{ scale: 1.1 }}
@@ -537,8 +542,8 @@ const AdminOrdersPage = () => {
                                     </motion.button>
                                   </Tooltip>
                                 )}
-                              {order.paymentMethod === "ONLINE" &&
-                                order.paymentStatus === "PENDING" && (
+                              {order.paymentMethod === 'ONLINE' &&
+                                order.paymentStatus === 'PENDING' && (
                                   <Tooltip title="Verify Payment">
                                     <motion.button
                                       whileHover={{ scale: 1.1 }}
@@ -562,7 +567,9 @@ const AdminOrdersPage = () => {
                               </Tooltip>
                             </>
                           ) : (
-                            <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">—</span>
+                            <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
+                              —
+                            </span>
                           )}
                         </td>
                       </motion.tr>
@@ -599,12 +606,12 @@ const AdminOrdersPage = () => {
                   whileTap={{ scale: 0.95 }}
                 >
                   <Button
-                    variant={currentPage === i + 1 ? "contained" : "outlined"}
+                    variant={currentPage === i + 1 ? 'contained' : 'outlined'}
                     onClick={() => handlePageChange(i + 1)}
                     className={`${
                       currentPage === i + 1
-                        ? "bg-indigo-600 text-white"
-                        : "border-indigo-500 text-indigo-500 hover:bg-indigo-50 dark:border-indigo-400 dark:text-indigo-400 dark:hover:bg-gray-700"
+                        ? 'bg-indigo-600 text-white'
+                        : 'border-indigo-500 text-indigo-500 hover:bg-indigo-50 dark:border-indigo-400 dark:text-indigo-400 dark:hover:bg-gray-700'
                     } text-xs sm:text-sm m-1`}
                   >
                     {i + 1}
@@ -729,10 +736,11 @@ const AdminOrdersPage = () => {
             <div className="space-y-4 mt-2">
               <div className="text-sm space-y-1">
                 <p>
-                  <span className="font-semibold">Order:</span> {verifyOrder._id}
+                  <span className="font-semibold">Order:</span>{' '}
+                  {verifyOrder._id}
                 </p>
                 <p>
-                  <span className="font-semibold">Customer:</span>{" "}
+                  <span className="font-semibold">Customer:</span>{' '}
                   {verifyOrder.user?.name} ({verifyOrder.user?.email})
                 </p>
                 <p>
@@ -740,8 +748,8 @@ const AdminOrdersPage = () => {
                   {verifyOrder.totalAmount?.toFixed(2)}
                 </p>
                 <p>
-                  <span className="font-semibold">UPI Reference:</span>{" "}
-                  {verifyOrder.upiReference || "Not provided"}
+                  <span className="font-semibold">UPI Reference:</span>{' '}
+                  {verifyOrder.upiReference || 'Not provided'}
                 </p>
               </div>
 
@@ -760,7 +768,9 @@ const AdminOrdersPage = () => {
                     />
                   </a>
                 ) : (
-                  <p className="text-sm text-gray-500">No screenshot uploaded.</p>
+                  <p className="text-sm text-gray-500">
+                    No screenshot uploaded.
+                  </p>
                 )}
               </div>
 
@@ -787,14 +797,14 @@ const AdminOrdersPage = () => {
             Cancel
           </Button>
           <Button
-            onClick={() => handleVerifyAction("reject")}
+            onClick={() => handleVerifyAction('reject')}
             disabled={!rejectionReason.trim()}
             className="bg-red-600 hover:bg-red-700 text-white text-sm sm:text-base disabled:opacity-50"
           >
             Reject
           </Button>
           <Button
-            onClick={() => handleVerifyAction("approve")}
+            onClick={() => handleVerifyAction('approve')}
             className="bg-green-600 hover:bg-green-700 text-white text-sm sm:text-base"
           >
             Approve

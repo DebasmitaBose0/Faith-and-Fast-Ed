@@ -94,7 +94,7 @@ const Home = () => {
 
       <button
         className="flex items-center justify-center bg-yellow-500 dark:bg-red-600 text-white py-2 px-6 rounded-full shadow-lg hover:bg-yellow-400 dark:hover:bg-red-500 transition-all duration-300 transform hover:scale-105 mb-5 mx-auto"
-        onClick={() => navigate("/products")}
+        onClick={() => navigate('/products')}
       >
         <span className="mr-2">View More Products</span>
         <CircleArrowRightIcon className="w-6 h-6" />

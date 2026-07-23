@@ -1,12 +1,12 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
 export const getAllOrders = createAsyncThunk(
-  "adminOrders/getAllOrders",
+  'adminOrders/getAllOrders',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axiosInstance.get("/api/order/get/admin", {
+      const token = localStorage.getItem('token');
+      const response = await axiosInstance.get('/api/order/get/admin', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -20,13 +20,13 @@ export const getAllOrders = createAsyncThunk(
 );
 
 export const updateOrderStatus = createAsyncThunk(
-  "adminOrders/updateOrderStatus",
+  'adminOrders/updateOrderStatus',
   async (
     { orderId, orderStatus, trackingId, notes, deliveryDate },
     { rejectWithValue }
   ) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.put(
         `/api/order/admin/update/${orderId}`,
         { orderStatus, trackingId, notes, deliveryDate },
@@ -45,10 +45,10 @@ export const updateOrderStatus = createAsyncThunk(
 );
 
 export const deleteOrder = createAsyncThunk(
-  "adminOrders/deleteOrder",
+  'adminOrders/deleteOrder',
   async (orderId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       await axiosInstance.delete(`/api/order/admin/delete/${orderId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -63,10 +63,10 @@ export const deleteOrder = createAsyncThunk(
 );
 
 export const getSingleOrder = createAsyncThunk(
-  "adminOrders/getSingleOrder",
+  'adminOrders/getSingleOrder',
   async (orderId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.get(`/api/order/get/${orderId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -81,12 +81,12 @@ export const getSingleOrder = createAsyncThunk(
 );
 
 export const deleteAllOrders = createAsyncThunk(
-  "adminOrders/deleteAllOrders",
+  'adminOrders/deleteAllOrders',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.delete(
-        "/api/order/admin/delete-all",
+        '/api/order/admin/delete-all',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -102,10 +102,10 @@ export const deleteAllOrders = createAsyncThunk(
 );
 
 export const verifyPayment = createAsyncThunk(
-  "adminOrders/verifyPayment",
+  'adminOrders/verifyPayment',
   async ({ orderId, action, rejectionReason }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.put(
         `/api/order/admin/verify-payment/${orderId}`,
         { action, rejectionReason },
@@ -124,7 +124,7 @@ export const verifyPayment = createAsyncThunk(
 );
 
 const adminOrdersSlice = createSlice({
-  name: "adminOrders",
+  name: 'adminOrders',
   initialState: {
     orders: [],
     singleOrder: null,
@@ -215,11 +215,11 @@ const adminOrdersSlice = createSlice({
       })
       .addCase(deleteAllOrders.fulfilled, (state) => {
         state.loading = false;
-        state.orders = []; 
+        state.orders = [];
       })
       .addCase(deleteAllOrders.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to delete all orders";
+        state.error = action.payload || 'Failed to delete all orders';
       });
   },
 });
