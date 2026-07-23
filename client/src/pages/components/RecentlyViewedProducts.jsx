@@ -1,5 +1,5 @@
-import PropTypes from "prop-types";
-import ProductCard from "../products/ProductCard";
+import PropTypes from 'prop-types';
+import ProductCard from '../products/ProductCard';
 
 const RecentlyViewedProducts = ({ products }) => {
   if (!products || products.length === 0) return null;

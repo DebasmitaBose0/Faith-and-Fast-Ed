@@ -1,12 +1,12 @@
-import axiosInstance from "@/api";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from '@/api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const getInventoryOverview = createAsyncThunk(
-  "inventory/getInventoryOverview",
+  'inventory/getInventoryOverview',
   async (threshold = 5, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axiosInstance.get("/api/inventory/overview", {
+      const token = localStorage.getItem('token');
+      const response = await axiosInstance.get('/api/inventory/overview', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -16,19 +16,19 @@ export const getInventoryOverview = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch inventory overview"
+        error.response?.data?.message || 'Failed to fetch inventory overview'
       );
     }
   }
 );
 
 export const bulkUpdateStock = createAsyncThunk(
-  "inventory/bulkUpdateStock",
+  'inventory/bulkUpdateStock',
   async (updates, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.put(
-        "/api/inventory/bulk-update",
+        '/api/inventory/bulk-update',
         { updates },
         {
           headers: {
@@ -40,14 +40,14 @@ export const bulkUpdateStock = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to update stock"
+        error.response?.data?.message || 'Failed to update stock'
       );
     }
   }
 );
 
 const inventorySlice = createSlice({
-  name: "inventory",
+  name: 'inventory',
   initialState: {
     summary: null,
     products: [],
@@ -71,7 +71,7 @@ const inventorySlice = createSlice({
       })
       .addCase(getInventoryOverview.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload || "Failed to fetch inventory overview";
+        state.error = action.payload || 'Failed to fetch inventory overview';
       })
       .addCase(bulkUpdateStock.pending, (state) => {
         state.updating = true;
@@ -82,7 +82,7 @@ const inventorySlice = createSlice({
       })
       .addCase(bulkUpdateStock.rejected, (state, action) => {
         state.updating = false;
-        state.error = action.payload || "Failed to update stock";
+        state.error = action.payload || 'Failed to update stock';
       });
   },
 });

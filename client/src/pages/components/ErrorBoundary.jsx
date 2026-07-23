@@ -1,6 +1,6 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { FiAlertTriangle, FiRefreshCw, FiHome } from "react-icons/fi";
+import React from 'react';
+import { motion } from 'framer-motion';
+import { FiAlertTriangle, FiRefreshCw, FiHome } from 'react-icons/fi';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -13,7 +13,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("[ErrorBoundary] Caught render error:", error, errorInfo);
+    console.error('[ErrorBoundary] Caught render error:', error, errorInfo);
   }
 
   handleRetry = () => {
@@ -28,7 +28,7 @@ class ErrorBoundary extends React.Component {
             className="text-center max-w-md"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
+            transition={{ duration: 0.8, ease: 'easeInOut' }}
           >
             <motion.div
               initial={{ y: -20, opacity: 0 }}

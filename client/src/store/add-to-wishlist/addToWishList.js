@@ -1,13 +1,13 @@
-import axiosInstance from "@/api";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from '@/api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const addToWishList = createAsyncThunk(
-  "wishList/addToWishList",
+  'wishList/addToWishList',
   async (productId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.post(
-        "/api/wishlist/create",
+        '/api/wishlist/create',
         { productId },
         {
           headers: {
@@ -19,18 +19,18 @@ export const addToWishList = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to add item to WishList"
+        error.response?.data?.message || 'Failed to add item to WishList'
       );
     }
   }
 );
 
 export const getWishListItems = createAsyncThunk(
-  "wishList/getWishListItems",
+  'wishList/getWishListItems',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axiosInstance.get("/api/wishlist/get", {
+      const token = localStorage.getItem('token');
+      const response = await axiosInstance.get('/api/wishlist/get', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -44,19 +44,19 @@ export const getWishListItems = createAsyncThunk(
         return { data: [], error: false, success: true };
       }
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch WishList items"
+        error.response?.data?.message || 'Failed to fetch WishList items'
       );
     }
   }
 );
 
 export const updateWishListItemQty = createAsyncThunk(
-  "wishList/updateWishListItemQty",
+  'wishList/updateWishListItemQty',
   async ({ _id, qty }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.put(
-        "/api/wishList/update",
+        '/api/wishList/update',
         { _id, qty },
         {
           headers: {
@@ -68,18 +68,18 @@ export const updateWishListItemQty = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to update WishList quantity"
+        error.response?.data?.message || 'Failed to update WishList quantity'
       );
     }
   }
 );
 
 export const deleteWishListItem = createAsyncThunk(
-  "wishList/deleteWishListItem",
+  'wishList/deleteWishListItem',
   async (_id, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axiosInstance.delete("/api/wishList/delete", {
+      const token = localStorage.getItem('token');
+      const response = await axiosInstance.delete('/api/wishList/delete', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -90,14 +90,14 @@ export const deleteWishListItem = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to delete WishList item"
+        error.response?.data?.message || 'Failed to delete WishList item'
       );
     }
   }
 );
 
 const WishListSlice = createSlice({
-  name: "wishList",
+  name: 'wishList',
   initialState: {
     WishListItems: [],
     loading: false,

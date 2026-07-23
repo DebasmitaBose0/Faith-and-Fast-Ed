@@ -1,51 +1,52 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import { Link } from "react-router-dom";
-import MetaData from "./MetaData";
-import contactConfig from "../../config/contact";
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import MetaData from './MetaData';
+import contactConfig from '../../config/contact';
 
 const faqs = [
   {
-    question: "What payment methods do you accept?",
-    answer: "We currently accept Cash on Delivery (COD).",
+    question: 'What payment methods do you accept?',
+    answer: 'We currently accept Cash on Delivery (COD).',
   },
   {
-    question: "What is Cash on Delivery?",
+    question: 'What is Cash on Delivery?',
     answer:
-      "Cash on Delivery (COD) allows you to pay for your order in cash when it’s delivered to your doorstep.",
+      'Cash on Delivery (COD) allows you to pay for your order in cash when it’s delivered to your doorstep.',
   },
   {
     question: "How is a 'business day' different from a regular day?",
     answer:
-      "A business day refers to working days (Monday to Friday), excluding public holidays and weekends.",
+      'A business day refers to working days (Monday to Friday), excluding public holidays and weekends.',
   },
   {
-    question: "How much is the platform fee?",
+    question: 'How much is the platform fee?',
     answer:
-      "Our platform is totally free! No extra charges for browsing or purchasing products.",
+      'Our platform is totally free! No extra charges for browsing or purchasing products.',
   },
   {
     question: "What's not allowed in product reviews?",
     answer:
-      "Fake, abusive, or promotional content is not allowed in product reviews.",
+      'Fake, abusive, or promotional content is not allowed in product reviews.',
   },
   {
-    question: "What can I write in product reviews?",
-    answer: "You can write about your personal experience with the product.",
+    question: 'What can I write in product reviews?',
+    answer: 'You can write about your personal experience with the product.',
   },
   {
-    question: "Are there any guidelines for writing product reviews?",
+    question: 'Are there any guidelines for writing product reviews?',
     answer:
-      "Yes. Reviews should be honest, relevant, and respectful. Avoid spam, advertisements, or offensive content.",
+      'Yes. Reviews should be honest, relevant, and respectful. Avoid spam, advertisements, or offensive content.',
   },
   {
     question:
-      "If I have found a security Bug/Vulnerability/Issue, what should I do?",
+      'If I have found a security Bug/Vulnerability/Issue, what should I do?',
     answer: (
       <>
-        Please report security vulnerabilities by emailing us at{" "}
-        <strong>{contactConfig.contact_details.email}</strong> with the following details:
+        Please report security vulnerabilities by emailing us at{' '}
+        <strong>{contactConfig.contact_details.email}</strong> with the
+        following details:
         <ol className="list-decimal ml-5 mt-2">
           <li>Steps to reproduce the bug/issue.</li>
           <li>Your web browser/mobile browser’s name and version.</li>
@@ -55,58 +56,59 @@ const faqs = [
     ),
   },
   {
-    question: "Do I need to verify my email address while signing up?",
+    question: 'Do I need to verify my email address while signing up?',
     answer:
-      "Yes, email verification is required to ensure account security and prevent fraud.",
+      'Yes, email verification is required to ensure account security and prevent fraud.',
   },
   {
-    question: "Why do I need to verify my email address while signing up?",
+    question: 'Why do I need to verify my email address while signing up?',
     answer:
-      "Email verification helps protect your account from unauthorized access and allows us to send important order updates.",
+      'Email verification helps protect your account from unauthorized access and allows us to send important order updates.',
   },
   {
-    question: "How long does shipping take?",
+    question: 'How long does shipping take?',
     answer:
-      "Shipping usually takes 5-10 business days depending on your location.",
+      'Shipping usually takes 5-10 business days depending on your location.',
   },
   {
-    question: "How can I track my order?",
+    question: 'How can I track my order?',
     answer:
-      "You will receive a tracking number on your My Orders page once your order has been shipped.",
+      'You will receive a tracking number on your My Orders page once your order has been shipped.',
   },
   {
-    question: "What is an OTP or verification code?",
+    question: 'What is an OTP or verification code?',
     answer:
-      "An OTP (One-Time Password) is a temporary code sent to your registered email or phone for security verification.",
+      'An OTP (One-Time Password) is a temporary code sent to your registered email or phone for security verification.',
   },
   {
-    question: "Will I have to pay a cancellation fee?",
-    answer: "No, there is no cancellation fee.",
+    question: 'Will I have to pay a cancellation fee?',
+    answer: 'No, there is no cancellation fee.',
   },
   {
-    question: "How long does it take to cancel an order?",
+    question: 'How long does it take to cancel an order?',
     answer:
-      "If the seller hasn’t shipped the order, it will be cancelled immediately. If already shipped, cancellation is not possible.",
+      'If the seller hasn’t shipped the order, it will be cancelled immediately. If already shipped, cancellation is not possible.',
   },
   {
-    question: "How do I contact customer support?",
+    question: 'How do I contact customer support?',
     answer: (
       <>
-        You can reach us via email at <strong>{contactConfig.contact_details.email}</strong>.
+        You can reach us via email at{' '}
+        <strong>{contactConfig.contact_details.email}</strong>.
       </>
     ),
   },
   {
-    question: "How can I contact you?",
+    question: 'How can I contact you?',
     answer: (
       <>
-        You can visit our{" "}
+        You can visit our{' '}
         <Link
           to="/ContactUs"
           className="text-indigo-500 dark:text-indigo-400 hover:underline"
         >
           Contact Us
-        </Link>{" "}
+        </Link>{' '}
         page for any inquiries.
       </>
     ),
@@ -125,7 +127,7 @@ const FAQPage = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
+      transition: { duration: 0.6, ease: 'easeOut' },
     },
   };
 
@@ -133,8 +135,8 @@ const FAQPage = () => {
     hidden: { opacity: 0, height: 0 },
     visible: {
       opacity: 1,
-      height: "auto",
-      transition: { duration: 0.2, ease: "easeInOut" },
+      height: 'auto',
+      transition: { duration: 0.2, ease: 'easeInOut' },
     },
   };
 
@@ -211,7 +213,7 @@ const FAQPage = () => {
           className="text-center mt-12"
         >
           <p className="text-gray-600 dark:text-gray-300 text-lg">
-            Still have questions?{" "}
+            Still have questions?{' '}
             <Link
               to="/ContactUs"
               className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline transition-colors duration-200"

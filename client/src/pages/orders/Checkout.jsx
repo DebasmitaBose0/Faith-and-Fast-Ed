@@ -1,22 +1,25 @@
-import { getCartItems, deleteCartItem } from "@/store/add-to-cart/addToCart";
-import { userAddress } from "@/store/address-slice/addressSlice";
-import { getSingleDetail } from "@/store/auth-slice/user";
-import { createOrder, uploadPaymentScreenshot } from "@/store/order-slice/order";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
-import StripeCardForm from "./StripeCardForm";
-import { getPaymentSettings } from "@/store/extra-slice/paymentSettingsSlice";
-import { getProducts } from "@/store/product-slice/productSlice";
+import { getCartItems, deleteCartItem } from '@/store/add-to-cart/addToCart';
+import { userAddress } from '@/store/address-slice/addressSlice';
+import { getSingleDetail } from '@/store/auth-slice/user';
+import {
+  createOrder,
+  uploadPaymentScreenshot,
+} from '@/store/order-slice/order';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import StripeCardForm from './StripeCardForm';
+import { getPaymentSettings } from '@/store/extra-slice/paymentSettingsSlice';
+import { getProducts } from '@/store/product-slice/productSlice';
 import {
   applyDiscount,
   clearAppliedDiscount,
-} from "@/store/extra-slice/discount";
-import { Button, CircularProgress } from "@mui/material";
-import { AnimatePresence, motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+} from '@/store/extra-slice/discount';
+import { Button, CircularProgress } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 // Load Stripe once at module scope using the publishable key from the
 // environment. Switch between test (pk_test_...) and live (pk_live_...) keys
@@ -34,7 +37,7 @@ const CreateOrder = () => {
   const { appliedDiscount, loading: discountLoading } = useSelector(
     (state) => state.discount
   );
-  const [couponCode, setCouponCode] = useState("");
+  const [couponCode, setCouponCode] = useState('');
   const { user, loading: authLoading } = useSelector((state) => state.auth);
   const { address } = useSelector((state) => state.address);
   const { product: products = [], loading: productLoading } = useSelector(
@@ -50,16 +53,16 @@ const CreateOrder = () => {
     (state) => state.paymentSettings
   );
 
-  const [upiReference, setUpiReference] = useState("");
+  const [upiReference, setUpiReference] = useState('');
   const [screenshotFile, setScreenshotFile] = useState(null);
-  const [screenshotPreview, setScreenshotPreview] = useState("");
+  const [screenshotPreview, setScreenshotPreview] = useState('');
   const [uploading, setUploading] = useState(false);
 
   const [orderData, setOrderData] = useState({
-    userId: "",
-    addressId: "",
+    userId: '',
+    addressId: '',
     products: [],
-    paymentMethod: "COD",
+    paymentMethod: 'COD',
     totalAmount: finalTotal.toFixed(2),
   });
 
@@ -67,18 +70,19 @@ const CreateOrder = () => {
   // Persist for the lifetime of this checkout page (sessionStorage), so that
   // if the network retries we send the same key.
   const getCheckoutIdempotencyKey = () => {
-    const key = "checkout:idempotencyKey";
+    const key = 'checkout:idempotencyKey';
     const existing = sessionStorage.getItem(key);
     if (existing) return existing;
 
     const uuid =
-      (typeof crypto !== "undefined" && crypto.randomUUID && crypto.randomUUID()) ||
+      (typeof crypto !== 'undefined' &&
+        crypto.randomUUID &&
+        crypto.randomUUID()) ||
       `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
     sessionStorage.setItem(key, uuid);
     return uuid;
   };
-
 
   useEffect(() => {
     dispatch(userAddress());
@@ -141,7 +145,7 @@ const CreateOrder = () => {
         ...prev,
         products: formattedProducts,
         totalAmount: Number(payable).toFixed(2),
-        couponCode: appliedDiscount?.name || "",
+        couponCode: appliedDiscount?.name || '',
         discountAmount: appliedDiscount?.discountAmount || 0,
       }));
     }
@@ -154,8 +158,8 @@ const CreateOrder = () => {
   const handleScreenshotChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file for the screenshot.");
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file for the screenshot.');
       return;
     }
     setScreenshotFile(file);
@@ -165,11 +169,11 @@ const CreateOrder = () => {
   const handleApplyCoupon = async () => {
     const code = couponCode.trim();
     if (!code) {
-      toast.error("Please enter a coupon code");
+      toast.error('Please enter a coupon code');
       return;
     }
     if (!user?._id) {
-      toast.error("Please login to apply a coupon");
+      toast.error('Please login to apply a coupon');
       return;
     }
     try {
@@ -181,35 +185,37 @@ const CreateOrder = () => {
           originalPrice: Number(finalTotal),
         })
       ).unwrap();
-      toast.success("Coupon applied successfully!");
+      toast.success('Coupon applied successfully!');
     } catch (err) {
       toast.error(
-        (typeof err === "object" ? err?.message : err) ||
-          "Failed to apply coupon"
+        (typeof err === 'object' ? err?.message : err) ||
+          'Failed to apply coupon'
       );
     }
   };
 
   const handleRemoveCoupon = () => {
     dispatch(clearAppliedDiscount());
-    setCouponCode("");
-    toast.info("Coupon removed");
+    setCouponCode('');
+    toast.info('Coupon removed');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!orderData.addressId) {
-      toast.error("Please select an address!");
+      toast.error('Please select an address!');
       return;
     }
 
-    const method = orderData.paymentMethod || "COD";
+    const method = orderData.paymentMethod || 'COD';
 
     // Card payments are handled entirely inside StripeCardForm (its own Pay
     // button runs the Stripe flow), so the generic Place Order submit does
     // nothing for the STRIPE method.
-    if (method === "STRIPE") {
-      toast.info("Use the \"Pay with Card\" button to complete your card payment.");
+    if (method === 'STRIPE') {
+      toast.info(
+        'Use the "Pay with Card" button to complete your card payment.'
+      );
       return;
     }
 
@@ -218,10 +224,9 @@ const CreateOrder = () => {
       // Attach idempotencyKey for duplicate-order prevention on retries.
       payload = { ...payload, idempotencyKey: getCheckoutIdempotencyKey() };
 
-
-      if (method === "ONLINE") {
+      if (method === 'ONLINE') {
         if (!screenshotFile) {
-          toast.error("Please upload your payment screenshot.");
+          toast.error('Please upload your payment screenshot.');
           return;
         }
         setUploading(true);
@@ -239,21 +244,21 @@ const CreateOrder = () => {
       const result = await dispatch(createOrder(payload)).unwrap();
       if (result) {
         toast.success(
-          method === "ONLINE"
-            ? "Order placed! Your payment is pending verification."
-            : "Order placed successfully (Cash on Delivery)!"
+          method === 'ONLINE'
+            ? 'Order placed! Your payment is pending verification.'
+            : 'Order placed successfully (Cash on Delivery)!'
         );
         cartItems.forEach((item) => {
           dispatch(deleteCartItem(item._id));
         });
         dispatch(getCartItems());
-        navigate("/order-success");
+        navigate('/order-success');
       }
     } catch (err) {
       setUploading(false);
       toast.error(
-        "Failed to place order: " +
-          ((typeof err === "object" ? err?.message : err) || "Unknown error")
+        'Failed to place order: ' +
+          ((typeof err === 'object' ? err?.message : err) || 'Unknown error')
       );
     }
   };
@@ -284,7 +289,7 @@ const CreateOrder = () => {
         animate={{ opacity: 1 }}
         className="flex justify-center items-center h-screen"
       >
-        <CircularProgress sx={{ color: "#f59e0b" }} size={60} />
+        <CircularProgress sx={{ color: '#f59e0b' }} size={60} />
       </motion.div>
     );
   }
@@ -309,7 +314,7 @@ const CreateOrder = () => {
             variants={itemVariants}
             className="text-red-500 text-center mb-6 bg-red-100 dark:bg-red-900 rounded-lg p-2 shadow-md"
           >
-            {typeof error === "object" ? error.message : error}
+            {typeof error === 'object' ? error.message : error}
           </motion.p>
         )}
 
@@ -329,15 +334,15 @@ const CreateOrder = () => {
                 <Link to="/saved-address">
                   <Button
                     sx={{
-                      background: "linear-gradient(to right, #f59e0b, #f97316)",
-                      color: "white",
-                      padding: "10px 20px",
-                      borderRadius: "9999px",
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      "&:hover": {
+                      background: 'linear-gradient(to right, #f59e0b, #f97316)',
+                      color: 'white',
+                      padding: '10px 20px',
+                      borderRadius: '9999px',
+                      fontSize: '14px',
+                      fontWeight: 'bold',
+                      '&:hover': {
                         background:
-                          "linear-gradient(to right, #d97706, #ea580c)",
+                          'linear-gradient(to right, #d97706, #ea580c)',
                       },
                     }}
                   >
@@ -390,12 +395,12 @@ const CreateOrder = () => {
               <button
                 type="button"
                 onClick={() =>
-                  setOrderData((prev) => ({ ...prev, paymentMethod: "COD" }))
+                  setOrderData((prev) => ({ ...prev, paymentMethod: 'COD' }))
                 }
                 className={`text-left p-4 rounded-xl border-2 transition-all duration-200 ${
-                  orderData.paymentMethod === "COD"
-                    ? "border-yellow-500 dark:border-red-500 bg-yellow-50 dark:bg-gray-700"
-                    : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"
+                  orderData.paymentMethod === 'COD'
+                    ? 'border-yellow-500 dark:border-red-500 bg-yellow-50 dark:bg-gray-700'
+                    : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700'
                 }`}
               >
                 <p className="font-semibold text-gray-800 dark:text-gray-100">
@@ -409,12 +414,12 @@ const CreateOrder = () => {
               <button
                 type="button"
                 onClick={() =>
-                  setOrderData((prev) => ({ ...prev, paymentMethod: "ONLINE" }))
+                  setOrderData((prev) => ({ ...prev, paymentMethod: 'ONLINE' }))
                 }
                 className={`text-left p-4 rounded-xl border-2 transition-all duration-200 ${
-                  orderData.paymentMethod === "ONLINE"
-                    ? "border-yellow-500 dark:border-red-500 bg-yellow-50 dark:bg-gray-700"
-                    : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"
+                  orderData.paymentMethod === 'ONLINE'
+                    ? 'border-yellow-500 dark:border-red-500 bg-yellow-50 dark:bg-gray-700'
+                    : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700'
                 }`}
               >
                 <p className="font-semibold text-gray-800 dark:text-gray-100">
@@ -428,12 +433,12 @@ const CreateOrder = () => {
               <button
                 type="button"
                 onClick={() =>
-                  setOrderData((prev) => ({ ...prev, paymentMethod: "STRIPE" }))
+                  setOrderData((prev) => ({ ...prev, paymentMethod: 'STRIPE' }))
                 }
                 className={`text-left p-4 rounded-xl border-2 transition-all duration-200 ${
-                  orderData.paymentMethod === "STRIPE"
-                    ? "border-yellow-500 dark:border-red-500 bg-yellow-50 dark:bg-gray-700"
-                    : "border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"
+                  orderData.paymentMethod === 'STRIPE'
+                    ? 'border-yellow-500 dark:border-red-500 bg-yellow-50 dark:bg-gray-700'
+                    : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700'
                 }`}
               >
                 <p className="font-semibold text-gray-800 dark:text-gray-100">
@@ -445,10 +450,10 @@ const CreateOrder = () => {
               </button>
             </div>
 
-            {orderData.paymentMethod === "ONLINE" && (
+            {orderData.paymentMethod === 'ONLINE' && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
+                animate={{ opacity: 1, height: 'auto' }}
                 className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl shadow-md space-y-4"
               >
                 <div className="flex flex-col sm:flex-row gap-4 items-start">
@@ -468,7 +473,7 @@ const CreateOrder = () => {
                       Pay to UPI ID
                     </p>
                     <p className="text-lg font-bold text-gray-800 dark:text-gray-100 break-all">
-                      {paymentSettings?.upiId || "Not configured"}
+                      {paymentSettings?.upiId || 'Not configured'}
                     </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                       Scan the QR or pay to the UPI ID above, then upload a
@@ -492,8 +497,7 @@ const CreateOrder = () => {
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                    Payment Screenshot{" "}
-                    <span className="text-red-500">*</span>
+                    Payment Screenshot <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="file"
@@ -512,7 +516,7 @@ const CreateOrder = () => {
               </motion.div>
             )}
 
-            {orderData.paymentMethod === "STRIPE" &&
+            {orderData.paymentMethod === 'STRIPE' &&
               (stripePromise ? (
                 <Elements stripe={stripePromise}>
                   <StripeCardForm
@@ -526,7 +530,7 @@ const CreateOrder = () => {
                         dispatch(deleteCartItem(item._id));
                       });
                       dispatch(getCartItems());
-                      navigate("/order-success");
+                      navigate('/order-success');
                     }}
                   />
                 </Elements>
@@ -557,7 +561,7 @@ const CreateOrder = () => {
                       <div className="flex items-center gap-4 flex-1">
                         <motion.img
                           src={
-                            item.productId.images[0]?.url || "/placeholder.jpg"
+                            item.productId.images[0]?.url || '/placeholder.jpg'
                           }
                           alt={item.productId.name}
                           className="w-20 h-20 object-cover rounded-lg shadow-sm"
@@ -653,17 +657,18 @@ const CreateOrder = () => {
                     onClick={handleApplyCoupon}
                     disabled={discountLoading}
                     sx={{
-                      background: "linear-gradient(to right, #f59e0b, #f97316)",
-                      color: "white",
-                      padding: "8px 24px",
-                      borderRadius: "9999px",
-                      fontWeight: "bold",
-                      "&:hover": {
-                        background: "linear-gradient(to right, #d97706, #ea580c)",
+                      background: 'linear-gradient(to right, #f59e0b, #f97316)',
+                      color: 'white',
+                      padding: '8px 24px',
+                      borderRadius: '9999px',
+                      fontWeight: 'bold',
+                      '&:hover': {
+                        background:
+                          'linear-gradient(to right, #d97706, #ea580c)',
                       },
                     }}
                   >
-                    {discountLoading ? "Applying..." : "Apply"}
+                    {discountLoading ? 'Applying...' : 'Apply'}
                   </Button>
                 </div>
               )}
@@ -720,10 +725,10 @@ const CreateOrder = () => {
             aria-label="Place Order"
           >
             {uploading
-              ? "Uploading screenshot..."
+              ? 'Uploading screenshot...'
               : orderLoading
-              ? "Placing order..."
-              : "Place Order"}
+                ? 'Placing order...'
+                : 'Place Order'}
           </motion.button>
         </form>
       </motion.div>

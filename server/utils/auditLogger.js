@@ -1,5 +1,5 @@
-import AuditLog from "../models/auditLogModel.js";
-import logger from "./logger.js";
+import AuditLog from '../models/auditLogModel.js';
+import logger from './logger.js';
 
 export const writeAuditLog = async ({
   actorId,
@@ -19,12 +19,15 @@ export const writeAuditLog = async ({
       afterSnapshot,
     });
 
-    logger.info(`Audit Log Created: ${actionType} on ${targetType} (ID: ${targetId}) by actor ${actorId}`, {
-      auditLogId: auditRecord._id,
-    });
+    logger.info(
+      `Audit Log Created: ${actionType} on ${targetType} (ID: ${targetId}) by actor ${actorId}`,
+      {
+        auditLogId: auditRecord._id,
+      }
+    );
 
     return auditRecord;
   } catch (error) {
-    logger.error("Failed to write audit log record", error);
+    logger.error('Failed to write audit log record', error);
   }
 };

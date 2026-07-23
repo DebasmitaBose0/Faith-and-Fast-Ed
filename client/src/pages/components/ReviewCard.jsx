@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 const ReviewCard = ({ review }) => {
   return (
@@ -19,7 +19,9 @@ const ReviewCard = ({ review }) => {
       </p>
       <div className="flex items-center justify-between text-gray-500 dark:text-gray-400 text-xs">
         <span>{new Date(review.createdAt).toLocaleDateString()}</span>
-        <span className="truncate max-w-[180px] text-blue-500">{review.productName}</span>
+        <span className="truncate max-w-[180px] text-blue-500">
+          {review.productName}
+        </span>
       </div>
       {review.productImage && (
         <div className="mt-2">

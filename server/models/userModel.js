@@ -1,21 +1,21 @@
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import crypto from "crypto";
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 const userSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: [true, "Please Enter Your Password"] },
-    avatar: { type: String, default: "" },
+    password: { type: String, required: [true, 'Please Enter Your Password'] },
+    avatar: { type: String, default: '' },
     mobile: {
       type: String,
       default: null,
     },
     refreshToken: {
       type: String,
-      default: "",
+      default: '',
     },
     verifyEmail: {
       type: Boolean,
@@ -36,31 +36,31 @@ const userSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Active", "Warning", "Suspended"],
-      default: "Active",
+      enum: ['Active', 'Warning', 'Suspended'],
+      default: 'Active',
     },
     addressDetails: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "Address",
+        ref: 'Address',
       },
     ],
     shoppingCart: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "cartProduct",
+        ref: 'cartProduct',
       },
     ],
     shoppingWishList: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "wishListProduct",
+        ref: 'wishListProduct',
       },
     ],
     orderHistory: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "Order",
+        ref: 'Order',
       },
     ],
     forgot_password_otp: {
@@ -81,13 +81,13 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["ADMIN", "USER"],
-      default: "USER",
+      enum: ['ADMIN', 'USER'],
+      default: 'USER',
     },
     permissions: {
       type: [String],
-      default: function() {
-        return this.role === "ADMIN" ? ["*"] : [];
+      default: function () {
+        return this.role === 'ADMIN' ? ['*'] : [];
       },
     },
   },
@@ -96,8 +96,8 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
     next();
   }
 
@@ -115,12 +115,12 @@ userSchema.methods.comparePassword = async function (password) {
 };
 
 userSchema.methods.getResetPasswordToken = function () {
-  const resetToken = crypto.randomBytes(20).toString("hex");
+  const resetToken = crypto.randomBytes(20).toString('hex');
 
   this.resetPasswordToken = crypto
-    .createHash("sha256")
+    .createHash('sha256')
     .update(resetToken)
-    .digest("hex");
+    .digest('hex');
 
   this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
 
@@ -131,6 +131,6 @@ userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ status: 1 });
 userSchema.index({ role: 1 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 export default User;

@@ -1,5 +1,5 @@
-import DiscountModel from "../models/discountModel.js";
-import { writeAuditLog } from "../utils/auditLogger.js";
+import DiscountModel from '../models/discountModel.js';
+import { writeAuditLog } from '../utils/auditLogger.js';
 
 // Admin
 export const createDiscount = async (req, res) => {
@@ -24,29 +24,29 @@ export const createDiscount = async (req, res) => {
     ) {
       return res
         .status(400)
-        .json({ success: false, message: "All fields are required" });
+        .json({ success: false, message: 'All fields are required' });
     }
 
-    if (!["FIXED", "PERCENTAGE"].includes(discountType)) {
+    if (!['FIXED', 'PERCENTAGE'].includes(discountType)) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid discount type" });
+        .json({ success: false, message: 'Invalid discount type' });
     }
 
     if (discountValue <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Discount value must be greater than 0",
+        message: 'Discount value must be greater than 0',
       });
     }
 
     // A percentage discount cannot exceed 100. This mirrors the same guard
     // already enforced in updateDiscount, so create and update stay consistent.
     // FIXED discounts legitimately have no upper cap.
-    if (discountType === "PERCENTAGE" && Number(discountValue) > 100) {
+    if (discountType === 'PERCENTAGE' && Number(discountValue) > 100) {
       return res.status(400).json({
         success: false,
-        message: "A percentage discount cannot exceed 100",
+        message: 'A percentage discount cannot exceed 100',
       });
     }
 
@@ -65,8 +65,8 @@ export const createDiscount = async (req, res) => {
 
     await writeAuditLog({
       actorId: req.user.id || req.user._id,
-      actionType: "DISCOUNT_CREATE",
-      targetType: "Discount",
+      actionType: 'DISCOUNT_CREATE',
+      targetType: 'Discount',
       targetId: newDiscount._id,
       beforeSnapshot: null,
       afterSnapshot: {
@@ -79,12 +79,12 @@ export const createDiscount = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Discount Created Successfully",
+      message: 'Discount Created Successfully',
       discount: newDiscount,
     });
   } catch (error) {
-    console.error("Error creating discount:", error);
-    res.status(500).json({ success: false, message: "Server Error" });
+    console.error('Error creating discount:', error);
+    res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
 
@@ -99,7 +99,7 @@ export const updateDiscount = async (req, res) => {
     if (!discount) {
       return res
         .status(404)
-        .json({ success: false, message: "Discount not found" });
+        .json({ success: false, message: 'Discount not found' });
     }
 
     const beforeSnapshot = {
@@ -121,28 +121,33 @@ export const updateDiscount = async (req, res) => {
     } = req.body;
 
     // Validate discountType only if it's being changed.
-    if (discountType !== undefined && !["FIXED", "PERCENTAGE"].includes(discountType)) {
+    if (
+      discountType !== undefined &&
+      !['FIXED', 'PERCENTAGE'].includes(discountType)
+    ) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid discount type" });
+        .json({ success: false, message: 'Invalid discount type' });
     }
 
     // Validate discountValue only if it's being changed.
     if (discountValue !== undefined && Number(discountValue) <= 0) {
       return res.status(400).json({
         success: false,
-        message: "Discount value must be greater than 0",
+        message: 'Discount value must be greater than 0',
       });
     }
 
     // A percentage discount cannot exceed 100.
     const effectiveType = discountType ?? discount.discountType;
     const effectiveValue =
-      discountValue !== undefined ? Number(discountValue) : discount.discountValue;
-    if (effectiveType === "PERCENTAGE" && effectiveValue > 100) {
+      discountValue !== undefined
+        ? Number(discountValue)
+        : discount.discountValue;
+    if (effectiveType === 'PERCENTAGE' && effectiveValue > 100) {
       return res.status(400).json({
         success: false,
-        message: "A percentage discount cannot exceed 100",
+        message: 'A percentage discount cannot exceed 100',
       });
     }
 
@@ -160,9 +165,12 @@ export const updateDiscount = async (req, res) => {
     // Apply only the provided fields.
     if (name !== undefined) discount.name = name;
     if (discountType !== undefined) discount.discountType = discountType;
-    if (discountValue !== undefined) discount.discountValue = Number(discountValue);
-    if (applicableProducts !== undefined) discount.applicableProducts = applicableProducts;
-    if (totalUsersAllowed !== undefined) discount.totalUsersAllowed = Number(totalUsersAllowed);
+    if (discountValue !== undefined)
+      discount.discountValue = Number(discountValue);
+    if (applicableProducts !== undefined)
+      discount.applicableProducts = applicableProducts;
+    if (totalUsersAllowed !== undefined)
+      discount.totalUsersAllowed = Number(totalUsersAllowed);
     if (startDate !== undefined) discount.startDate = startDate;
     if (endDate !== undefined) discount.endDate = endDate;
     if (isActive !== undefined) discount.isActive = Boolean(isActive);
@@ -173,8 +181,8 @@ export const updateDiscount = async (req, res) => {
 
     await writeAuditLog({
       actorId: req.user.id || req.user._id,
-      actionType: "DISCOUNT_UPDATE",
-      targetType: "Discount",
+      actionType: 'DISCOUNT_UPDATE',
+      targetType: 'Discount',
       targetId: discount._id,
       beforeSnapshot,
       afterSnapshot: {
@@ -187,12 +195,12 @@ export const updateDiscount = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Discount Updated Successfully",
+      message: 'Discount Updated Successfully',
       discount,
     });
   } catch (error) {
-    console.error("Error updating discount:", error);
-    res.status(500).json({ success: false, message: "Server Error" });
+    console.error('Error updating discount:', error);
+    res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
 
@@ -203,7 +211,7 @@ export const applyDiscount = async (req, res) => {
     if (!userId || !couponCode || !originalPrice) {
       return res.status(400).json({
         success: false,
-        message: "User ID, coupon code, and original price are required",
+        message: 'User ID, coupon code, and original price are required',
       });
     }
 
@@ -217,14 +225,14 @@ export const applyDiscount = async (req, res) => {
     if (!discount) {
       return res.status(400).json({
         success: false,
-        message: "No active discount found with this coupon code",
+        message: 'No active discount found with this coupon code',
       });
     }
 
     if (discount.usedBy.includes(userId)) {
       return res.status(400).json({
         success: false,
-        message: "User already used this discount",
+        message: 'User already used this discount',
       });
     }
 
@@ -233,12 +241,12 @@ export const applyDiscount = async (req, res) => {
       await discount.save();
       return res.status(400).json({
         success: false,
-        message: "Discount limit reached",
+        message: 'Discount limit reached',
       });
     }
 
     let discountAmount =
-      discount.discountType === "FIXED"
+      discount.discountType === 'FIXED'
         ? discount.discountValue
         : (originalPrice * discount.discountValue) / 100;
 
@@ -250,7 +258,7 @@ export const applyDiscount = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Discount Applied Successfully!",
+      message: 'Discount Applied Successfully!',
       discount: {
         name: discount.name,
         type: discount.discountType,
@@ -260,8 +268,8 @@ export const applyDiscount = async (req, res) => {
       newPrice,
     });
   } catch (error) {
-    console.error("Error applying discount:", error);
-    res.status(500).json({ success: false, message: "Server Error" });
+    console.error('Error applying discount:', error);
+    res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
 
@@ -269,12 +277,12 @@ export const applyDiscount = async (req, res) => {
 export const getAllDiscounts = async (req, res) => {
   try {
     const discounts = await DiscountModel.find()
-      .populate("applicableProducts", "name price")
-      .populate("lastUpdatedBy", "name email");
+      .populate('applicableProducts', 'name price')
+      .populate('lastUpdatedBy', 'name email');
     res.status(200).json({ success: true, discounts });
   } catch (error) {
-    console.error("Error fetching discounts:", error);
-    res.status(500).json({ success: false, message: "Server Error" });
+    console.error('Error fetching discounts:', error);
+    res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
 
@@ -286,20 +294,20 @@ export const deleteDiscount = async (req, res) => {
     if (!discountId) {
       return res
         .status(400)
-        .json({ success: false, message: "Discount ID is required" });
+        .json({ success: false, message: 'Discount ID is required' });
     }
 
     const discount = await DiscountModel.findByIdAndDelete(discountId);
     if (!discount) {
       return res
         .status(404)
-        .json({ success: false, message: "Discount not found" });
+        .json({ success: false, message: 'Discount not found' });
     }
 
     await writeAuditLog({
       actorId: req.user.id || req.user._id,
-      actionType: "DISCOUNT_DELETE",
-      targetType: "Discount",
+      actionType: 'DISCOUNT_DELETE',
+      targetType: 'Discount',
       targetId: discount._id,
       beforeSnapshot: {
         name: discount.name,
@@ -312,9 +320,9 @@ export const deleteDiscount = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Discount Deleted Successfully" });
+      .json({ success: true, message: 'Discount Deleted Successfully' });
   } catch (error) {
-    console.error("Error deleting discount:", error);
-    res.status(500).json({ success: false, message: "Server Error" });
+    console.error('Error deleting discount:', error);
+    res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
