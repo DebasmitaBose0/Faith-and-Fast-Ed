@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-
 import { Search, ShoppingCart, X, Heart, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Typewriter from 'typewriter-effect';
@@ -16,6 +15,8 @@ import PropTypes from 'prop-types';
 import MetaData from '../extras/MetaData';
 import ProductSkeleton from '../components/skeletons/ProductSkeleton';
 import useDebounce from '@/utils/useDebounce';
+import { fetchRates, setCurrency } from '@/store/currency-slice/currencySlice';
+
 
 const FilterSection = ({ title, items, selected, onSelect, children }) => (
   <motion.div
@@ -103,6 +104,11 @@ const Products = () => {
 
   const [localMaxPrice, setLocalMaxPrice] = useState(maxPrice);
 
+  const { selectedCurrency, rates, symbols } = useSelector((state) => state.currency);
+
+  useEffect(() => {
+    dispatch(fetchRates());
+  }, [dispatch]);
   useEffect(() => {
     setLocalMaxPrice(maxPrice);
   }, [maxPrice]);
@@ -750,15 +756,26 @@ const Products = () => {
 
           {/* Product Grid */}
           <motion.div variants={childVariants} className="flex-1">
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex justify-between items-center mb-8 gap-4">
               <h2 className="text-xl sm:text-3xl font-bold text-gray-800 dark:text-gray-100">
                 All Products
               </h2>
-              <select
-                value={sortBy}
-                onChange={(e) => updateSearchParams({ sortBy: e.target.value })}
-                className="px-2 py-1 sm:px-4 sm:py-2 text-sm sm:text-base bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 shadow-sm focus:ring-2 focus:ring-yellow-500 transition duration-200"
-              >
+              <div className="flex items-center gap-2">
+                <select
+                  value={selectedCurrency}
+                  onChange={(e) => dispatch(setCurrency(e.target.value))}
+                  className="px-2 py-1 sm:px-4 sm:py-2 text-sm sm:text-base bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 shadow-sm focus:ring-2 focus:ring-yellow-500 transition duration-200"
+                >
+                  <option value="INR">INR (₹)</option>
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
+                </select>
+                <select
+                  value={sortBy}
+                  onChange={(e) => updateSearchParams({ sortBy: e.target.value })}
+                  className="px-2 py-1 sm:px-4 sm:py-2 text-sm sm:text-base bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 shadow-sm focus:ring-2 focus:ring-yellow-500 transition duration-200"
+                >
                 <option value="relevant">Sort by: Relevant</option>
                 <option value="newest">Newest First</option>
                 <option value="price-low-high">Price: Low to High</option>
@@ -766,6 +783,7 @@ const Products = () => {
                 <option value="rating-high-low">Highest Rated</option>
                 <option value="popular">Most Popular</option>
               </select>
+              </div>
             </div>
 
             {/* Active Filters Row */}
@@ -945,6 +963,22 @@ const Products = () => {
                             {item.name}
                           </h3>
 
+<<<<<<< HEAD
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100">
+                              {symbols[selectedCurrency] || "₹"}
+                              {(
+                                (item.price - item.price * (item.discount / 100)) *
+                                (rates[selectedCurrency] || 1)
+                              ).toFixed(2)}
+                            </span>
+
+                            {item.discount > 0 && (
+                              <span className="text-sm line-through text-gray-500 dark:text-gray-400">
+                                {symbols[selectedCurrency] || "₹"}
+                                {(item.price * (rates[selectedCurrency] || 1)).toFixed(2)}
+=======
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span className="text-base sm:text-xl font-bold text-gray-900 dark:text-gray-100">
@@ -953,6 +987,7 @@ const Products = () => {
                                   item.price -
                                   item.price * (item.discount / 100)
                                 ).toFixed(2)}
+>>>>>>> upstream/main
                               </span>
 
                               {item.discount > 0 && (
