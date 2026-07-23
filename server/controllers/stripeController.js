@@ -105,10 +105,12 @@ export const createPaymentIntent = catchAsyncErrors(async (req, res) => {
 
     const amountMajor = await computeServerAmount(products, discountAmount);
     if (amountMajor <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Order amount must be greater than zero',
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: 'Order amount must be greater than zero',
+        });
     }
 
     // India Stripe export compliance requires a shipping name + address on the
