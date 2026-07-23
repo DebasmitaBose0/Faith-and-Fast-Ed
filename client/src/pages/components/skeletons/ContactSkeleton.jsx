@@ -1,8 +1,14 @@
+import PropTypes from 'prop-types';
+
 const SkeletonBlock = ({ className = '' }) => (
   <div
     className={`animate-pulse bg-gray-300 dark:bg-gray-600 rounded ${className}`}
   />
 );
+
+SkeletonBlock.propTypes = {
+  className: PropTypes.string,
+};
 
 const ContactSkeleton = () => (
   <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-900 transition-all duration-300">
