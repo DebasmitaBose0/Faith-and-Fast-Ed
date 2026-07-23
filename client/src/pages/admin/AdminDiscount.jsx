@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import {
   TextField,
   Button,
@@ -10,44 +10,44 @@ import {
   Modal,
   MenuItem,
   Chip,
-} from "@mui/material";
+} from '@mui/material';
 import {
   createDiscount,
   updateDiscount,
   deleteDiscount,
   fetchDiscounts,
   clearMessages,
-} from "@/store/extra-slice/discount";
-import { getAllUsers } from "@/store/auth-slice/user";
-import { hasPermission } from "@/utils/permissions";
+} from '@/store/extra-slice/discount';
+import { getAllUsers } from '@/store/auth-slice/user';
+import { hasPermission } from '@/utils/permissions';
 
 const EMPTY_FORM = {
-  name: "",
-  discountType: "FIXED",
-  discountValue: "",
-  totalUsersAllowed: "",
-  startDate: "",
-  endDate: "",
-  isActive: "true",
+  name: '',
+  discountType: 'FIXED',
+  discountValue: '',
+  totalUsersAllowed: '',
+  startDate: '',
+  endDate: '',
+  isActive: 'true',
 };
 
 // Format an ISO date string to yyyy-mm-dd for a <input type="date">.
 const toDateInput = (value) => {
-  if (!value) return "";
+  if (!value) return '';
   const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "";
+  if (Number.isNaN(d.getTime())) return '';
   return d.toISOString().slice(0, 10);
 };
 
 // Human-readable date for the list rows.
 const formatDate = (value) => {
-  if (!value) return "—";
+  if (!value) return '—';
   const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   });
 };
 
@@ -57,10 +57,10 @@ const deriveStatus = (discount) => {
   const start = discount.startDate ? new Date(discount.startDate) : null;
   const end = discount.endDate ? new Date(discount.endDate) : null;
 
-  if (!discount.isActive) return { label: "Inactive", color: "default" };
-  if (end && end < now) return { label: "Expired", color: "error" };
-  if (start && start > now) return { label: "Scheduled", color: "warning" };
-  return { label: "Active", color: "success" };
+  if (!discount.isActive) return { label: 'Inactive', color: 'default' };
+  if (end && end < now) return { label: 'Expired', color: 'error' };
+  if (start && start > now) return { label: 'Scheduled', color: 'warning' };
+  return { label: 'Active', color: 'success' };
 };
 
 const AdminDiscount = () => {
@@ -69,7 +69,7 @@ const AdminDiscount = () => {
     (state) => state.discount
   );
   const { totalUsers, user } = useSelector((state) => state.auth);
-  const canWrite = hasPermission(user, "discounts:write");
+  const canWrite = hasPermission(user, 'discounts:write');
 
   const [discountData, setDiscountData] = useState(EMPTY_FORM);
   const [openModal, setOpenModal] = useState(false);
@@ -111,13 +111,13 @@ const AdminDiscount = () => {
   const openEditModal = (discount) => {
     setEditingId(discount._id);
     setDiscountData({
-      name: discount.name || "",
-      discountType: discount.discountType || "FIXED",
-      discountValue: discount.discountValue ?? "",
-      totalUsersAllowed: discount.totalUsersAllowed ?? "",
+      name: discount.name || '',
+      discountType: discount.discountType || 'FIXED',
+      discountValue: discount.discountValue ?? '',
+      totalUsersAllowed: discount.totalUsersAllowed ?? '',
       startDate: toDateInput(discount.startDate),
       endDate: toDateInput(discount.endDate),
-      isActive: discount.isActive ? "true" : "false",
+      isActive: discount.isActive ? 'true' : 'false',
     });
     setOpenModal(true);
   };
@@ -129,7 +129,7 @@ const AdminDiscount = () => {
       ...discountData,
       discountValue: Number(discountData.discountValue),
       totalUsersAllowed: Number(discountData.totalUsersAllowed),
-      isActive: discountData.isActive === "true",
+      isActive: discountData.isActive === 'true',
     };
 
     if (editingId) {
@@ -184,7 +184,7 @@ const AdminDiscount = () => {
       )}
       {error && (
         <Typography variant="body1" className="text-red-500 text-center">
-          {typeof error === "string" ? error : error?.message || "Error"}
+          {typeof error === 'string' ? error : error?.message || 'Error'}
         </Typography>
       )}
 
@@ -227,7 +227,7 @@ const AdminDiscount = () => {
                       />
                       <Chip
                         label={
-                          discount.discountType === "FIXED"
+                          discount.discountType === 'FIXED'
                             ? `₹${discount.discountValue} off`
                             : `${discount.discountValue}% off`
                         }
@@ -238,17 +238,19 @@ const AdminDiscount = () => {
 
                     <div className="text-sm text-gray-600 dark:text-gray-300 space-y-0.5">
                       <p>
-                        <span className="font-medium">Valid:</span>{" "}
-                        {formatDate(discount.startDate)} —{" "}
+                        <span className="font-medium">Valid:</span>{' '}
+                        {formatDate(discount.startDate)} —{' '}
                         {formatDate(discount.endDate)}
                       </p>
                       <p>
-                        <span className="font-medium">Usage:</span> {usedCount} /{" "}
-                        {discount.totalUsersAllowed} redeemed
+                        <span className="font-medium">Usage:</span> {usedCount}{' '}
+                        / {discount.totalUsersAllowed} redeemed
                       </p>
                       <p>
-                        <span className="font-medium">Updated By:</span>{" "}
-                        {discount.lastUpdatedBy ? discount.lastUpdatedBy.name : "System"}
+                        <span className="font-medium">Updated By:</span>{' '}
+                        {discount.lastUpdatedBy
+                          ? discount.lastUpdatedBy.name
+                          : 'System'}
                       </p>
                     </div>
                   </div>
@@ -272,7 +274,9 @@ const AdminDiscount = () => {
                       </Button>
                     </div>
                   ) : (
-                    <span className="text-gray-500 dark:text-gray-400 text-sm shrink-0 self-center">—</span>
+                    <span className="text-gray-500 dark:text-gray-400 text-sm shrink-0 self-center">
+                      —
+                    </span>
                   )}
                 </div>
               </motion.div>
@@ -298,7 +302,7 @@ const AdminDiscount = () => {
             variant="h5"
             className="text-center text-gray-800 dark:text-white mb-4"
           >
-            {editingId ? "Edit Discount" : "Create New Discount"}
+            {editingId ? 'Edit Discount' : 'Create New Discount'}
           </Typography>
           <Box className="space-y-4">
             <TextField
@@ -351,19 +355,19 @@ const AdminDiscount = () => {
                 onClick={() =>
                   setDiscountData((prev) => ({
                     ...prev,
-                    totalUsersAllowed: totalUsers ?? "",
+                    totalUsersAllowed: totalUsers ?? '',
                   }))
                 }
                 disabled={!totalUsers}
                 title={
                   totalUsers
                     ? `Fill with total registered users (${totalUsers})`
-                    : "Loading user count…"
+                    : 'Loading user count…'
                 }
                 className="shrink-0 whitespace-nowrap"
-                sx={{ minWidth: "max-content" }}
+                sx={{ minWidth: 'max-content' }}
               >
-                {totalUsers ? `All Users (${totalUsers})` : "All Users"}
+                {totalUsers ? `All Users (${totalUsers})` : 'All Users'}
               </Button>
             </Box>
             <TextField
@@ -412,11 +416,11 @@ const AdminDiscount = () => {
             >
               {isSubmitting
                 ? editingId
-                  ? "Saving..."
-                  : "Creating..."
+                  ? 'Saving...'
+                  : 'Creating...'
                 : editingId
-                ? "Save Changes"
-                : "Create Discount"}
+                  ? 'Save Changes'
+                  : 'Create Discount'}
             </Button>
           </Box>
         </motion.div>
@@ -448,10 +452,7 @@ const AdminDiscount = () => {
             removed.
           </Typography>
           <div className="flex gap-3 justify-end">
-            <Button
-              onClick={() => setConfirmDeleteId(null)}
-              variant="outlined"
-            >
+            <Button onClick={() => setConfirmDeleteId(null)} variant="outlined">
               Cancel
             </Button>
             <Button

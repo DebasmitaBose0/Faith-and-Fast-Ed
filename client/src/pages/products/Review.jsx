@@ -1,50 +1,50 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { Heart, ShoppingCart } from 'lucide-react';
 
 const Review = () => {
   const [activeTab, setActiveTab] = useState('description');
   const [wishlist, setWishlist] = useState(new Set());
-  
+
   const products = [
     {
       id: 1,
       name: 'Men Slim Fit Relaxed Denim Jacket',
       price: 79,
       image: '/api/placeholder/300/400',
-      color: 'Yellow'
+      color: 'Yellow',
     },
     {
       id: 2,
       name: 'Men Slim Fit Relaxed Denim Jacket',
       price: 72,
       image: '/api/placeholder/300/400',
-      color: 'Navy'
+      color: 'Navy',
     },
     {
       id: 3,
       name: 'Men Slim Fit Relaxed Denim Jacket',
       price: 80,
       image: '/api/placeholder/300/400',
-      color: 'Light Blue'
+      color: 'Light Blue',
     },
     {
       id: 4,
       name: 'Men Slim Fit Relaxed Denim Jacket',
       price: 84,
       image: '/api/placeholder/300/400',
-      color: 'Dark Blue'
+      color: 'Dark Blue',
     },
     {
       id: 5,
       name: 'Men Slim Fit Relaxed Denim Jacket',
       price: 77,
       image: '/api/placeholder/300/400',
-      color: 'Black/White'
-    }
+      color: 'Black/White',
+    },
   ];
 
   const toggleWishlist = (productId) => {
-    setWishlist(prev => {
+    setWishlist((prev) => {
       const newWishlist = new Set(prev);
       if (newWishlist.has(productId)) {
         newWishlist.delete(productId);
@@ -63,8 +63,8 @@ const Review = () => {
           <button
             onClick={() => setActiveTab('description')}
             className={`px-4 py-2 font-medium ${
-              activeTab === 'description' 
-                ? 'border-b-2 border-black text-black' 
+              activeTab === 'description'
+                ? 'border-b-2 border-black text-black'
                 : 'text-gray-500'
             }`}
           >
@@ -73,27 +73,36 @@ const Review = () => {
           <button
             onClick={() => setActiveTab('reviews')}
             className={`px-4 py-2 font-medium ${
-              activeTab === 'reviews' 
-                ? 'border-b-2 border-black text-black' 
+              activeTab === 'reviews'
+                ? 'border-b-2 border-black text-black'
                 : 'text-gray-500'
             }`}
           >
             Reviews (122)
           </button>
         </div>
-        
+
         <div className="mt-4">
           {activeTab === 'description' && (
             <div className="text-gray-600">
               <p className="mb-4">
-                An e-commerce website is an online platform that facilitates the buying and selling of products or services over the internet. It serves as a virtual marketplace where businesses and individuals can showcase their products, interact with customers, and conduct transactions without the need for a physical presence. E-commerce websites have gained immense popularity due to their convenience, accessibility, and the global reach they offer.
+                An e-commerce website is an online platform that facilitates the
+                buying and selling of products or services over the internet. It
+                serves as a virtual marketplace where businesses and individuals
+                can showcase their products, interact with customers, and
+                conduct transactions without the need for a physical presence.
+                E-commerce websites have gained immense popularity due to their
+                convenience, accessibility, and the global reach they offer.
               </p>
               <p>
-                E-commerce websites typically display products or services along with detailed descriptions, images, prices, and any available variations (e.g., sizes, colors). Each product usually has its own dedicated page with relevant information.
+                E-commerce websites typically display products or services along
+                with detailed descriptions, images, prices, and any available
+                variations (e.g., sizes, colors). Each product usually has its
+                own dedicated page with relevant information.
               </p>
             </div>
           )}
-          
+
           {activeTab === 'reviews' && (
             <div className="text-gray-600">
               Customer reviews will be displayed here.
@@ -108,22 +117,25 @@ const Review = () => {
           <span className="text-gray-500">RELATED</span>{' '}
           <span className="text-gray-800">PRODUCTS</span>
         </h2>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {products.map((product) => (
-            <div key={product.id} className="group border border-gray-200 rounded-lg overflow-hidden bg-white">
+            <div
+              key={product.id}
+              className="group border border-gray-200 rounded-lg overflow-hidden bg-white"
+            >
               {/* Card Container */}
               <div className="aspect-[4/4] relative">
                 {/* Wishlist Button */}
-                <button 
+                <button
                   onClick={() => toggleWishlist(product.id)}
                   className="absolute top-2 right-2 z-10 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors duration-300"
                 >
-                  <Heart 
+                  <Heart
                     className={`w-5 h-5 ${wishlist.has(product.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
                   />
                 </button>
-                
+
                 {/* Image Container */}
                 <div className="w-full h-full relative overflow-hidden">
                   <img

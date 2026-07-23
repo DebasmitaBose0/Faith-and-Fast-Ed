@@ -1,14 +1,14 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const paymentSettingsSchema = new mongoose.Schema(
   {
     upiId: {
       type: String,
-      default: "",
+      default: '',
     },
     qrCode: {
-      public_id: { type: String, default: "" },
-      url: { type: String, default: "" },
+      public_id: { type: String, default: '' },
+      url: { type: String, default: '' },
     },
   },
   {
@@ -17,7 +17,7 @@ const paymentSettingsSchema = new mongoose.Schema(
 );
 
 const PaymentSettingsModel = mongoose.model(
-  "PaymentSettings",
+  'PaymentSettings',
   paymentSettingsSchema
 );
 

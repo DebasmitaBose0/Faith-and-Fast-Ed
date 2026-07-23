@@ -1,14 +1,14 @@
 const AUTH_PERSIST_KEY = {
-  token: "token",
-  user: "user",
-  verifyEmail: "verifyEmail",
+  token: 'token',
+  user: 'user',
+  verifyEmail: 'verifyEmail',
 };
 
 const AUTH_ACTIONS = {
-  loginFulfilled: "auth/loginUser/fulfilled",
-  logoutFulfilled: "auth/logoutUser/fulfilled",
-  updateProfileFulfilled: "auth/updateProfile/fulfilled",
-  uploadAvatarFulfilled: "auth/uploadAvatar/fulfilled",
+  loginFulfilled: 'auth/loginUser/fulfilled',
+  logoutFulfilled: 'auth/logoutUser/fulfilled',
+  updateProfileFulfilled: 'auth/updateProfile/fulfilled',
+  uploadAvatarFulfilled: 'auth/uploadAvatar/fulfilled',
 };
 
 const safeWrite = (key, value) => {
@@ -35,7 +35,8 @@ const authPersistMiddleware = () => (next) => (action) => {
       const { token, user, verifyEmail } = action.payload;
       if (token) safeWrite(AUTH_PERSIST_KEY.token, token);
       if (user) safeWrite(AUTH_PERSIST_KEY.user, JSON.stringify(user));
-      if (verifyEmail !== undefined) safeWrite(AUTH_PERSIST_KEY.verifyEmail, String(verifyEmail));
+      if (verifyEmail !== undefined)
+        safeWrite(AUTH_PERSIST_KEY.verifyEmail, String(verifyEmail));
       break;
     }
 
@@ -60,13 +61,18 @@ const authPersistMiddleware = () => (next) => (action) => {
       if (action.payload?.avatar) {
         const stored = (() => {
           try {
-            return JSON.parse(localStorage.getItem(AUTH_PERSIST_KEY.user) || "null");
+            return JSON.parse(
+              localStorage.getItem(AUTH_PERSIST_KEY.user) || 'null'
+            );
           } catch {
             return null;
           }
         })();
         if (stored) {
-          safeWrite(AUTH_PERSIST_KEY.user, JSON.stringify({ ...stored, avatar: action.payload.avatar }));
+          safeWrite(
+            AUTH_PERSIST_KEY.user,
+            JSON.stringify({ ...stored, avatar: action.payload.avatar })
+          );
         }
       }
       break;

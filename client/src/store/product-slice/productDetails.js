@@ -1,22 +1,22 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
 export const getProductDetails = createAsyncThunk(
-  "product/getDetails",
+  'product/getDetails',
   async (productId, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`/api/product/get/${productId}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch product details"
+        error.response?.data?.message || 'Failed to fetch product details'
       );
     }
   }
 );
 
 export const getProductReviews = createAsyncThunk(
-  "product/getReviews",
+  'product/getReviews',
   async (productId, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
@@ -25,17 +25,17 @@ export const getProductReviews = createAsyncThunk(
       return response.data.reviews;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch reviews"
+        error.response?.data?.message || 'Failed to fetch reviews'
       );
     }
   }
 );
 
 export const postReview = createAsyncThunk(
-  "product/postReview",
+  'product/postReview',
   async ({ productId, reviewData }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.post(
         `/api/product/review/${productId}`,
         reviewData,
@@ -48,17 +48,17 @@ export const postReview = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to post review"
+        error.response?.data?.message || 'Failed to post review'
       );
     }
   }
 );
 
 export const deleteReview = createAsyncThunk(
-  "product/deleteReview",
+  'product/deleteReview',
   async ({ productId, reviewId }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.delete(
         `/api/product/review/${productId}/${reviewId}`,
         {
@@ -71,21 +71,21 @@ export const deleteReview = createAsyncThunk(
       return { productId, reviewId };
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to delete review"
+        error.response?.data?.message || 'Failed to delete review'
       );
     }
   }
 );
 
 export const getSimilarProducts = createAsyncThunk(
-  "product/getSimilar",
+  'product/getSimilar',
   async (params = {}, { rejectWithValue }) => {
     try {
       // Accept either a category string (legacy callers) or an options object,
       // and forward the criteria as query params so results are actually
       // category/subcategory-relevant and exclude the current product.
       const query =
-        typeof params === "string"
+        typeof params === 'string'
           ? { category: params }
           : {
               ...(params.category ? { category: params.category } : {}),
@@ -98,36 +98,36 @@ export const getSimilarProducts = createAsyncThunk(
               ...(params.exclude ? { exclude: params.exclude } : {}),
             };
 
-      const response = await axiosInstance.get("/api/product/similar", {
+      const response = await axiosInstance.get('/api/product/similar', {
         params: query,
       });
       return response.data.similarProducts;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch similar products"
+        error.response?.data?.message || 'Failed to fetch similar products'
       );
     }
   }
 );
 
 export const getTrendingProducts = createAsyncThunk(
-  "product/getTrending",
+  'product/getTrending',
   async (limit = 8, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/api/product/trending", {
+      const response = await axiosInstance.get('/api/product/trending', {
         params: { limit },
       });
       return response.data.products;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch trending products"
+        error.response?.data?.message || 'Failed to fetch trending products'
       );
     }
   }
 );
 
 export const getFrequentlyBoughtTogether = createAsyncThunk(
-  "product/getFrequentlyBoughtTogether",
+  'product/getFrequentlyBoughtTogether',
   async (productId, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
@@ -137,7 +137,7 @@ export const getFrequentlyBoughtTogether = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message ||
-          "Failed to fetch frequently bought together products"
+          'Failed to fetch frequently bought together products'
       );
     }
   }
@@ -155,7 +155,7 @@ const initialState = {
 };
 
 const productDetailsSlice = createSlice({
-  name: "productDetails",
+  name: 'productDetails',
   initialState,
   reducers: {
     clearProductErrors: (state) => {

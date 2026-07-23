@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { motion } from "framer-motion";
-import { CircularProgress, Button, TextField } from "@mui/material";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { motion } from 'framer-motion';
+import { CircularProgress, Button, TextField } from '@mui/material';
 import {
   Package,
   AlertTriangle,
@@ -9,14 +9,14 @@ import {
   CheckCircle,
   IndianRupee,
   Boxes,
-} from "lucide-react";
-import { toast } from "react-toastify";
-import AdminBulkUpload from "./AdminBulkUpload";
+} from 'lucide-react';
+import { toast } from 'react-toastify';
+import AdminBulkUpload from './AdminBulkUpload';
 import {
   getInventoryOverview,
   bulkUpdateStock,
-} from "@/store/extra-slice/inventorySlice";
-import { hasPermission } from "@/utils/permissions";
+} from '@/store/extra-slice/inventorySlice';
+import { hasPermission } from '@/utils/permissions';
 
 const AdminInventory = () => {
   const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const AdminInventory = () => {
     (state) => state.inventory
   );
   const { user } = useSelector((state) => state.auth);
-  const canWrite = hasPermission(user, "inventory:write");
+  const canWrite = hasPermission(user, 'inventory:write');
 
   // Local map of productId -> edited stock value (only dirty rows are tracked).
   const [edits, setEdits] = useState({});
@@ -47,41 +47,41 @@ const AdminInventory = () => {
   const handleBulkSave = () => {
     // Build the updates array from dirty rows that hold a valid number.
     const updates = Object.entries(edits)
-      .filter(([, val]) => val !== "" && Number(val) >= 0)
+      .filter(([, val]) => val !== '' && Number(val) >= 0)
       .map(([productId, val]) => ({ productId, stock: Number(val) }));
 
     if (updates.length === 0) {
-      toast.info("No stock changes to save.");
+      toast.info('No stock changes to save.');
       return;
     }
 
     dispatch(bulkUpdateStock(updates))
       .unwrap()
       .then((res) => {
-        toast.success(res?.message || "Stock updated successfully");
+        toast.success(res?.message || 'Stock updated successfully');
         setEdits({});
         dispatch(getInventoryOverview(threshold));
       })
-      .catch((err) => toast.error(err || "Failed to update stock"));
+      .catch((err) => toast.error(err || 'Failed to update stock'));
   };
 
   const statusBadge = (status) => {
     switch (status) {
-      case "OUT_OF_STOCK":
-        return "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400";
-      case "LOW_STOCK":
-        return "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400";
+      case 'OUT_OF_STOCK':
+        return 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400';
+      case 'LOW_STOCK':
+        return 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400';
       default:
-        return "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400";
+        return 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400';
     }
   };
 
   const statusLabel = (status) =>
-    status === "OUT_OF_STOCK"
-      ? "Out of Stock"
-      : status === "LOW_STOCK"
-      ? "Low Stock"
-      : "In Stock";
+    status === 'OUT_OF_STOCK'
+      ? 'Out of Stock'
+      : status === 'LOW_STOCK'
+        ? 'Low Stock'
+        : 'In Stock';
 
   if (loading) {
     return (
@@ -95,39 +95,39 @@ const AdminInventory = () => {
     ? [
         {
           icon: Package,
-          label: "Total Products",
+          label: 'Total Products',
           value: summary.totalProducts,
-          color: "text-blue-600 dark:text-blue-400",
+          color: 'text-blue-600 dark:text-blue-400',
         },
         {
           icon: Boxes,
-          label: "Total Stock Units",
+          label: 'Total Stock Units',
           value: summary.totalStockUnits,
-          color: "text-purple-600 dark:text-purple-400",
+          color: 'text-purple-600 dark:text-purple-400',
         },
         {
           icon: IndianRupee,
-          label: "Inventory Value",
+          label: 'Inventory Value',
           value: `₹${Number(summary.inventoryValue).toLocaleString()}`,
-          color: "text-emerald-600 dark:text-emerald-400",
+          color: 'text-emerald-600 dark:text-emerald-400',
         },
         {
           icon: CheckCircle,
-          label: "Healthy",
+          label: 'Healthy',
           value: summary.healthyCount,
-          color: "text-green-600 dark:text-green-400",
+          color: 'text-green-600 dark:text-green-400',
         },
         {
           icon: AlertTriangle,
-          label: "Low Stock",
+          label: 'Low Stock',
           value: summary.lowStockCount,
-          color: "text-orange-600 dark:text-orange-400",
+          color: 'text-orange-600 dark:text-orange-400',
         },
         {
           icon: XCircle,
-          label: "Out of Stock",
+          label: 'Out of Stock',
           value: summary.outOfStockCount,
-          color: "text-red-600 dark:text-red-400",
+          color: 'text-red-600 dark:text-red-400',
         },
       ]
     : [];
@@ -203,17 +203,18 @@ const AdminInventory = () => {
       </div>
 
       {/* Low-stock alert banner */}
-      {summary && (summary.lowStockCount > 0 || summary.outOfStockCount > 0) && (
-        <div className="flex items-start gap-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
-          <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5 shrink-0" />
-          <p className="text-sm text-orange-800 dark:text-orange-300">
-            <strong>{summary.outOfStockCount}</strong> product(s) are out of
-            stock and <strong>{summary.lowStockCount}</strong> are running low
-            (≤ {threshold} units). Review and restock the highlighted items
-            below.
-          </p>
-        </div>
-      )}
+      {summary &&
+        (summary.lowStockCount > 0 || summary.outOfStockCount > 0) && (
+          <div className="flex items-start gap-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
+            <AlertTriangle className="w-5 h-5 text-orange-500 mt-0.5 shrink-0" />
+            <p className="text-sm text-orange-800 dark:text-orange-300">
+              <strong>{summary.outOfStockCount}</strong> product(s) are out of
+              stock and <strong>{summary.lowStockCount}</strong> are running low
+              (≤ {threshold} units). Review and restock the highlighted items
+              below.
+            </p>
+          </div>
+        )}
 
       {/* Bulk save bar */}
       <div className="flex items-center justify-between">
@@ -225,18 +226,18 @@ const AdminInventory = () => {
           onClick={handleBulkSave}
           disabled={updating || Object.keys(edits).length === 0 || !canWrite}
           sx={{
-            background: "linear-gradient(to right, #16a34a, #15803d)",
-            "&:hover": {
-              background: "linear-gradient(to right, #15803d, #166534)",
+            background: 'linear-gradient(to right, #16a34a, #15803d)',
+            '&:hover': {
+              background: 'linear-gradient(to right, #15803d, #166534)',
             },
           }}
         >
           {updating
-            ? "Saving..."
+            ? 'Saving...'
             : `Save Changes${
                 Object.keys(edits).length > 0
                   ? ` (${Object.keys(edits).length})`
-                  : ""
+                  : ''
               }`}
         </Button>
       </div>
@@ -306,7 +307,7 @@ const AdminInventory = () => {
                     </span>
                   </td>
                   <td className="p-3 text-gray-600 dark:text-gray-300">
-                    {p.lastUpdatedBy ? p.lastUpdatedBy.name : "System"}
+                    {p.lastUpdatedBy ? p.lastUpdatedBy.name : 'System'}
                   </td>
                   <td className="p-3">
                     <input
@@ -314,10 +315,8 @@ const AdminInventory = () => {
                       min="0"
                       disabled={!canWrite}
                       placeholder={String(p.stock)}
-                      value={edits[p._id] ?? ""}
-                      onChange={(e) =>
-                        handleStockChange(p._id, e.target.value)
-                      }
+                      value={edits[p._id] ?? ''}
+                      onChange={(e) => handleStockChange(p._id, e.target.value)}
                       className="w-24 p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-yellow-500 dark:focus:ring-red-500 disabled:opacity-50"
                     />
                   </td>
