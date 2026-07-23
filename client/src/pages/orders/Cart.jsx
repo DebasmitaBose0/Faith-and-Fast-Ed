@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   deleteCartItem,
   getCartItems,
   updateCartItemQty,
-} from "@/store/add-to-cart/addToCart";
-import MetaData from "../extras/MetaData";
-import CartSkeleton from "../components/skeletons/CartSkeleton";
-import RecommendationSection from "../components/RecommendationSection";
-import EmptyState from "../components/EmptyState";
-import { ShoppingCart } from "lucide-react";
-import { getTrendingProducts } from "@/store/product-slice/productDetails";
-import { IconButton } from "@mui/material";
-import { ShoppingCartCheckout } from "@mui/icons-material";
+} from '@/store/add-to-cart/addToCart';
+import MetaData from '../extras/MetaData';
+import CartSkeleton from '../components/skeletons/CartSkeleton';
+import RecommendationSection from '../components/RecommendationSection';
+import EmptyState from '../components/EmptyState';
+import { ShoppingCart } from 'lucide-react';
+import { getTrendingProducts } from '@/store/product-slice/productDetails';
+import { IconButton } from '@mui/material';
+import { ShoppingCartCheckout } from '@mui/icons-material';
 
 const Cart = () => {
   // eslint-disable-next-line no-unused-vars
@@ -35,7 +35,7 @@ const Cart = () => {
     dispatch(getTrendingProducts(8));
   }, [dispatch]);
 
-  if (loading){
+  if (loading) {
     return <CartSkeleton />;
   }
   const handleUpdateQty = (id, qty) => {
@@ -234,7 +234,7 @@ const Cart = () => {
 
               <button
                 className="bg-yellow-500 hover:bg-yellow-700 dark:bg-red-600 dark:hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 m-auto mt-4"
-                onClick={() => navigate("/checkout")}
+                onClick={() => navigate('/checkout')}
               >
                 <ShoppingCartCheckout /> Proceed to Checkout
               </button>

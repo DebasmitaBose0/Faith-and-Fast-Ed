@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const wishListProductSchema = new mongoose.Schema(
   {
     productId: {
       type: mongoose.Schema.ObjectId,
-      ref: "Product",
+      ref: 'Product',
       required: true,
     },
     quantity: {
@@ -13,7 +13,7 @@ const wishListProductSchema = new mongoose.Schema(
     },
     userId: {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
   },
@@ -23,7 +23,7 @@ const wishListProductSchema = new mongoose.Schema(
 );
 
 const wishListProductModel = mongoose.model(
-  "wishListProduct",
+  'wishListProduct',
   wishListProductSchema
 );
 

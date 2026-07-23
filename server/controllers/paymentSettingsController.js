@@ -1,7 +1,7 @@
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import PaymentSettingsModel from "../models/paymentSettingsModel.js";
-import { uploadImage, deleteImage } from "../utils/cloudinary.js";
-import { encrypt, decrypt } from "../utils/encryption.js";
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import PaymentSettingsModel from '../models/paymentSettingsModel.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
+import { encrypt, decrypt } from '../utils/encryption.js';
 
 // Public — the checkout page needs the UPI ID and QR to show online-payment instructions.
 export const getPaymentSettings = catchAsyncErrors(async (req, res) => {
@@ -10,8 +10,8 @@ export const getPaymentSettings = catchAsyncErrors(async (req, res) => {
 
     if (!settings) {
       settings = await PaymentSettingsModel.create({
-        upiId: "",
-        qrCode: { public_id: "", url: "" },
+        upiId: '',
+        qrCode: { public_id: '', url: '' },
       });
     }
 
@@ -33,20 +33,20 @@ export const updatePaymentSettings = catchAsyncErrors(async (req, res) => {
     let settings = await PaymentSettingsModel.findOne();
     if (!settings) {
       settings = new PaymentSettingsModel({
-        upiId: "",
-        qrCode: { public_id: "", url: "" },
+        upiId: '',
+        qrCode: { public_id: '', url: '' },
       });
     }
 
-    if (typeof upiId === "string") {
+    if (typeof upiId === 'string') {
       const upiTrimmed = upiId.trim();
-      if (upiTrimmed !== "") {
+      if (upiTrimmed !== '') {
         // Standard UPI validation regex (e.g. username@bankname)
         const upiRegex = /^[\w.\-_]{2,256}@[a-zA-Z]{2,64}$/;
         if (!upiRegex.test(upiTrimmed)) {
           return res.status(400).json({
             success: false,
-            message: "Invalid UPI ID format. Correct format is name@bank",
+            message: 'Invalid UPI ID format. Correct format is name@bank',
           });
         }
       }
@@ -78,7 +78,7 @@ export const updatePaymentSettings = catchAsyncErrors(async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Payment settings updated",
+      message: 'Payment settings updated',
       settings: response,
     });
   } catch (error) {

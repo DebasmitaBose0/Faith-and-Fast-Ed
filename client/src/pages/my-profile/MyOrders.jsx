@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   CircularProgress,
   Alert,
@@ -11,21 +11,21 @@ import {
   InputLabel,
   FormControl,
   TextField,
-} from "@mui/material";
-import { Link } from "react-router-dom";
-import { myOrders } from "@/store/order-slice/order";
-import EmptyState from "../components/EmptyState";
-import { Package } from "lucide-react";
-import { jsPDF } from "jspdf";
+} from '@mui/material';
+import { Link } from 'react-router-dom';
+import { myOrders } from '@/store/order-slice/order';
+import EmptyState from '../components/EmptyState';
+import { Package } from 'lucide-react';
+import { jsPDF } from 'jspdf';
 
 const MyOrders = () => {
   const dispatch = useDispatch();
   const { orders, loading, error } = useSelector((state) => state.order);
   const { user } = useSelector((state) => state.auth);
 
-  const [statusFilter, setStatusFilter] = useState("ALL");
-  const [timeFilter, setTimeFilter] = useState("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [timeFilter, setTimeFilter] = useState('ALL');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [currentPage, setCurrentPage] = useState(1);
   const [ordersPerPage] = useState(8);
@@ -36,47 +36,47 @@ const MyOrders = () => {
 
   const handleStatus = (status) => {
     switch (status) {
-      case "DELIVERED":
-        return "bg-green-200 dark:bg-green-800 text-green-900 dark:text-green-100 px-2 py-1 rounded-md font-semibold text-xs sm:text-sm";
-      case "PENDING":
-        return "bg-orange-200 dark:bg-orange-800 text-orange-900 dark:text-orange-100 px-2 py-1 rounded-md font-semibold text-xs sm:text-sm";
-      case "SHIPPED":
-        return "bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100 px-2 py-1 rounded-md font-semibold text-xs sm:text-sm";
-      case "CANCELLED":
-        return "bg-red-200 dark:bg-red-800 text-red-900 dark:text-red-100 px-2 py-1 rounded-md font-semibold text-xs sm:text-sm";
+      case 'DELIVERED':
+        return 'bg-green-200 dark:bg-green-800 text-green-900 dark:text-green-100 px-2 py-1 rounded-md font-semibold text-xs sm:text-sm';
+      case 'PENDING':
+        return 'bg-orange-200 dark:bg-orange-800 text-orange-900 dark:text-orange-100 px-2 py-1 rounded-md font-semibold text-xs sm:text-sm';
+      case 'SHIPPED':
+        return 'bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100 px-2 py-1 rounded-md font-semibold text-xs sm:text-sm';
+      case 'CANCELLED':
+        return 'bg-red-200 dark:bg-red-800 text-red-900 dark:text-red-100 px-2 py-1 rounded-md font-semibold text-xs sm:text-sm';
       default:
-        return "bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1 rounded-md font-semibold text-xs sm:text-sm";
+        return 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1 rounded-md font-semibold text-xs sm:text-sm';
     }
   };
 
   const formatDeliveryDate = (date) => {
-    if (!date || date === "To be delivered") return "To be delivered";
+    if (!date || date === 'To be delivered') return 'To be delivered';
     const deliveryDate = new Date(date);
     const today = new Date();
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
 
     const options = {
-      month: "long",
-      day: "2-digit",
+      month: 'long',
+      day: '2-digit',
       year:
         deliveryDate.getFullYear() === today.getFullYear()
           ? undefined
-          : "numeric",
+          : 'numeric',
     };
 
     if (
       deliveryDate.toDateString() === today.toDateString() &&
       deliveryDate.getTime() > today.getTime()
     ) {
-      return "Arriving today by 10 PM";
+      return 'Arriving today by 10 PM';
     }
     if (deliveryDate.toDateString() === tomorrow.toDateString()) {
-      return "Arriving tomorrow by 10 PM";
+      return 'Arriving tomorrow by 10 PM';
     }
     if (deliveryDate > today) {
       return `Arriving on ${deliveryDate.toLocaleDateString(
-        "en-US",
+        'en-US',
         options
       )} by 10 PM`;
     }
@@ -85,35 +85,35 @@ const MyOrders = () => {
       deliveryDate.getMonth() === today.getMonth() &&
       deliveryDate.getFullYear() === today.getFullYear()
     ) {
-      return `Delivered today, ${deliveryDate.toLocaleDateString("en-US", {
-        month: "long",
-        day: "2-digit",
+      return `Delivered today, ${deliveryDate.toLocaleDateString('en-US', {
+        month: 'long',
+        day: '2-digit',
       })}`;
     }
-    return `Delivered on ${deliveryDate.toLocaleDateString("en-US", options)}`;
+    return `Delivered on ${deliveryDate.toLocaleDateString('en-US', options)}`;
   };
 
   const filterOrders = () => {
     let filtered = [...(Array.isArray(orders) ? orders : [])];
 
-    if (statusFilter !== "ALL") {
+    if (statusFilter !== 'ALL') {
       filtered = filtered.filter((order) => order.orderStatus === statusFilter);
     }
 
     const today = new Date();
-    if (timeFilter === "LAST_7_DAYS") {
+    if (timeFilter === 'LAST_7_DAYS') {
       const sevenDaysAgo = new Date(today);
       sevenDaysAgo.setDate(today.getDate() - 7);
       filtered = filtered.filter(
         (order) => new Date(order.createdAt) >= sevenDaysAgo
       );
-    } else if (timeFilter === "LAST_30_DAYS") {
+    } else if (timeFilter === 'LAST_30_DAYS') {
       const thirtyDaysAgo = new Date(today);
       thirtyDaysAgo.setDate(today.getDate() - 30);
       filtered = filtered.filter(
         (order) => new Date(order.createdAt) >= thirtyDaysAgo
       );
-    } else if (timeFilter !== "ALL") {
+    } else if (timeFilter !== 'ALL') {
       const year = parseInt(timeFilter, 10);
       filtered = filtered.filter(
         (order) => new Date(order.createdAt).getFullYear() === year
@@ -122,13 +122,13 @@ const MyOrders = () => {
 
     if (searchQuery) {
       filtered = filtered.filter((order) => {
-        const orderId = order._id ? String(order._id).toLowerCase() : "";
+        const orderId = order._id ? String(order._id).toLowerCase() : '';
         const productNames = order.products
-          ?.map((p) => String(p.product?.name || "").toLowerCase())
-          .join(" ");
+          ?.map((p) => String(p.product?.name || '').toLowerCase())
+          .join(' ');
         const colors = order.products
-          ?.map((p) => String(p.selectedColor || "").toLowerCase())
-          .join(" ");
+          ?.map((p) => String(p.selectedColor || '').toLowerCase())
+          .join(' ');
 
         return (
           orderId.includes(searchQuery.toLowerCase()) ||
@@ -175,19 +175,19 @@ const MyOrders = () => {
     let y = 20;
 
     doc.setFontSize(18);
-    doc.text("Faith AND Fast", 14, y);
+    doc.text('Faith AND Fast', 14, y);
     y += 8;
     doc.setFontSize(12);
-    doc.text("Order Receipt", 14, y);
+    doc.text('Order Receipt', 14, y);
     y += 10;
 
     doc.setFontSize(10);
     doc.text(`Order ID: ${order._id}`, 14, y);
     y += 6;
-    doc.text(`Customer: ${user?.name || "Customer"}`, 14, y);
+    doc.text(`Customer: ${user?.name || 'Customer'}`, 14, y);
     y += 6;
     doc.text(
-      `Order Date: ${new Date(order.createdAt).toLocaleString("en-IN")}`,
+      `Order Date: ${new Date(order.createdAt).toLocaleString('en-IN')}`,
       14,
       y
     );
@@ -203,11 +203,11 @@ const MyOrders = () => {
     y += 4;
 
     doc.setFontSize(12);
-    doc.text("Items", 14, y);
+    doc.text('Items', 14, y);
     y += 6;
     doc.setFontSize(10);
     order.products.forEach((item) => {
-      const name = item.product?.name || "Product";
+      const name = item.product?.name || 'Product';
       const line = `${name}  x${item.quantity}   Rs. ${Number(
         item.totalPrice || 0
       ).toFixed(2)}`;
@@ -328,7 +328,7 @@ const MyOrders = () => {
               }}
               className="dark:bg-gray-200 dark:text-white"
               InputProps={{
-                className: "dark:text-gray-300 text-xs sm:text-sm",
+                className: 'dark:text-gray-300 text-xs sm:text-sm',
                 endAdornment: (
                   <Button
                     variant="contained"
@@ -339,7 +339,7 @@ const MyOrders = () => {
                 ),
               }}
               InputLabelProps={{
-                className: "dark:text-gray-300 text-xs sm:text-sm",
+                className: 'dark:text-gray-300 text-xs sm:text-sm',
               }}
             />
           </motion.div>
@@ -350,7 +350,7 @@ const MyOrders = () => {
             </div>
           ) : error ? (
             <Alert severity="error" className="text-sm sm:text-base">
-              {typeof error === "string" ? error : "No Orders Available"}
+              {typeof error === 'string' ? error : 'No Orders Available'}
             </Alert>
           ) : filteredProducts.length === 0 ? (
             <EmptyState
@@ -384,7 +384,7 @@ const MyOrders = () => {
                               product.product.images &&
                               product.product.images.length > 0
                                 ? product.product.images[0].url
-                                : "https://via.placeholder.com/64"
+                                : 'https://via.placeholder.com/64'
                             }
                             alt={product.product.name}
                             className="w-full h-full object-cover rounded"
@@ -395,16 +395,16 @@ const MyOrders = () => {
                       {/* Product and Order Details */}
                       <div className="flex-1">
                         <h3 className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200 line-clamp-2">
-                          {product.product.name || "Unknown Product"}
+                          {product.product.name || 'Unknown Product'}
                         </h3>
                         <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                          Color: {product.selectedColor || "N/A"} | Size:{" "}
-                          {product.selectedSize || "N/A"}
+                          Color: {product.selectedColor || 'N/A'} | Size:{' '}
+                          {product.selectedSize || 'N/A'}
                         </p>
                         <p className="text-xs sm:text-sm font-bold text-green-600 dark:text-green-400">
                           ₹{product.totalAmount.toFixed(2)}
                         </p>
-                       
+
                         <div className="mt-1 flex flex-wrap gap-1">
                           <span
                             className={`inline-block ${handleStatus(
@@ -415,22 +415,22 @@ const MyOrders = () => {
                           </span>
                           <span
                             className={`inline-block px-2 py-1 rounded-md font-semibold text-xs sm:text-sm ${
-                              product.paymentStatus === "COMPLETED"
-                                ? "bg-green-200 dark:bg-green-800 text-green-900 dark:text-green-100"
-                                : product.paymentStatus === "FAILED"
-                                ? "bg-red-200 dark:bg-red-800 text-red-900 dark:text-red-100"
-                                : "bg-yellow-200 dark:bg-yellow-800 text-yellow-900 dark:text-yellow-100"
+                              product.paymentStatus === 'COMPLETED'
+                                ? 'bg-green-200 dark:bg-green-800 text-green-900 dark:text-green-100'
+                                : product.paymentStatus === 'FAILED'
+                                  ? 'bg-red-200 dark:bg-red-800 text-red-900 dark:text-red-100'
+                                  : 'bg-yellow-200 dark:bg-yellow-800 text-yellow-900 dark:text-yellow-100'
                             }`}
                           >
                             {product.paymentMethod} · {product.paymentStatus}
                           </span>
                         </div>
                         <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
-                          Order Placed on:{" "}
-                          {new Date(product.createdAt).toLocaleString("en-IN", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
+                          Order Placed on:{' '}
+                          {new Date(product.createdAt).toLocaleString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
                           })}
                         </p>
                         <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
@@ -453,9 +453,9 @@ const MyOrders = () => {
                               </Link>
                             </motion.div>
                           </Tooltip>
-                          {(product.paymentMethod === "COD" ||
-                            product.paymentStatus === "COMPLETED") &&
-                            product.orderStatus !== "CANCELLED" && (
+                          {(product.paymentMethod === 'COD' ||
+                            product.paymentStatus === 'COMPLETED') &&
+                            product.orderStatus !== 'CANCELLED' && (
                               <Tooltip title="Download Receipt">
                                 <motion.button
                                   whileHover={{ scale: 1.1 }}
@@ -469,7 +469,7 @@ const MyOrders = () => {
                                 </motion.button>
                               </Tooltip>
                             )}
-                          {product.orderStatus === "DELIVERED" && (
+                          {product.orderStatus === 'DELIVERED' && (
                             <Tooltip title="Rate & Review Product">
                               <motion.div
                                 whileHover={{ scale: 1.1 }}
@@ -517,12 +517,12 @@ const MyOrders = () => {
                 whileTap={{ scale: 0.95 }}
               >
                 <Button
-                  variant={currentPage === i + 1 ? "contained" : "outlined"}
+                  variant={currentPage === i + 1 ? 'contained' : 'outlined'}
                   onClick={() => handlePageChange(i + 1)}
                   className={`${
                     currentPage === i + 1
-                      ? "bg-indigo-600 text-white"
-                      : "border-indigo-500 text-indigo-500 hover:bg-indigo-50 dark:border-indigo-400 dark:text-indigo-400 dark:hover:bg-gray-700"
+                      ? 'bg-indigo-600 text-white'
+                      : 'border-indigo-500 text-indigo-500 hover:bg-indigo-50 dark:border-indigo-400 dark:text-indigo-400 dark:hover:bg-gray-700'
                   } text-xs sm:text-sm`}
                 >
                   {i + 1}

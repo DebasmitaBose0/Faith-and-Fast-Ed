@@ -2,11 +2,11 @@
 
 Faith-and-Fast supports three payment methods at checkout:
 
-| Method   | `paymentMethod` value | How it works                                                        | Order created when                  |
-| -------- | --------------------- | ------------------------------------------------------------------- | ----------------------------------- |
-| Cash on Delivery | `COD`         | Customer pays in cash when the order arrives.                       | Immediately on placing the order.   |
-| Manual UPI       | `ONLINE`      | Customer pays to a UPI ID / QR and uploads a payment screenshot. An admin verifies it. | Immediately (status `PENDING`), confirmed after admin verification. |
-| Card (Stripe)    | `STRIPE`      | Customer pays by debit/credit card through Stripe.                  | **Only after** the card payment succeeds. |
+| Method           | `paymentMethod` value | How it works                                                                           | Order created when                                                  |
+| ---------------- | --------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Cash on Delivery | `COD`                 | Customer pays in cash when the order arrives.                                          | Immediately on placing the order.                                   |
+| Manual UPI       | `ONLINE`              | Customer pays to a UPI ID / QR and uploads a payment screenshot. An admin verifies it. | Immediately (status `PENDING`), confirmed after admin verification. |
+| Card (Stripe)    | `STRIPE`              | Customer pays by debit/credit card through Stripe.                                     | **Only after** the card payment succeeds.                           |
 
 This document explains the **Stripe** integration added for online card payments — how it works, the environment variables it needs, and how to switch between test (sandbox) and live modes.
 
@@ -37,16 +37,16 @@ Admin order views show the payment method and the Stripe transaction id, so card
 
 Stripe accounts based in India must comply with RBI export regulations for card
 payments. Stripe enforces two extra requirements on every card PaymentIntent —
-without them the payment is rejected with errors like *"export transactions
-require a description"* and *"export transactions require a customer name and
-address"*. The integration satisfies them as follows:
+without them the payment is rejected with errors like _"export transactions
+require a description"_ and _"export transactions require a customer name and
+address"_. The integration satisfies them as follows:
 
-| Requirement | Where it is set | Source of the data |
-| ----------- | --------------- | ------------------ |
-| **Description** on the PaymentIntent | `createPaymentIntent` (server) | Generated from the cart, e.g. `Faith-and-Fast order - 3 item(s)`. |
-| **Customer name + shipping address** on the PaymentIntent | `createPaymentIntent` (server) — `shipping` | Name from the signed-in user account; address from the selected delivery address. |
-| **Customer name + billing address** on the card | `StripeCardForm` (client) — `billing_details` | Name from the user account; address from the selected delivery address (used as the billing address). |
-| **Valid ISO country codes** | `toISOCountry()` on both client and server | Maps the stored country name (e.g. `India`) to its ISO 3166-1 alpha-2 code (`IN`). Values already in 2-letter form pass through; unrecognised values fall back to `IN` for this India-based store. |
+| Requirement                                               | Where it is set                               | Source of the data                                                                                                                                                                                 |
+| --------------------------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Description** on the PaymentIntent                      | `createPaymentIntent` (server)                | Generated from the cart, e.g. `Faith-and-Fast order - 3 item(s)`.                                                                                                                                  |
+| **Customer name + shipping address** on the PaymentIntent | `createPaymentIntent` (server) — `shipping`   | Name from the signed-in user account; address from the selected delivery address.                                                                                                                  |
+| **Customer name + billing address** on the card           | `StripeCardForm` (client) — `billing_details` | Name from the user account; address from the selected delivery address (used as the billing address).                                                                                              |
+| **Valid ISO country codes**                               | `toISOCountry()` on both client and server    | Maps the stored country name (e.g. `India`) to its ISO 3166-1 alpha-2 code (`IN`). Values already in 2-letter form pass through; unrecognised values fall back to `IN` for this India-based store. |
 
 Because the shipping address is required for compliance, **card payments require a
 saved delivery address** — the create-intent endpoint returns `400` if none is
@@ -60,16 +60,16 @@ provided. COD and Manual UPI are unaffected.
 
 ### Server (`server/.env`)
 
-| Variable               | Required | Example            | Description                                                         |
-| ---------------------- | -------- | ------------------ | ------------------------------------------------------------------- |
-| `STRIPE_SECRET_KEY`    | yes (for card payments) | `sk_test_51AbC...` | Stripe secret key. Use `sk_test_...` for sandbox, `sk_live_...` for production. If unset, the card endpoints return 503 and the rest of the app still runs. |
-| `STRIPE_CURRENCY`      | no       | `inr`              | ISO currency code for charges. Defaults to `inr`.                   |
+| Variable            | Required                | Example            | Description                                                                                                                                                 |
+| ------------------- | ----------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `STRIPE_SECRET_KEY` | yes (for card payments) | `sk_test_51AbC...` | Stripe secret key. Use `sk_test_...` for sandbox, `sk_live_...` for production. If unset, the card endpoints return 503 and the rest of the app still runs. |
+| `STRIPE_CURRENCY`   | no                      | `inr`              | ISO currency code for charges. Defaults to `inr`.                                                                                                           |
 
 ### Client (`client/.env`)
 
-| Variable                        | Required | Example            | Description                                                  |
-| ------------------------------- | -------- | ------------------ | ------------------------------------------------------------ |
-| `VITE_STRIPE_PUBLISHABLE_KEY`   | yes (for card payments) | `pk_test_51AbC...` | Stripe publishable key. Use `pk_test_...` for sandbox, `pk_live_...` for production. If unset, the card option shows a "not configured" message and COD/UPI still work. |
+| Variable                      | Required                | Example            | Description                                                                                                                                                             |
+| ----------------------------- | ----------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | yes (for card payments) | `pk_test_51AbC...` | Stripe publishable key. Use `pk_test_...` for sandbox, `pk_live_...` for production. If unset, the card option shows a "not configured" message and COD/UPI still work. |
 
 > The secret key stays on the server only. The publishable key is safe to expose in the browser — that is what it is designed for.
 
@@ -93,10 +93,10 @@ Get the keys from the **Stripe Dashboard → Developers → API keys**. The dash
    ```
 4. Start the server and client, go to checkout, choose **Pay with Card (Stripe)**, and use a Stripe test card:
 
-   | Card number          | Result            |
-   | -------------------- | ----------------- |
-   | `4242 4242 4242 4242` | Payment succeeds  |
-   | `4000 0000 0000 0002` | Card declined     |
+   | Card number           | Result           |
+   | --------------------- | ---------------- |
+   | `4242 4242 4242 4242` | Payment succeeds |
+   | `4000 0000 0000 0002` | Card declined    |
 
    Use any future expiry date, any 3-digit CVC, and any postal code.
 

@@ -1,15 +1,15 @@
-import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const CategoryPanel = () => {
   const navigate = useNavigate();
 
-  const categories = ["MEN", "WOMEN", "KIDS", "VIEW MORE PRODUCTS"];
+  const categories = ['MEN', 'WOMEN', 'KIDS', 'VIEW MORE PRODUCTS'];
 
   const handleCategoryClick = (category) => {
-    if (category === "VIEW MORE PRODUCTS") {
-      navigate("/products");
-    } 
+    if (category === 'VIEW MORE PRODUCTS') {
+      navigate('/products');
+    }
   };
 
   return (

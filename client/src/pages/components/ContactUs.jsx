@@ -1,17 +1,17 @@
-import { motion } from "framer-motion";
-import { WhatsApp } from "@mui/icons-material";
-import { Mail, Phone, MapPin } from "lucide-react";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { motion } from 'framer-motion';
+import { WhatsApp } from '@mui/icons-material';
+import { Mail, Phone, MapPin } from 'lucide-react';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import {
   submitContactMessage,
   resetContactState,
-} from "@/store/extra-slice/contactSlice";
-import { contactConfig } from "../../config/contact";
-import { validateContactForm } from "../../utils/contactValidation";
-import ContactSkeleton from "./skeletons/ContactSkeleton";
-import MetaData from "../extras/MetaData";
+} from '@/store/extra-slice/contactSlice';
+import { contactConfig } from '../../config/contact';
+import { validateContactForm } from '../../utils/contactValidation';
+import ContactSkeleton from './skeletons/ContactSkeleton';
+import MetaData from '../extras/MetaData';
 
 const ContactUs = () => {
   const dispatch = useDispatch();
@@ -19,10 +19,10 @@ const ContactUs = () => {
   const [contactData] = useState(contactConfig);
 
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
   });
   const [errors, setErrors] = useState({});
 
@@ -30,7 +30,7 @@ const ContactUs = () => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -51,14 +51,14 @@ const ContactUs = () => {
       .unwrap()
       .then((res) => {
         toast.success(
-          res?.message || "Your message has been sent successfully!"
+          res?.message || 'Your message has been sent successfully!'
         );
-        setForm({ name: "", email: "", phone: "", message: "" });
+        setForm({ name: '', email: '', phone: '', message: '' });
         setErrors({});
         dispatch(resetContactState());
       })
       .catch((err) => {
-        toast.error(err || "Failed to send message. Please try again.");
+        toast.error(err || 'Failed to send message. Please try again.');
       });
   };
 
@@ -76,10 +76,10 @@ const ContactUs = () => {
           className="max-w-6xl mx-auto py-16 px-6"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
         >
           <h1 className="text-4xl font-bold text-center mb-4">
-            Contact{" "}
+            Contact{' '}
             <span className="text-yellow-500 dark:text-red-500">
               Faith AND Fast
             </span>
@@ -91,8 +91,8 @@ const ContactUs = () => {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
-            Have questions or need assistance? We&apos;re here to help! Reach out
-            through any of the channels below.
+            Have questions or need assistance? We&apos;re here to help! Reach
+            out through any of the channels below.
           </motion.p>
 
           <div className="grid md:grid-cols-2 gap-12 items-start">
@@ -189,7 +189,9 @@ const ContactUs = () => {
                     className="w-full p-3 border border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 dark:focus:ring-red-500 transition"
                   ></textarea>
                   {errors.message && (
-                    <p className="mt-1 text-sm text-red-500">{errors.message}</p>
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.message}
+                    </p>
                   )}
                 </div>
                 <motion.button
@@ -199,7 +201,7 @@ const ContactUs = () => {
                   whileHover={{ scale: loading ? 1 : 1.05 }}
                   whileTap={{ scale: loading ? 1 : 0.95 }}
                 >
-                  {loading ? "Sending..." : "Send Message"}
+                  {loading ? 'Sending...' : 'Send Message'}
                 </motion.button>
               </form>
             </motion.div>

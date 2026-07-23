@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const couponSchema = new mongoose.Schema(
   {
@@ -11,7 +11,7 @@ const couponSchema = new mongoose.Schema(
     },
     discountType: {
       type: String,
-      enum: ["FIXED", "PERCENTAGE"],
+      enum: ['FIXED', 'PERCENTAGE'],
       required: true,
     },
     discountValue: {
@@ -34,6 +34,6 @@ const couponSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const CouponModel = mongoose.model("Coupon", couponSchema);
+const CouponModel = mongoose.model('Coupon', couponSchema);
 
 export default CouponModel;
