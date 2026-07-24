@@ -89,6 +89,7 @@ import backupRouter from './route/backupRoute.js';
 import bulkProductRouter from './route/bulkProductRoute.js';
 import cartRouter from './route/cartRoute.js';
 import categoryRouter from './route/categoryRoute.js';
+import currencyRouter from './route/currencyRoute.js';
 import discountRouter from './route/discountRoute.js';
 import healthRouter from './route/healthRoute.js';
 import inventoryRouter from './route/inventoryRoute.js';
