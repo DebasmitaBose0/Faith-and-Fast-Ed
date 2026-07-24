@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CircularProgress, Alert } from '@mui/material';
-import { Download, ArrowLeft } from 'lucide-react';
+import { Download, ArrowLeft, Printer } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { getSingleOrder } from '@/store/order-slice/order';
 import MetaData from '../extras/MetaData';
@@ -203,12 +203,20 @@ const Invoice = () => {
           >
             <ArrowLeft className="w-4 h-4" /> Back to Order
           </Link>
-          <button
-            onClick={handleDownloadPDF}
-            className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
-          >
-            <Download className="w-4 h-4" /> Download PDF
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+            >
+              <Printer className="w-4 h-4" /> Print
+            </button>
+            <button
+              onClick={handleDownloadPDF}
+              className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
+            >
+              <Download className="w-4 h-4" /> Download PDF
+            </button>
+          </div>
         </div>
 
         {/* Invoice card */}
