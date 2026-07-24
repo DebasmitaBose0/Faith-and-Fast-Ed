@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -25,7 +26,7 @@ const ProductReviewPage = () => {
 
     loading,
     error,
-    reviewPosting,
+    
   } = useSelector((state) => state.productDetails);
 
   const [rating, setRating] = useState(0);
@@ -307,3 +308,4 @@ const StarRating = ({ value, onChange, readOnly = false }) => {
 };
 
 export default ProductReviewPage;
+

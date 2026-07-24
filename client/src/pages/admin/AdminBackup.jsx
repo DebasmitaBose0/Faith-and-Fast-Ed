@@ -2,9 +2,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import {
   Database,
-  Download,
   CheckCircle,
-  AlertTriangle,
   Play,
 } from 'lucide-react';
 import axiosInstance from '@/api';

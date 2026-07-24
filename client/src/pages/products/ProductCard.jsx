@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -63,3 +64,4 @@ ProductCard.propTypes = {
 };
 
 export default ProductCard;
+

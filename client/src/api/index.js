@@ -23,7 +23,7 @@ axiosInstance.interceptors.response.use(
     if (
       response.data &&
       response.data.success === true &&
-      response.data.hasOwnProperty('data')
+      Object.prototype.hasOwnProperty.call(response.data, 'data')
     ) {
       const originalData = response.data.data;
       const originalMeta = response.data.meta;
