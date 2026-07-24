@@ -1,39 +1,47 @@
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const Sitemap = () => {
   const pages = [
-    { path: "/", name: "Home" },
-    { path: "/verify-email", name: "Verify Email" },
-    { path: "/login", name: "Login" },
-    { path: "/forgot-password", name: "Forgot Password" },
-    { path: "/reset-password", name: "Reset Password" },
-    { path: "/my-profile", name: "My Profile" },
-    { path: "/my-orders", name: "My Orders" },
-    { path: "/order-success", name: "Order Success" },
-    { path: "/update-password", name: "Update Password" },
-    { path: "/update-profile", name: "Update Profile" },
-    { path: "/saved-address", name: "Saved Address" },
-    { path: "/products", name: "Products" },
-    { path: "/cart", name: "Cart" },
-    { path: "/wishlist", name: "Wishlist" },
-    { path: "/about", name: "About Us" },
-    { path: "/contactus", name: "Contact Us" },
-    { path: "/signup", name: "Sign Up" },
-    { path: "/faqs", name: "FAQs" },
-    { path: "/privacy-policy", name: "Privacy Policy" },
-    { path: "/terms", name: "Terms & Conditions" },
-    { path: "/sitemap", name: "Sitemap" },
+    { path: '/', name: 'Home' },
+    { path: '/verify-email', name: 'Verify Email' },
+    { path: '/login', name: 'Login' },
+    { path: '/forgot-password', name: 'Forgot Password' },
+    { path: '/reset-password', name: 'Reset Password' },
+    { path: '/my-profile', name: 'My Profile' },
+    { path: '/my-orders', name: 'My Orders' },
+    { path: '/order-success', name: 'Order Success' },
+    { path: '/update-password', name: 'Update Password' },
+    { path: '/update-profile', name: 'Update Profile' },
+    { path: '/saved-address', name: 'Saved Address' },
+    { path: '/products', name: 'Products' },
+    { path: '/cart', name: 'Cart' },
+    { path: '/wishlist', name: 'Wishlist' },
+    { path: '/about', name: 'About Us' },
+    { path: '/contactus', name: 'Contact Us' },
+    { path: '/signup', name: 'Sign Up' },
+    { path: '/faqs', name: 'FAQs' },
+    { path: '/privacy-policy', name: 'Privacy Policy' },
+    { path: '/terms', name: 'Terms & Conditions' },
+    { path: '/sitemap', name: 'Sitemap' },
   ];
 
   const containerVariants = {
     hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: 'easeOut' },
+    },
   };
 
   const linkVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" } },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.4, ease: 'easeOut' },
+    },
   };
 
   return (

@@ -1,37 +1,30 @@
 const colors = [
   {
-    title: "Primary Colors",
-    colorOptions: [
-      "Red",
-      "Blue",
-      "Green",
-      "Yellow",
-      "Black",
-      "White"
-    ]
+    title: 'Primary Colors',
+    colorOptions: ['Red', 'Blue', 'Green', 'Yellow', 'Black', 'White'],
   },
   {
-    title: "Pastel Shades",
+    title: 'Pastel Shades',
     colorOptions: [
-      "Lavender",
-      "Mint Green",
-      "Baby Blue",
-      "Peach",
-      "Dusty Pink"
-    ]
+      'Lavender',
+      'Mint Green',
+      'Baby Blue',
+      'Peach',
+      'Dusty Pink',
+    ],
   },
   {
-    title: "Metallic & Earthy",
+    title: 'Metallic & Earthy',
     colorOptions: [
-      "Gold",
-      "Silver",
-      "Bronze",
-      "Olive Green",
-      "Brown",
-      "Beige",
-      "Khaki"
-    ]
-  }
+      'Gold',
+      'Silver',
+      'Bronze',
+      'Olive Green',
+      'Brown',
+      'Beige',
+      'Khaki',
+    ],
+  },
 ];
 
 export default colors;

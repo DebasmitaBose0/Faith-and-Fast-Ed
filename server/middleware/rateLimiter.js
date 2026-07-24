@@ -1,4 +1,4 @@
-import rateLimit from "express-rate-limit";
+import rateLimit from 'express-rate-limit';
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -7,7 +7,8 @@ export const authLimiter = rateLimit({
   legacyHeaders: false,
   message: {
     success: false,
-    message: "Too many authentication attempts. Please try again after 15 minutes.",
+    message:
+      'Too many authentication attempts. Please try again after 15 minutes.',
   },
 });
 
@@ -18,7 +19,7 @@ export const orderLimiter = rateLimit({
   legacyHeaders: false,
   message: {
     success: false,
-    message: "Too many orders created from this IP. Please try again later.",
+    message: 'Too many orders created from this IP. Please try again later.',
   },
 });
 
@@ -29,7 +30,7 @@ export const contactLimiter = rateLimit({
   legacyHeaders: false,
   message: {
     success: false,
-    message: "Too many contact submissions. Please try again after 15 minutes.",
+    message: 'Too many contact submissions. Please try again after 15 minutes.',
   },
 });
 
@@ -40,7 +41,7 @@ export const generalLimiter = rateLimit({
   legacyHeaders: false,
   message: {
     success: false,
-    message: "Too many requests, please try again later.",
+    message: 'Too many requests, please try again later.',
   },
 });
 
@@ -51,6 +52,7 @@ export const passwordResetLimiter = rateLimit({
   legacyHeaders: false,
   message: {
     success: false,
-    message: "Too many password reset attempts. Please try again after an hour.",
+    message:
+      'Too many password reset attempts. Please try again after an hour.',
   },
 });

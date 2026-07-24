@@ -13,20 +13,20 @@
  * malformed (not a decodable three-part JWT).
  */
 export const decodeToken = (token) => {
-  if (!token || typeof token !== "string") return null;
+  if (!token || typeof token !== 'string') return null;
 
-  const parts = token.split(".");
+  const parts = token.split('.');
   if (parts.length !== 3) return null;
 
   try {
     // JWT uses base64url; convert to standard base64 before decoding.
     const base64Url = parts[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
     const json = decodeURIComponent(
       atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
     );
     return JSON.parse(json);
   } catch {
@@ -42,7 +42,7 @@ export const decodeToken = (token) => {
  */
 export const isTokenValid = (token) => {
   const payload = decodeToken(token);
-  if (!payload || typeof payload.exp !== "number") return false;
+  if (!payload || typeof payload.exp !== 'number') return false;
 
   // exp is in seconds; Date.now() is in milliseconds.
   return payload.exp * 1000 > Date.now();

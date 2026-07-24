@@ -1,6 +1,6 @@
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import CartProductModel from "../models/cartModel.js";
-import UserModel from "../models/userModel.js";
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import CartProductModel from '../models/cartModel.js';
+import UserModel from '../models/userModel.js';
 
 export const addToCartItemController = catchAsyncErrors(async (req, res) => {
   try {
@@ -9,7 +9,7 @@ export const addToCartItemController = catchAsyncErrors(async (req, res) => {
 
     if (!productId || !selectedColor || !selectedSize) {
       return res.status(402).json({
-        message: "Please provide productId, selectedColor, and selectedSize",
+        message: 'Please provide productId, selectedColor, and selectedSize',
         error: true,
         success: false,
       });
@@ -35,7 +35,7 @@ export const addToCartItemController = catchAsyncErrors(async (req, res) => {
 
     if (updateCartUser.modifiedCount === 0) {
       return res.status(500).json({
-        message: "Failed to update user cart",
+        message: 'Failed to update user cart',
         error: true,
         success: false,
       });
@@ -43,13 +43,13 @@ export const addToCartItemController = catchAsyncErrors(async (req, res) => {
 
     return res.json({
       data: savedCartItem,
-      message: "Item added to cart successfully",
+      message: 'Item added to cart successfully',
       error: false,
       success: true,
     });
   } catch (error) {
     return res.status(500).json({
-      message: error.message || "Internal Server Error",
+      message: error.message || 'Internal Server Error',
       error: true,
       success: false,
     });
@@ -62,11 +62,11 @@ export const getCartItemController = catchAsyncErrors(async (req, res) => {
 
     const cartItems = await CartProductModel.find({
       userId: userId,
-    }).populate("productId");
+    }).populate('productId');
 
     if (cartItems.length === 0) {
       return res.status(404).json({
-        message: "No items found in the cart",
+        message: 'No items found in the cart',
         error: true,
         success: false,
       });
@@ -79,7 +79,7 @@ export const getCartItemController = catchAsyncErrors(async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({
-      message: error.message || "Internal Server Error",
+      message: error.message || 'Internal Server Error',
       error: true,
       success: false,
     });
@@ -92,9 +92,9 @@ export const updateCartItemQtyController = catchAsyncErrors(
       const userId = req.user._id;
       const { _id, qty } = req.body;
 
-      if (!_id || qty === undefined || qty === null || qty === "") {
+      if (!_id || qty === undefined || qty === null || qty === '') {
         return res.status(400).json({
-          message: "Please provide _id and qty",
+          message: 'Please provide _id and qty',
           error: true,
           success: false,
         });
@@ -106,7 +106,7 @@ export const updateCartItemQtyController = catchAsyncErrors(
       const quantity = Number(qty);
       if (!Number.isInteger(quantity) || quantity < 1) {
         return res.status(400).json({
-          message: "Quantity must be a positive whole number",
+          message: 'Quantity must be a positive whole number',
           error: true,
           success: false,
         });
@@ -117,11 +117,11 @@ export const updateCartItemQtyController = catchAsyncErrors(
       const cartItem = await CartProductModel.findOne({
         _id: _id,
         userId: userId,
-      }).populate("productId");
+      }).populate('productId');
 
       if (!cartItem) {
         return res.status(404).json({
-          message: "Cart item not found",
+          message: 'Cart item not found',
           error: true,
           success: false,
         });
@@ -130,7 +130,7 @@ export const updateCartItemQtyController = catchAsyncErrors(
       const product = cartItem.productId;
       if (
         product &&
-        typeof product.stock === "number" &&
+        typeof product.stock === 'number' &&
         quantity > product.stock
       ) {
         return res.status(400).json({
@@ -144,14 +144,14 @@ export const updateCartItemQtyController = catchAsyncErrors(
       const updatedCartItem = await cartItem.save();
 
       return res.json({
-        message: "Cart updated successfully",
+        message: 'Cart updated successfully',
         success: true,
         error: false,
         data: updatedCartItem,
       });
     } catch (error) {
       return res.status(500).json({
-        message: error.message || "Internal Server Error",
+        message: error.message || 'Internal Server Error',
         error: true,
         success: false,
       });
@@ -167,7 +167,7 @@ export const deleteCartItemQtyController = catchAsyncErrors(
 
       if (!_id) {
         return res.status(400).json({
-          message: "Please provide _id",
+          message: 'Please provide _id',
           error: true,
           success: false,
         });
@@ -180,21 +180,21 @@ export const deleteCartItemQtyController = catchAsyncErrors(
 
       if (deleteResult.deletedCount === 0) {
         return res.status(404).json({
-          message: "Cart item not found",
+          message: 'Cart item not found',
           error: true,
           success: false,
         });
       }
 
       return res.json({
-        message: "Item removed from cart successfully",
+        message: 'Item removed from cart successfully',
         error: false,
         success: true,
         data: deleteResult,
       });
     } catch (error) {
       return res.status(500).json({
-        message: error.message || "Internal Server Error",
+        message: error.message || 'Internal Server Error',
         error: true,
         success: false,
       });

@@ -1,12 +1,12 @@
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import OrderModel from "../models/orderModel.js";
-import ProductModel from "../models/productModel.js";
-import UserModel from "../models/userModel.js";
-import DiscountModel from "../models/discountModel.js";
-import { writeAuditLog } from "../utils/auditLogger.js";
-import sendEmail from "../config/sendEmail.js";
-import generateReceiptHTML from "../utils/generateReceipt.js";
-import { uploadImage } from "../utils/cloudinary.js";
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import OrderModel from '../models/orderModel.js';
+import ProductModel from '../models/productModel.js';
+import UserModel from '../models/userModel.js';
+import DiscountModel from '../models/discountModel.js';
+import { writeAuditLog } from '../utils/auditLogger.js';
+import sendEmail from '../config/sendEmail.js';
+import generateReceiptHTML from '../utils/generateReceipt.js';
+import { uploadImage } from '../utils/cloudinary.js';
 
 export const createOrder = catchAsyncErrors(async (req, res) => {
   try {
@@ -29,7 +29,7 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
 
     const createdAt = new Date();
     deliveryDate = new Date(createdAt);
-    
+
     // Enforce idempotency for checkout retries. For a given user + key,
     // createOrder returns the previously created order instead of creating
     // duplicates.
@@ -37,32 +37,36 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
       const existing = await OrderModel.findOne({
         user: userId,
         idempotencyKey: String(idempotencyKey).trim(),
-      }).populate("user", "name email").populate("products.product", "name price images");
+      })
+        .populate('user', 'name email')
+        .populate('products.product', 'name price images');
 
       if (existing) {
-        return res.status(200).json({ success: true, order: existing, idempotent: true });
+        return res
+          .status(200)
+          .json({ success: true, order: existing, idempotent: true });
       }
     }
 
     deliveryDate.setDate(createdAt.getDate() + 5);
 
-    const method = paymentMethod || "COD";
-    if (!["COD", "ONLINE", "STRIPE"].includes(method)) {
+    const method = paymentMethod || 'COD';
+    if (!['COD', 'ONLINE', 'STRIPE'].includes(method)) {
       return res
         .status(400)
-        .json({ success: false, message: "Invalid payment method" });
+        .json({ success: false, message: 'Invalid payment method' });
     }
-    if (method === "ONLINE" && (!paymentScreenshot || !paymentScreenshot.url)) {
+    if (method === 'ONLINE' && (!paymentScreenshot || !paymentScreenshot.url)) {
       return res.status(400).json({
         success: false,
-        message: "Payment screenshot is required for online payments",
+        message: 'Payment screenshot is required for online payments',
       });
     }
 
     if (!Array.isArray(products) || products.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "Order must contain at least one product",
+        message: 'Order must contain at least one product',
       });
     }
 
@@ -100,8 +104,8 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
           Array.isArray(item.images) && item.images.length > 0
             ? item.images
             : product.images,
-        selectedColor: item.selectedColor || "",
-        selectedSize: item.selectedSize || "",
+        selectedColor: item.selectedColor || '',
+        selectedSize: item.selectedSize || '',
       });
     }
 
@@ -111,7 +115,7 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
     // amount (so a tampered discountAmount cannot be trusted) and never re-consume
     // the coupon. An invalid, expired, or inactive coupon simply yields no discount.
     let discountAmount = 0;
-    let appliedCouponCode = "";
+    let appliedCouponCode = '';
     if (couponCode && String(couponCode).trim()) {
       const discount = await DiscountModel.findOne({
         name: String(couponCode).trim(),
@@ -122,7 +126,7 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
 
       if (discount) {
         let computed =
-          discount.discountType === "FIXED"
+          discount.discountType === 'FIXED'
             ? discount.discountValue
             : (itemsTotal * discount.discountValue) / 100;
         computed = Math.min(computed, itemsTotal);
@@ -158,40 +162,42 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
       couponCode: appliedCouponCode,
       discountAmount,
       paymentMethod: method,
-      idempotencyKey: idempotencyKey && String(idempotencyKey).trim() ? String(idempotencyKey).trim() : "",
-      upiReference: method === "ONLINE" ? upiReference || "" : "",
+      idempotencyKey:
+        idempotencyKey && String(idempotencyKey).trim()
+          ? String(idempotencyKey).trim()
+          : '',
+      upiReference: method === 'ONLINE' ? upiReference || '' : '',
       paymentScreenshot:
-        method === "ONLINE" && paymentScreenshot
+        method === 'ONLINE' && paymentScreenshot
           ? {
-              public_id: paymentScreenshot.public_id || "",
-              url: paymentScreenshot.url || "",
+              public_id: paymentScreenshot.public_id || '',
+              url: paymentScreenshot.url || '',
             }
-          : { public_id: "", url: "" },
+          : { public_id: '', url: '' },
       // Controlled status transitions:
       // - COD: PENDING -> CONFIRMED and paymentStatus -> COMPLETED (at placement)
       // - ONLINE/STRIPE: stays pending until verification/success.
-      orderStatus: method === "COD" ? "CONFIRMED" : "PENDING",
-      paymentStatus: method === "COD" ? "COMPLETED" : "PENDING",
+      orderStatus: method === 'COD' ? 'CONFIRMED' : 'PENDING',
+      paymentStatus: method === 'COD' ? 'COMPLETED' : 'PENDING',
       deliveryDate,
     });
-
 
     await newOrder.save();
 
     const populatedOrder = await OrderModel.findById(newOrder._id)
-      .populate("user", "name email")
-      .populate("products.product", "name price images");
+      .populate('user', 'name email')
+      .populate('products.product', 'name price images');
 
     // COD orders get their confirmation/receipt immediately.
     // ONLINE orders are "Pending Verification" — their receipt email is sent
     // only after an admin verifies the payment (see verifyPayment below).
-    if (method === "COD") {
+    if (method === 'COD') {
       const receiptHTML = generateReceiptHTML(populatedOrder);
       const user = await UserModel.findById(userId);
 
       sendEmail({
         sendTo: user.email,
-        subject: "Order Confirmation",
+        subject: 'Order Confirmation',
         html: receiptHTML,
       });
     }
@@ -199,7 +205,6 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
     // Keep receipt/payment email side-effects idempotent-ish:
     // for COD we set paymentStatus COMPLETED at placement, so retried calls
     // return the existing order early above.
-
 
     res.status(201).json({ success: true, order: populatedOrder });
   } catch (error) {
@@ -214,7 +219,7 @@ export const uploadPaymentScreenshot = catchAsyncErrors(async (req, res) => {
     if (!req.file) {
       return res
         .status(400)
-        .json({ success: false, message: "No screenshot uploaded" });
+        .json({ success: false, message: 'No screenshot uploaded' });
     }
 
     const result = await uploadImage(req.file);
@@ -234,7 +239,7 @@ export const verifyPayment = catchAsyncErrors(async (req, res) => {
     const { orderId } = req.params;
     const { action, rejectionReason } = req.body;
 
-    if (!["approve", "reject"].includes(action)) {
+    if (!['approve', 'reject'].includes(action)) {
       return res.status(400).json({
         success: false,
         message: "Invalid action. Use 'approve' or 'reject'.",
@@ -242,58 +247,58 @@ export const verifyPayment = catchAsyncErrors(async (req, res) => {
     }
 
     const order = await OrderModel.findById(orderId)
-      .populate("user", "name email")
-      .populate("products.product", "name price images");
+      .populate('user', 'name email')
+      .populate('products.product', 'name price images');
 
     if (!order) {
       return res
         .status(404)
-        .json({ success: false, message: "Order not found" });
+        .json({ success: false, message: 'Order not found' });
     }
 
-    if (order.paymentMethod !== "ONLINE") {
+    if (order.paymentMethod !== 'ONLINE') {
       return res.status(400).json({
         success: false,
-        message: "Only online payments require verification",
+        message: 'Only online payments require verification',
       });
     }
 
-    if (order.paymentStatus !== "PENDING") {
+    if (order.paymentStatus !== 'PENDING') {
       return res.status(400).json({
         success: false,
         message: `Payment already ${order.paymentStatus.toLowerCase()}`,
       });
     }
 
-    if (action === "approve") {
-      order.paymentStatus = "COMPLETED";
+    if (action === 'approve') {
+      order.paymentStatus = 'COMPLETED';
       order.paymentVerifiedAt = new Date();
-      order.paymentRejectionReason = "";
+      order.paymentRejectionReason = '';
       await order.save();
 
       const receiptHTML = generateReceiptHTML(order);
       sendEmail({
         sendTo: order.user.email,
-        subject: "Payment Verified — Your Receipt - Faith AND Fast",
+        subject: 'Payment Verified — Your Receipt - Faith AND Fast',
         html: receiptHTML,
       });
 
       return res.status(200).json({
         success: true,
-        message: "Payment approved successfully",
+        message: 'Payment approved successfully',
         order,
       });
     }
 
     // reject
-    order.paymentStatus = "FAILED";
+    order.paymentStatus = 'FAILED';
     order.paymentRejectionReason =
-      rejectionReason || "Payment could not be verified";
+      rejectionReason || 'Payment could not be verified';
     await order.save();
 
     sendEmail({
       sendTo: order.user.email,
-      subject: "Payment Verification Failed - Faith AND Fast",
+      subject: 'Payment Verification Failed - Faith AND Fast',
       html: `
         <html>
           <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333;">
@@ -312,7 +317,7 @@ export const verifyPayment = catchAsyncErrors(async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Payment rejected",
+      message: 'Payment rejected',
       order,
     });
   } catch (error) {
@@ -325,14 +330,14 @@ export const getSingleOrder = catchAsyncErrors(async (req, res) => {
     const { orderId } = req.params;
 
     const order = await OrderModel.findById(orderId)
-      .populate("user", "name email")
-      .populate("address", "address_line city pincode state country mobile")
-      .populate("products.product", "name price images");
+      .populate('user', 'name email')
+      .populate('address', 'address_line city pincode state country mobile')
+      .populate('products.product', 'name price images');
 
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: "Order not found",
+        message: 'Order not found',
       });
     }
 
@@ -342,11 +347,11 @@ export const getSingleOrder = catchAsyncErrors(async (req, res) => {
     // ownership guard already used by cancelOrder in this file.
     if (
       order.user._id.toString() !== req.user._id.toString() &&
-      req.user.role !== "ADMIN"
+      req.user.role !== 'ADMIN'
     ) {
       return res.status(403).json({
         success: false,
-        message: "Unauthorized to view this order",
+        message: 'Unauthorized to view this order',
       });
     }
 
@@ -367,14 +372,14 @@ export const myOrders = catchAsyncErrors(async (req, res) => {
     const userId = req.user._id;
 
     const orders = await OrderModel.find({ user: userId })
-      .populate("address", "address_line city pincode state country mobile")
-      .populate("products.product", "name price images")
+      .populate('address', 'address_line city pincode state country mobile')
+      .populate('products.product', 'name price images')
       .sort({ createdAt: -1 });
 
     if (orders.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No orders found for this user",
+        message: 'No orders found for this user',
       });
     }
 
@@ -394,16 +399,16 @@ export const myOrders = catchAsyncErrors(async (req, res) => {
 export const getAllOrders = catchAsyncErrors(async (req, res) => {
   try {
     const orders = await OrderModel.find()
-      .populate("user", "name email")
-      .populate("address", "address_line city pincode state country mobile")
-      .populate("products.product", "name price images")
-      .populate("lastUpdatedBy", "name email")
+      .populate('user', 'name email')
+      .populate('address', 'address_line city pincode state country mobile')
+      .populate('products.product', 'name price images')
+      .populate('lastUpdatedBy', 'name email')
       .sort({ createdAt: -1 });
 
     if (!orders || orders.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No orders found",
+        message: 'No orders found',
       });
     }
 
@@ -426,16 +431,21 @@ export const updateOrderStatus = catchAsyncErrors(async (req, res) => {
     const { orderId } = req.params;
     const { orderStatus, trackingId, notes, deliveryDate } = req.body;
     const adminId =
-      req.user && req.user._id ? req.user._id.toString() : "Unknown";
+      req.user && req.user._id ? req.user._id.toString() : 'Unknown';
 
-    console.log("Request Body:", req.body);
+    console.log('Request Body:', req.body);
 
-    const validStatuses = ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED", "CANCELLED"];
+    const validStatuses = [
+      'PENDING',
+      'CONFIRMED',
+      'SHIPPED',
+      'DELIVERED',
+      'CANCELLED',
+    ];
     if (!validStatuses.includes(orderStatus)) {
-
       return res.status(400).json({
         success: false,
-        message: "Invalid order status",
+        message: 'Invalid order status',
       });
     }
 
@@ -443,7 +453,7 @@ export const updateOrderStatus = catchAsyncErrors(async (req, res) => {
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: "Order not found",
+        message: 'Order not found',
       });
     }
 
@@ -455,7 +465,7 @@ export const updateOrderStatus = catchAsyncErrors(async (req, res) => {
     order.orderStatus = orderStatus;
     if (trackingId) order.trackingId = trackingId;
 
-    if (orderStatus === "DELIVERED") {
+    if (orderStatus === 'DELIVERED') {
       order.deliveryDate = new Date();
     } else if (deliveryDate) {
       order.deliveryDate = new Date(deliveryDate);
@@ -465,14 +475,14 @@ export const updateOrderStatus = catchAsyncErrors(async (req, res) => {
       status: orderStatus,
       changedAt: new Date(),
       changedBy: adminId.toString(),
-      notes: notes || "",
+      notes: notes || '',
     });
 
     // Deduct stock at most once per order: only on the first transition into
     // SHIPPED (stockDeducted === false). Without this guard, setting an order to
     // SHIPPED again (e.g. PENDING → SHIPPED → DELIVERED → SHIPPED, or a duplicated
     // request) deducted the same items' stock a second time.
-    if (orderStatus === "SHIPPED" && !order.stockDeducted) {
+    if (orderStatus === 'SHIPPED' && !order.stockDeducted) {
       // Two-phase inventory update to guarantee stock integrity.
       //
       // PHASE 1 — validate every line item BEFORE touching any stock. Load each
@@ -543,7 +553,7 @@ export const updateOrderStatus = catchAsyncErrors(async (req, res) => {
     // Previously the CANCELLED branch only changed the status, so inventory for a
     // shipped-then-cancelled order leaked permanently. Guarded by stockDeducted
     // so cancelling an order that never shipped does not inflate stock.
-    if (orderStatus === "CANCELLED" && order.stockDeducted) {
+    if (orderStatus === 'CANCELLED' && order.stockDeducted) {
       for (const item of order.products) {
         await updateCancelStock(item.product, item.quantity);
       }
@@ -552,12 +562,12 @@ export const updateOrderStatus = catchAsyncErrors(async (req, res) => {
 
     order.lastUpdatedBy = req.user.id || req.user._id;
     await order.save();
-    console.log("Updated Order:", order);
+    console.log('Updated Order:', order);
 
     await writeAuditLog({
       actorId: req.user.id || req.user._id,
-      actionType: "ORDER_STATUS_UPDATE",
-      targetType: "Order",
+      actionType: 'ORDER_STATUS_UPDATE',
+      targetType: 'Order',
       targetId: order._id,
       beforeSnapshot,
       afterSnapshot: {
@@ -568,14 +578,14 @@ export const updateOrderStatus = catchAsyncErrors(async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Order status updated successfully",
+      message: 'Order status updated successfully',
       order,
     });
   } catch (error) {
-    console.error("Error updating order status:", error);
+    console.error('Error updating order status:', error);
     res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: 'Internal server error',
     });
   }
 });
@@ -586,41 +596,41 @@ export const cancelOrder = catchAsyncErrors(async (req, res) => {
     const userId = req.user._id;
 
     const order = await OrderModel.findById(orderId)
-      .populate("products.product")
-      .populate("user");
+      .populate('products.product')
+      .populate('user');
 
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: "Order not found",
+        message: 'Order not found',
       });
     }
 
-    if (order.orderStatus === "CANCELLED") {
+    if (order.orderStatus === 'CANCELLED') {
       return res.status(400).json({
         success: false,
-        message: "Order is already cancelled",
+        message: 'Order is already cancelled',
       });
     }
 
     if (
       order.user._id.toString() !== userId.toString() &&
-      req.user.role !== "ADMIN"
+      req.user.role !== 'ADMIN'
     ) {
       return res.status(403).json({
         success: false,
-        message: "Unauthorized to cancel this order",
+        message: 'Unauthorized to cancel this order',
       });
     }
 
-    if (order.orderStatus === "SHIPPED" || order.orderStatus === "DELIVERED") {
+    if (order.orderStatus === 'SHIPPED' || order.orderStatus === 'DELIVERED') {
       return res.status(400).json({
         success: false,
-        message: "Cannot cancel an order that is already shipped or delivered",
+        message: 'Cannot cancel an order that is already shipped or delivered',
       });
     }
 
-    order.orderStatus = "CANCELLED";
+    order.orderStatus = 'CANCELLED';
 
     for (const item of order.products) {
       const prodId = item.product?._id || item.product;
@@ -628,17 +638,17 @@ export const cancelOrder = catchAsyncErrors(async (req, res) => {
     }
 
     order.orderHistory.push({
-      status: "CANCELLED",
+      status: 'CANCELLED',
       changedAt: new Date(),
       changedBy: userId.toString(),
-      notes: "Order cancelled by user",
+      notes: 'Order cancelled by user',
     });
 
     await order.save();
 
     const emailSent = await sendEmail({
       sendTo: order.user.email,
-      subject: "Your Order Has Been Cancelled - Faith AND Fast",
+      subject: 'Your Order Has Been Cancelled - Faith AND Fast',
       html: `
             <html>
               <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; color: #333;">
@@ -655,7 +665,7 @@ export const cancelOrder = catchAsyncErrors(async (req, res) => {
                         (item) =>
                           `<li><strong>Product:</strong> ${item.product.name} | <strong>Quantity:</strong> ${item.quantity}</li>`
                       )
-                      .join("")}
+                      .join('')}
                   </ul>
                   <p style="font-size: 16px;"><strong>Order Created:</strong> ${
                     order.createdAt
@@ -673,14 +683,14 @@ export const cancelOrder = catchAsyncErrors(async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Order cancelled successfully",
+      message: 'Order cancelled successfully',
       emailSent,
       order,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: 'Internal server error',
     });
   }
 });
@@ -701,21 +711,20 @@ export const deleteOrder = catchAsyncErrors(async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const order = await OrderModel.findById(orderId).populate(
-      "products.product"
-    );
+    const order =
+      await OrderModel.findById(orderId).populate('products.product');
 
     if (!order) {
       return res.status(404).json({
         success: false,
-        message: "Order not found",
+        message: 'Order not found',
       });
     }
 
-    if (req.user.role !== "ADMIN") {
+    if (req.user.role !== 'ADMIN') {
       return res.status(403).json({
         success: false,
-        message: "Unauthorized to delete this order",
+        message: 'Unauthorized to delete this order',
       });
     }
 
@@ -723,12 +732,12 @@ export const deleteOrder = catchAsyncErrors(async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Order deleted successfully",
+      message: 'Order deleted successfully',
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: 'Internal server error',
       error: error.message,
     });
   }
@@ -739,13 +748,13 @@ export const deleteAllOrders = catchAsyncErrors(async (req, res) => {
     await OrderModel.deleteMany({});
     res.status(200).json({
       success: true,
-      message: "All orders deleted successfully",
+      message: 'All orders deleted successfully',
     });
   } catch (error) {
-    console.error("Error deleting all orders:", error);
+    console.error('Error deleting all orders:', error);
     res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: 'Internal server error',
     });
   }
 });

@@ -1,12 +1,12 @@
-import UserModel from "../models/userModel.js";
-import bcryptjs from "bcryptjs";
-import sendEmail from "../config/sendEmail.js";
-import verifyEmailTemplate from "../utils/verifyEmailTemplate.js";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import { deleteImage, uploadImage } from "../utils/cloudinary.js";
-import forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
-import generatedOtp from "../utils/generatedOtp.js";
-import sendToken from "../utils/jwtToken.js";
+import UserModel from '../models/userModel.js';
+import bcryptjs from 'bcryptjs';
+import sendEmail from '../config/sendEmail.js';
+import verifyEmailTemplate from '../utils/verifyEmailTemplate.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import { deleteImage, uploadImage } from '../utils/cloudinary.js';
+import forgotPasswordTemplate from '../utils/forgotPasswordTemplate.js';
+import generatedOtp from '../utils/generatedOtp.js';
+import sendToken from '../utils/jwtToken.js';
 
 export const registerUser = catchAsyncErrors(async (req, res) => {
   try {
@@ -14,7 +14,7 @@ export const registerUser = catchAsyncErrors(async (req, res) => {
 
     if (!name || !email || !password) {
       return res.status(400).json({
-        message: "Please fill all required fields",
+        message: 'Please fill all required fields',
         error: true,
         success: false,
       });
@@ -24,7 +24,7 @@ export const registerUser = catchAsyncErrors(async (req, res) => {
 
     if (existingUser) {
       return res.status(400).json({
-        message: "Email already exists",
+        message: 'Email already exists',
         error: true,
         success: false,
       });
@@ -36,13 +36,13 @@ export const registerUser = catchAsyncErrors(async (req, res) => {
 
     const emailResponse = await sendEmail({
       sendTo: email,
-      subject: "Verify Your Email - Faith AND Fast",
+      subject: 'Verify Your Email - Faith AND Fast',
       html: verifyEmailTemplate({ name, otp }),
     });
 
     if (!emailResponse) {
       return res.status(500).json({
-        message: "Failed to send verification email",
+        message: 'Failed to send verification email',
         error: true,
         success: false,
       });
@@ -62,7 +62,7 @@ export const registerUser = catchAsyncErrors(async (req, res) => {
 
     if (!savedUser) {
       return res.status(500).json({
-        message: "Failed to create user",
+        message: 'Failed to create user',
         error: true,
         success: false,
       });
@@ -70,14 +70,14 @@ export const registerUser = catchAsyncErrors(async (req, res) => {
 
     return res.status(201).json({
       message:
-        "User registered successfully. Please check your email to verify your account.",
+        'User registered successfully. Please check your email to verify your account.',
       error: false,
       success: true,
       data: savedUser,
     });
   } catch (error) {
     return res.status(500).json({
-      message: "Server error. Please try again.",
+      message: 'Server error. Please try again.',
       error: true,
       success: false,
     });
@@ -92,7 +92,7 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
-        message: "Email not registered.",
+        message: 'Email not registered.',
         error: true,
         success: false,
       });
@@ -104,13 +104,13 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res) => {
 
       const emailResponse = await sendEmail({
         sendTo: email,
-        subject: "New OTP for Email Verification - Faith AND Fast",
+        subject: 'New OTP for Email Verification - Faith AND Fast',
         html: verifyEmailTemplate({ name: user.name, otp: newOtp }),
       });
 
       if (!emailResponse) {
         return res.status(500).json({
-          message: "Failed to resend OTP. Try again later.",
+          message: 'Failed to resend OTP. Try again later.',
           error: true,
           success: false,
         });
@@ -121,14 +121,14 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res) => {
       await user.save();
 
       return res.status(410).json({
-        message: "OTP expired. A new OTP has been sent to your email.",
+        message: 'OTP expired. A new OTP has been sent to your email.',
         error: true,
         success: false,
       });
     }
 
     if (otp !== user.login_otp) {
-      return res.status(401).json({ message: "Invalid OTP", error: true });
+      return res.status(401).json({ message: 'Invalid OTP', error: true });
     }
 
     await UserModel.findByIdAndUpdate(user._id, {
@@ -138,13 +138,13 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res) => {
     });
 
     return res.json({
-      message: "Email verified successfully.",
+      message: 'Email verified successfully.',
       error: false,
       success: true,
     });
   } catch (error) {
     return res.status(500).json({
-      message: error.message || "An error occurred while verifying OTP.",
+      message: error.message || 'An error occurred while verifying OTP.',
       error: true,
       success: false,
     });
@@ -159,7 +159,7 @@ export const resendOtp = catchAsyncErrors(async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
-        message: "Email not registered.",
+        message: 'Email not registered.',
         error: true,
         success: false,
       });
@@ -171,13 +171,13 @@ export const resendOtp = catchAsyncErrors(async (req, res) => {
 
     const emailResponse = await sendEmail({
       sendTo: email,
-      subject: "New OTP for Email Verification - Faith AND Fast",
+      subject: 'New OTP for Email Verification - Faith AND Fast',
       html: verifyEmailTemplate({ name: user.name, otp: newOtp }),
     });
 
     if (!emailResponse) {
       return res.status(500).json({
-        message: "Failed to resend OTP. Try again later.",
+        message: 'Failed to resend OTP. Try again later.',
         error: true,
         success: false,
       });
@@ -188,13 +188,13 @@ export const resendOtp = catchAsyncErrors(async (req, res) => {
     await user.save();
 
     return res.status(200).json({
-      message: "A new OTP has been sent to your email.",
+      message: 'A new OTP has been sent to your email.',
       error: false,
       success: true,
     });
   } catch (error) {
     return res.status(500).json({
-      message: error.message || "Failed to resend OTP.",
+      message: error.message || 'Failed to resend OTP.',
       error: true,
       success: false,
     });
@@ -207,25 +207,25 @@ export const loginUser = catchAsyncErrors(async (req, res) => {
   if (!email || !password) {
     return res.status(400).json({
       success: false,
-      message: "Please provide email and password",
+      message: 'Please provide email and password',
       error: true,
     });
   }
 
-  const user = await UserModel.findOne({ email }).select("+password");
+  const user = await UserModel.findOne({ email }).select('+password');
 
   if (!user) {
     return res.status(400).json({
       success: false,
-      message: "User is not registered",
+      message: 'User is not registered',
       error: true,
     });
   }
 
-  if (user.status !== "Active") {
+  if (user.status !== 'Active') {
     return res.status(400).json({
       success: false,
-      message: "Your account is not active. Please contact the admin.",
+      message: 'Your account is not active. Please contact the admin.',
       error: true,
     });
   }
@@ -235,7 +235,7 @@ export const loginUser = catchAsyncErrors(async (req, res) => {
   if (!checkPassword) {
     return res.status(400).json({
       success: false,
-      message: "Incorrect email or password",
+      message: 'Incorrect email or password',
       error: true,
     });
   }
@@ -248,19 +248,19 @@ export const loginUser = catchAsyncErrors(async (req, res) => {
 
 export const logoutUser = catchAsyncErrors(async (req, res) => {
   try {
-    res.cookie("token", null, {
+    res.cookie('token', null, {
       expires: new Date(Date.now()),
       httpOnly: true,
     });
 
     return res.status(200).json({
-      message: "Logout successful",
+      message: 'Logout successful',
       error: false,
       success: true,
     });
   } catch (error) {
     return res.status(500).json({
-      message: error.message || "Internal Server Error",
+      message: error.message || 'Internal Server Error',
       error: true,
       success: false,
     });
@@ -274,7 +274,7 @@ export const uploadAvatar = catchAsyncErrors(async (req, res) => {
 
     if (!image) {
       return res.status(400).json({
-        message: "No image file provided",
+        message: 'No image file provided',
         success: false,
         error: true,
       });
@@ -284,7 +284,7 @@ export const uploadAvatar = catchAsyncErrors(async (req, res) => {
 
     if (!upload || !upload.url) {
       return res.status(500).json({
-        message: "Image upload failed",
+        message: 'Image upload failed',
         success: false,
         error: true,
       });
@@ -300,14 +300,14 @@ export const uploadAvatar = catchAsyncErrors(async (req, res) => {
 
     if (!updatedUser) {
       return res.status(404).json({
-        message: "User not found",
+        message: 'User not found',
         success: false,
         error: true,
       });
     }
 
     return res.json({
-      message: "Profile picture uploaded successfully",
+      message: 'Profile picture uploaded successfully',
       success: true,
       error: false,
       data: {
@@ -332,7 +332,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
-        message: "Email not available",
+        message: 'Email not available',
         error: true,
         success: false,
       });
@@ -348,7 +348,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res) => {
 
     if (!update) {
       return res.status(500).json({
-        message: "Failed to update user with OTP",
+        message: 'Failed to update user with OTP',
         error: true,
         success: false,
       });
@@ -356,7 +356,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res) => {
 
     const emailResponse = await sendEmail({
       sendTo: email,
-      subject: "Forgot password from Faith AND Fast",
+      subject: 'Forgot password from Faith AND Fast',
       html: forgotPasswordTemplate({
         name: user.name,
         otp: otp,
@@ -365,7 +365,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res) => {
 
     if (!emailResponse) {
       return res.status(500).json({
-        message: "Failed to send password reset email. Please try again later.",
+        message: 'Failed to send password reset email. Please try again later.',
         error: true,
         success: false,
       });
@@ -373,7 +373,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res) => {
 
     return res.json({
       message:
-        "A password reset OTP has been sent to your email. Please check your inbox.",
+        'A password reset OTP has been sent to your email. Please check your inbox.',
       error: false,
       success: true,
     });
@@ -392,7 +392,7 @@ export const verifyOtp = catchAsyncErrors(async (req, res) => {
 
     if (!email || !otp) {
       return res.status(400).json({
-        message: "Please provide both email and otp.",
+        message: 'Please provide both email and otp.',
         error: true,
         success: false,
       });
@@ -402,7 +402,7 @@ export const verifyOtp = catchAsyncErrors(async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
-        message: "Email not registered.",
+        message: 'Email not registered.',
         error: true,
         success: false,
       });
@@ -412,7 +412,7 @@ export const verifyOtp = catchAsyncErrors(async (req, res) => {
     const expiry = new Date(user.forgot_password_expiry);
     if (expiry < now) {
       return res.status(400).json({
-        message: "Otp has expired. Please req a new one.",
+        message: 'Otp has expired. Please req a new one.',
         error: true,
         success: false,
       });
@@ -420,7 +420,7 @@ export const verifyOtp = catchAsyncErrors(async (req, res) => {
 
     if (otp !== user.forgot_password_otp) {
       return res.status(400).json({
-        message: "Invalid otp. Please try again.",
+        message: 'Invalid otp. Please try again.',
         error: true,
         success: false,
       });
@@ -432,13 +432,13 @@ export const verifyOtp = catchAsyncErrors(async (req, res) => {
     // resetPassword is the authoritative authorization gate.
 
     return res.json({
-      message: "OTP verified successfully.",
+      message: 'OTP verified successfully.',
       error: false,
       success: true,
     });
   } catch (error) {
     return res.status(500).json({
-      message: error.message || "An error occurred while verifying OTP.",
+      message: error.message || 'An error occurred while verifying OTP.',
       error: true,
       success: false,
     });
@@ -452,7 +452,7 @@ export const resetPassword = catchAsyncErrors(async (req, res) => {
     if (!email || !otp || !newPassword || !confirmPassword) {
       return res.status(400).json({
         message:
-          "Please provide required fields: email, otp, newPassword, and confirmPassword.",
+          'Please provide required fields: email, otp, newPassword, and confirmPassword.',
         error: true,
         success: false,
       });
@@ -460,7 +460,7 @@ export const resetPassword = catchAsyncErrors(async (req, res) => {
 
     if (newPassword !== confirmPassword) {
       return res.status(400).json({
-        message: "New password and confirm password must be the same.",
+        message: 'New password and confirm password must be the same.',
         error: true,
         success: false,
       });
@@ -468,7 +468,7 @@ export const resetPassword = catchAsyncErrors(async (req, res) => {
 
     if (newPassword.length < 6) {
       return res.status(400).json({
-        message: "Password must be at least 6 characters long.",
+        message: 'Password must be at least 6 characters long.',
         error: true,
         success: false,
       });
@@ -478,7 +478,7 @@ export const resetPassword = catchAsyncErrors(async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
-        message: "Email not found.",
+        message: 'Email not found.',
         error: true,
         success: false,
       });
@@ -490,7 +490,7 @@ export const resetPassword = catchAsyncErrors(async (req, res) => {
     // for this account, and verify it exactly as verifyOtp does.
     if (!user.forgot_password_otp || !user.forgot_password_expiry) {
       return res.status(400).json({
-        message: "No active password reset request. Please request a new OTP.",
+        message: 'No active password reset request. Please request a new OTP.',
         error: true,
         success: false,
       });
@@ -500,7 +500,7 @@ export const resetPassword = catchAsyncErrors(async (req, res) => {
     const expiry = new Date(user.forgot_password_expiry);
     if (isNaN(expiry.getTime()) || expiry < now) {
       return res.status(400).json({
-        message: "OTP has expired. Please request a new one.",
+        message: 'OTP has expired. Please request a new one.',
         error: true,
         success: false,
       });
@@ -508,7 +508,7 @@ export const resetPassword = catchAsyncErrors(async (req, res) => {
 
     if (String(otp) !== String(user.forgot_password_otp)) {
       return res.status(400).json({
-        message: "Invalid OTP. Please try again.",
+        message: 'Invalid OTP. Please try again.',
         error: true,
         success: false,
       });
@@ -521,29 +521,29 @@ export const resetPassword = catchAsyncErrors(async (req, res) => {
       user._id,
       {
         password: hashPassword,
-        forgot_password_otp: "",
-        forgot_password_expiry: "",
+        forgot_password_otp: '',
+        forgot_password_expiry: '',
       },
       { new: true }
     );
 
     if (!updatedUser) {
       return res.status(500).json({
-        message: "Failed to update password. Please try again.",
+        message: 'Failed to update password. Please try again.',
         error: true,
         success: false,
       });
     }
 
     return res.json({
-      message: "Password updated successfully.",
+      message: 'Password updated successfully.',
       error: false,
       success: true,
     });
   } catch (error) {
     return res.status(500).json({
       message:
-        error.message || "An error occurred while updating the password.",
+        error.message || 'An error occurred while updating the password.',
       error: true,
       success: false,
     });
@@ -552,19 +552,23 @@ export const resetPassword = catchAsyncErrors(async (req, res) => {
 
 export const getUserDetails = catchAsyncErrors(async (req, res) => {
   try {
-    console.log("Checking User model:", UserModel);
+    console.log('Checking User model:', UserModel);
 
-    console.log("User ID:", req.user?._id);
+    console.log('User ID:', req.user?._id);
 
     const user = await UserModel.findById(req.user._id);
 
     if (!user) {
-      return res.sendError(404, "USER_NOT_FOUND", "User not found");
+      return res.sendError(404, 'USER_NOT_FOUND', 'User not found');
     }
 
     return res.sendSuccess({ user });
   } catch (error) {
-    return res.sendError(500, "SERVER_ERROR", error.message || "Server error while fetching user details");
+    return res.sendError(
+      500,
+      'SERVER_ERROR',
+      error.message || 'Server error while fetching user details'
+    );
   }
 });
 
@@ -586,10 +590,10 @@ export const updateUserDetails = catchAsyncErrors(async (req, res) => {
     }
 
     if (avatar) {
-      const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+      const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!validImageTypes.includes(avatar.mimetype)) {
         return res.status(400).json({
-          message: "Invalid image type. Only JPEG, PNG, and GIF are allowed.",
+          message: 'Invalid image type. Only JPEG, PNG, and GIF are allowed.',
           error: true,
           success: false,
         });
@@ -598,7 +602,7 @@ export const updateUserDetails = catchAsyncErrors(async (req, res) => {
       const user = await UserModel.findById(userId);
 
       if (user.avatar) {
-        const publicId = user.avatar.split("/").pop().split(".")[0];
+        const publicId = user.avatar.split('/').pop().split('.')[0];
         await deleteImage(`ff/${publicId}`);
       }
 
@@ -606,7 +610,7 @@ export const updateUserDetails = catchAsyncErrors(async (req, res) => {
 
       if (!uploadResult || !uploadResult.url) {
         return res.status(500).json({
-          message: "Image upload failed",
+          message: 'Image upload failed',
           error: true,
           success: false,
         });
@@ -621,14 +625,14 @@ export const updateUserDetails = catchAsyncErrors(async (req, res) => {
 
     if (!updateUser) {
       return res.status(404).json({
-        message: "User not found",
+        message: 'User not found',
         error: true,
         success: false,
       });
     }
 
     return res.json({
-      message: "User details updated successfully",
+      message: 'User details updated successfully',
       error: false,
       success: true,
       data: updateUser,
@@ -645,33 +649,33 @@ export const updateUserDetails = catchAsyncErrors(async (req, res) => {
 // Admin
 export const getAllUsers = catchAsyncErrors(async (req, res) => {
   try {
-    if (req.user.role !== "ADMIN") {
+    if (req.user.role !== 'ADMIN') {
       return res.status(403).json({
-        message: "Access denied. Admins only.",
+        message: 'Access denied. Admins only.',
         error: true,
         success: false,
       });
     }
 
-    const { page = 1, limit = 10, search = "" } = req.query;
+    const { page = 1, limit = 10, search = '' } = req.query;
     const skip = (page - 1) * limit;
 
     const query = {
       $or: [
-        { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
       ],
     };
 
     const totalUsers = await UserModel.countDocuments(query);
 
     const users = await UserModel.find(query)
-      .select("-password")
+      .select('-password')
       .skip(skip)
       .limit(Number(limit));
 
     return res.json({
-      message: "Users fetched successfully",
+      message: 'Users fetched successfully',
       error: false,
       success: true,
       totalUsers,
@@ -691,9 +695,9 @@ export const getAllUsers = catchAsyncErrors(async (req, res) => {
 // Admin
 export const getSingleUser = catchAsyncErrors(async (req, res) => {
   try {
-    if (req.user.role !== "ADMIN") {
+    if (req.user.role !== 'ADMIN') {
       return res.status(403).json({
-        message: "Permission denied. Admins only.",
+        message: 'Permission denied. Admins only.',
         error: true,
         success: false,
       });
@@ -701,18 +705,18 @@ export const getSingleUser = catchAsyncErrors(async (req, res) => {
 
     const userId = req.params.id;
 
-    const user = await UserModel.findById(userId).select("-password");
+    const user = await UserModel.findById(userId).select('-password');
 
     if (!user) {
       return res.status(404).json({
-        message: "User not found",
+        message: 'User not found',
         error: true,
         success: false,
       });
     }
 
     return res.json({
-      message: "User details fetched successfully",
+      message: 'User details fetched successfully',
       error: false,
       success: true,
       data: user,
@@ -729,9 +733,9 @@ export const getSingleUser = catchAsyncErrors(async (req, res) => {
 // Admin
 export const updateUserRole = catchAsyncErrors(async (req, res) => {
   try {
-    if (req.user.role !== "ADMIN") {
+    if (req.user.role !== 'ADMIN') {
       return res.status(403).json({
-        message: "Permission denied. Admins only.",
+        message: 'Permission denied. Admins only.',
         error: true,
         success: false,
       });
@@ -739,7 +743,7 @@ export const updateUserRole = catchAsyncErrors(async (req, res) => {
 
     const { email, role, permissions } = req.body;
 
-    if (!role || !["USER", "ADMIN"].includes(role)) {
+    if (!role || !['USER', 'ADMIN'].includes(role)) {
       return res.status(400).json({
         message: "Invalid role. Role must be either 'USER' or 'ADMIN'.",
         error: true,
@@ -749,7 +753,7 @@ export const updateUserRole = catchAsyncErrors(async (req, res) => {
 
     if (permissions !== undefined && !Array.isArray(permissions)) {
       return res.status(400).json({
-        message: "Permissions must be an array of strings",
+        message: 'Permissions must be an array of strings',
         error: true,
         success: false,
       });
@@ -759,7 +763,7 @@ export const updateUserRole = catchAsyncErrors(async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        message: "User not found",
+        message: 'User not found',
         error: true,
         success: false,
       });
@@ -772,7 +776,7 @@ export const updateUserRole = catchAsyncErrors(async (req, res) => {
     const updatedUser = await user.save();
 
     return res.json({
-      message: "User role and permissions updated successfully",
+      message: 'User role and permissions updated successfully',
       error: false,
       success: true,
       data: updatedUser,
@@ -791,9 +795,9 @@ export const deleteUser = catchAsyncErrors(async (req, res) => {
   try {
     const userId = req.params.id;
 
-    if (req.user.role !== "ADMIN") {
+    if (req.user.role !== 'ADMIN') {
       return res.status(403).json({
-        message: "Permission denied. Admins only.",
+        message: 'Permission denied. Admins only.',
         error: true,
         success: false,
       });
@@ -803,14 +807,14 @@ export const deleteUser = catchAsyncErrors(async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        message: "User not found",
+        message: 'User not found',
         error: true,
         success: false,
       });
     }
 
     if (user.avatar) {
-      const publicId = user.avatar.split("/").pop().split(".")[0];
+      const publicId = user.avatar.split('/').pop().split('.')[0];
 
       await deleteImage(`ff/${publicId}`);
     }
@@ -818,13 +822,13 @@ export const deleteUser = catchAsyncErrors(async (req, res) => {
     await UserModel.findByIdAndDelete(userId);
 
     return res.json({
-      message: "User and avatar deleted successfully",
+      message: 'User and avatar deleted successfully',
       success: true,
       error: false,
     });
   } catch (error) {
     return res.status(500).json({
-      message: error.message || "Internal Server Error",
+      message: error.message || 'Internal Server Error',
       error: true,
       success: false,
     });
@@ -837,23 +841,23 @@ export const updateUserStatus = catchAsyncErrors(async (req, res) => {
     const { status } = req.body;
     const { id } = req.params;
 
-    const allowedStatuses = ["Active", "Warning", "Suspended"];
+    const allowedStatuses = ['Active', 'Warning', 'Suspended'];
     if (!allowedStatuses.includes(status)) {
-      return res.status(400).json({ error: "Invalid status provided" });
+      return res.status(400).json({ error: 'Invalid status provided' });
     }
 
     const user = await UserModel.findById(id);
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: 'User not found' });
     }
 
     user.status = status;
     await user.save();
 
-    if (status === "Warning") {
+    if (status === 'Warning') {
       await sendEmail({
         sendTo: user.email,
-        subject: "⚠️ Account Warning - Faith AND Fast",
+        subject: '⚠️ Account Warning - Faith AND Fast',
         html: `
           <div style="font-family: Arial, sans-serif; color: #333;">
             <div style="background-color: #ffcc00; padding: 10px; text-align: center;">
@@ -876,10 +880,10 @@ export const updateUserStatus = catchAsyncErrors(async (req, res) => {
       });
     }
 
-    if (status === "Suspended") {
+    if (status === 'Suspended') {
       await sendEmail({
         sendTo: user.email,
-        subject: "❌ Account Suspended - Faith AND Fast",
+        subject: '❌ Account Suspended - Faith AND Fast',
         html: `
           <div style="font-family: Arial, sans-serif; color: #333;">
             <div style="background-color: #f44336; padding: 10px; text-align: center;">
@@ -902,10 +906,10 @@ export const updateUserStatus = catchAsyncErrors(async (req, res) => {
       });
     }
 
-    if (status === "Active") {
+    if (status === 'Active') {
       await sendEmail({
         sendTo: user.email,
-        subject: "✅ Your Account is Active - Faith AND Fast",
+        subject: '✅ Your Account is Active - Faith AND Fast',
         html: `
           <div style="font-family: Arial, sans-serif; color: #333;">
             <div style="background-color: #4caf50; padding: 10px; text-align: center;">
@@ -923,8 +927,8 @@ export const updateUserStatus = catchAsyncErrors(async (req, res) => {
       });
     }
 
-    res.status(200).json({ message: "User status updated successfully", user });
+    res.status(200).json({ message: 'User status updated successfully', user });
   } catch (error) {
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: 'Server error' });
   }
 });

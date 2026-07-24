@@ -1,14 +1,14 @@
-import axiosInstance from "@/api";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from '@/api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const createProduct = createAsyncThunk(
-  "products/createProduct",
+  'products/createProduct',
   async (formData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axiosInstance.post("/api/product/new", formData, {
+      const token = localStorage.getItem('token');
+      const response = await axiosInstance.post('/api/product/new', formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
         },
       });
@@ -20,31 +20,39 @@ export const createProduct = createAsyncThunk(
 );
 
 export const updateProduct = createAsyncThunk(
-  "products/updateProduct",
+  'products/updateProduct',
   async ({ id, productData }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const formData = new FormData();
-      formData.append("name", productData.name);
-      formData.append("description", productData.description);
-      formData.append("price", productData.price);
-      formData.append("category", productData.category);
-      formData.append("subcategory", productData.subcategory || "");
-      formData.append("stock", productData.stock);
-      formData.append("discount", productData.discount);
-      productData.coloroptions.forEach((color) => formData.append("coloroptions[]", color));
-      productData.size.forEach((size) => formData.append("size[]", size));
-      productData.sizeoptions.forEach((sizeoption) => formData.append("sizeoptions[]", sizeoption));
+      formData.append('name', productData.name);
+      formData.append('description', productData.description);
+      formData.append('price', productData.price);
+      formData.append('category', productData.category);
+      formData.append('subcategory', productData.subcategory || '');
+      formData.append('stock', productData.stock);
+      formData.append('discount', productData.discount);
+      productData.coloroptions.forEach((color) =>
+        formData.append('coloroptions[]', color)
+      );
+      productData.size.forEach((size) => formData.append('size[]', size));
+      productData.sizeoptions.forEach((sizeoption) =>
+        formData.append('sizeoptions[]', sizeoption)
+      );
       productData.images.forEach((image) => {
-        if (image) formData.append("images", image);
+        if (image) formData.append('images', image);
       });
 
-      const response = await axiosInstance.put(`/api/product/update/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axiosInstance.put(
+        `/api/product/update/${id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       return response.data.data;
     } catch (error) {
@@ -54,10 +62,10 @@ export const updateProduct = createAsyncThunk(
 );
 
 export const deleteProduct = createAsyncThunk(
-  "products/deleteProduct",
+  'products/deleteProduct',
   async (id, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.delete(`/api/product/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -72,7 +80,7 @@ export const deleteProduct = createAsyncThunk(
 );
 
 const adminProductSlice = createSlice({
-  name: "adminProduct",
+  name: 'adminProduct',
   initialState: {
     loading: false,
     error: null,

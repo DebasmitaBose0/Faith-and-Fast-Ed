@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from "react";
-import { User, ShoppingBag, Lock, MapPin } from "lucide-react";
-import { NavLink } from "react-router-dom";
-import { FaUserEdit } from "react-icons/fa";
-import { getSingleDetail } from "@/store/auth-slice/user";
-import { useDispatch, useSelector } from "react-redux";
-import { motion } from "framer-motion";
-import MetaData from "../extras/MetaData";
+import { useState, useRef, useEffect } from 'react';
+import { User, ShoppingBag, Lock, MapPin } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
+import { FaUserEdit } from 'react-icons/fa';
+import { getSingleDetail } from '@/store/auth-slice/user';
+import { useDispatch, useSelector } from 'react-redux';
+import { motion } from 'framer-motion';
+import MetaData from '../extras/MetaData';
 
 const MyProfile = () => {
   const fileInputRef = useRef(null);
@@ -14,7 +14,7 @@ const MyProfile = () => {
 
   // eslint-disable-next-line no-unused-vars
   const [profileImage, setProfileImage] = useState(
-    user ? user.avatar : "https://placehold.co/150x150"
+    user ? user.avatar : 'https://placehold.co/150x150'
   );
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const MyProfile = () => {
     }
   }, [user]);
 
-  const displayFields = ["name", "email", "mobile"];
+  const displayFields = ['name', 'email', 'mobile'];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -39,8 +39,7 @@ const MyProfile = () => {
     visible: { y: 0, opacity: 1 },
   };
 
-  console.log("User data from Redux:", user);
-
+  console.log('User data from Redux:', user);
 
   return (
     <motion.div
@@ -121,7 +120,7 @@ const MyProfile = () => {
                     <p>Loading...</p>
                   ) : (
                     <img
-                      src={user?.avatar || "https://placehold.co/150x150"}
+                      src={user?.avatar || 'https://placehold.co/150x150'}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
@@ -130,10 +129,10 @@ const MyProfile = () => {
               </div>
               <div>
                 <h2 className="text-xl font-semibold capitalize">
-                  {loading ? "Loading..." : user?.name}
+                  {loading ? 'Loading...' : user?.name}
                 </h2>
                 <p className="text-gray-500 dark:text-gray-400">
-                  {loading ? "Loading..." : user?.role}
+                  {loading ? 'Loading...' : user?.role}
                 </p>
               </div>
             </motion.div>
@@ -149,7 +148,7 @@ const MyProfile = () => {
                     {field.charAt(0).toUpperCase() + field.slice(1)}
                   </span>
                   <p className="font-medium ">
-                    {user ? user[field] : "Loading..."}
+                    {user ? user[field] : 'Loading...'}
                   </p>
                 </motion.div>
               ))}
