@@ -95,40 +95,12 @@ const generateReceiptHTML = (order) => {
             <p>Thank you for choosing Faith AND Fast!</p>
             <p><strong>Contact Us:</strong> support@faithandfast.com</p>
             <p><strong><a href="https://www.faithandfast.com">Faith AND Fast</a></strong></p>
+            
+            <a href="${process.env.BACKEND_URL || 'http://localhost:5000'}/api/order/invoice/${order._id}" class="download-btn" style="display: block; margin: 20px auto; width: 250px;">
+              Download Receipt as PDF
+            </a>
           </div>
         </div>
-
-        <script>
-          document.addEventListener('DOMContentLoaded', function () {
-            const downloadBtn = document.createElement('button');
-            downloadBtn.textContent = 'Download Receipt as PDF';
-            downloadBtn.className = 'download-btn';
-            downloadBtn.style.display = 'block';
-            downloadBtn.style.margin = '20px auto';
-            document.body.appendChild(downloadBtn);
-
-            downloadBtn.addEventListener('click', function () {
-              const { jsPDF } = window.jspdf; // Assumes jsPDF is loaded globally
-              const doc = new jsPDF();
-              
-              doc.text('Order Confirmation', 20, 20);
-              doc.text('Dear ${user.name},', 20, 30);
-              doc.text('Thank you for shopping with Faith AND Fast.', 20, 40);
-              
-              let y = 50;
-              ${products
-                .map((item) => {
-                  return `
-                  doc.text('${item.product.name} x ${item.quantity} - ${item.totalPrice}', 20, y);
-                  y += 10;
-                `;
-                })
-                .join('')}
-              
-              doc.save('receipt.pdf');
-            });
-          });
-        </script>
       </body>
     </html>
   `;
