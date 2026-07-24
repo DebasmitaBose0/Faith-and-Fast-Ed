@@ -1,12 +1,12 @@
-import multer from "multer";
+import multer from 'multer';
 
 const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/")) {
+  if (file.mimetype.startsWith('image/')) {
     cb(null, true);
   } else {
-    cb(new Error("Not an image! Please upload an image file."), false);
+    cb(new Error('Not an image! Please upload an image file.'), false);
   }
 };
 

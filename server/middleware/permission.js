@@ -3,19 +3,19 @@ export const requirePermission = (permission) => {
     if (!req.user) {
       return res.status(401).json({
         success: false,
-        message: "Not Authorized. Login Again.",
+        message: 'Not Authorized. Login Again.',
       });
     }
 
-    if (req.user.role !== "ADMIN") {
+    if (req.user.role !== 'ADMIN') {
       return res.status(403).json({
         success: false,
-        message: "Access Denied: Admins Only",
+        message: 'Access Denied: Admins Only',
       });
     }
 
     const userPermissions = req.user.permissions || [];
-    if (userPermissions.includes("*") || userPermissions.includes(permission)) {
+    if (userPermissions.includes('*') || userPermissions.includes(permission)) {
       return next();
     }
 

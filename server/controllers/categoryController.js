@@ -1,7 +1,7 @@
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import CategoryModel from "../models/categoryModel.js";
-import ProductModel from "../models/productModel.js";
-import { deleteImage, uploadImage } from "../utils/cloudinary.js";
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import CategoryModel from '../models/categoryModel.js';
+import ProductModel from '../models/productModel.js';
+import { deleteImage, uploadImage } from '../utils/cloudinary.js';
 
 export const AddCategory = catchAsyncErrors(async (req, res) => {
   try {
@@ -10,7 +10,7 @@ export const AddCategory = catchAsyncErrors(async (req, res) => {
 
     if (!name) {
       return res.status(400).json({
-        message: "Category name is required",
+        message: 'Category name is required',
         error: true,
         success: false,
       });
@@ -19,7 +19,7 @@ export const AddCategory = catchAsyncErrors(async (req, res) => {
     const existingCategory = await CategoryModel.findOne({ name });
     if (existingCategory) {
       return res.status(400).json({
-        message: "Category already exists",
+        message: 'Category already exists',
         error: true,
         success: false,
       });
@@ -27,7 +27,7 @@ export const AddCategory = catchAsyncErrors(async (req, res) => {
 
     if (!image) {
       return res.status(400).json({
-        message: "Image is required",
+        message: 'Image is required',
         error: true,
         success: false,
       });
@@ -47,21 +47,21 @@ export const AddCategory = catchAsyncErrors(async (req, res) => {
 
     if (!saveCategory) {
       return res.status(500).json({
-        message: "Not Created",
+        message: 'Not Created',
         error: true,
         success: false,
       });
     }
 
     return res.status(201).json({
-      message: "Category added successfully",
+      message: 'Category added successfully',
       data: saveCategory,
       success: true,
       error: false,
     });
   } catch (error) {
     return res.status(500).json({
-      message: error.message || "Internal Server Error",
+      message: error.message || 'Internal Server Error',
       error: true,
       success: false,
     });
@@ -93,7 +93,7 @@ export const updateCategory = catchAsyncErrors(async (req, res) => {
     const existingCategory = await CategoryModel.findById(_id);
     if (!existingCategory) {
       return res.status(404).json({
-        message: "Category not found",
+        message: 'Category not found',
         error: true,
         success: false,
       });
@@ -118,7 +118,7 @@ export const updateCategory = catchAsyncErrors(async (req, res) => {
       }
     );
     return res.json({
-      message: "Category updated successfully",
+      message: 'Category updated successfully',
       success: true,
       error: false,
       data: update,
@@ -139,7 +139,7 @@ export const deleteCategory = catchAsyncErrors(async (req, res) => {
     const category = await CategoryModel.findById(_id);
     if (!category) {
       return res.status(404).json({
-        message: "Category not found",
+        message: 'Category not found',
         error: true,
         success: false,
       });
@@ -150,7 +150,7 @@ export const deleteCategory = catchAsyncErrors(async (req, res) => {
     }).countDocuments();
     if (checkProduct > 0) {
       return res.status(400).json({
-        message: "Category is in use and cannot be deleted",
+        message: 'Category is in use and cannot be deleted',
         error: true,
         success: false,
       });
@@ -163,7 +163,7 @@ export const deleteCategory = catchAsyncErrors(async (req, res) => {
     const deleteCategory = await CategoryModel.deleteOne({ _id: _id });
 
     return res.json({
-      message: "Category deleted successfully",
+      message: 'Category deleted successfully',
       data: deleteCategory,
       error: false,
       success: true,

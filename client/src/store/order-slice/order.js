@@ -1,13 +1,13 @@
-import axiosInstance from "@/api";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from '@/api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const createOrder = createAsyncThunk(
-  "order/createOrder",
+  'order/createOrder',
   async (orderData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.post(
-        "/api/order/create",
+        '/api/order/create',
         orderData,
         {
           headers: {
@@ -23,14 +23,14 @@ export const createOrder = createAsyncThunk(
 );
 
 export const uploadPaymentScreenshot = createAsyncThunk(
-  "order/uploadPaymentScreenshot",
+  'order/uploadPaymentScreenshot',
   async (file, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const formData = new FormData();
-      formData.append("screenshot", file);
+      formData.append('screenshot', file);
       const response = await axiosInstance.post(
-        "/api/order/upload-payment-screenshot",
+        '/api/order/upload-payment-screenshot',
         formData,
         {
           headers: {
@@ -40,7 +40,9 @@ export const uploadPaymentScreenshot = createAsyncThunk(
       );
       return response.data.screenshot;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Screenshot upload failed");
+      return rejectWithValue(
+        error.response?.data || 'Screenshot upload failed'
+      );
     }
   }
 );
@@ -49,12 +51,12 @@ export const uploadPaymentScreenshot = createAsyncThunk(
 // The server computes the amount; we only receive a clientSecret to confirm the
 // card with on the browser.
 export const createStripeIntent = createAsyncThunk(
-  "order/createStripeIntent",
+  'order/createStripeIntent',
   async (intentData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.post(
-        "/api/payment/create-intent",
+        '/api/payment/create-intent',
         intentData,
         {
           headers: {
@@ -65,7 +67,7 @@ export const createStripeIntent = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data || "Failed to start card payment"
+        error.response?.data || 'Failed to start card payment'
       );
     }
   }
@@ -75,12 +77,12 @@ export const createStripeIntent = createAsyncThunk(
 // create the order. The server re-verifies the PaymentIntent with Stripe before
 // saving, so this only succeeds for a genuinely paid intent.
 export const confirmStripePayment = createAsyncThunk(
-  "order/confirmStripePayment",
+  'order/confirmStripePayment',
   async (confirmData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.post(
-        "/api/payment/confirm",
+        '/api/payment/confirm',
         confirmData,
         {
           headers: {
@@ -91,17 +93,17 @@ export const confirmStripePayment = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data || "Failed to confirm card payment"
+        error.response?.data || 'Failed to confirm card payment'
       );
     }
   }
 );
 
 export const getSingleOrder = createAsyncThunk(
-  "order/getSingleOrder",
+  'order/getSingleOrder',
   async (orderId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.get(`/api/order/get/${orderId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -115,11 +117,11 @@ export const getSingleOrder = createAsyncThunk(
 );
 
 export const myOrders = createAsyncThunk(
-  "order/myOrders",
+  'order/myOrders',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axiosInstance.get("/api/order/myorder", {
+      const token = localStorage.getItem('token');
+      const response = await axiosInstance.get('/api/order/myorder', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -137,16 +139,20 @@ export const myOrders = createAsyncThunk(
 );
 
 export const cancelOrder = createAsyncThunk(
-  "order/cancelOrder",
+  'order/cancelOrder',
   async (orderId, { rejectWithValue }) => {
     try {
-      console.log("Cancel Order ID:", orderId);
-      const token = localStorage.getItem("token");
-      const response = await axiosInstance.put(`/api/order/cancel/${orderId}`, {},{
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      console.log('Cancel Order ID:', orderId);
+      const token = localStorage.getItem('token');
+      const response = await axiosInstance.put(
+        `/api/order/cancel/${orderId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -155,10 +161,10 @@ export const cancelOrder = createAsyncThunk(
 );
 
 export const deleteOrder = createAsyncThunk(
-  "order/deleteOrder",
+  'order/deleteOrder',
   async (orderId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.delete(
         `/api/order/delete/${orderId}`,
         {
@@ -175,7 +181,7 @@ export const deleteOrder = createAsyncThunk(
 );
 
 export const orderSlice = createSlice({
-  name: "order",
+  name: 'order',
   initialState: {
     orders: [],
     order: null,
@@ -226,7 +232,7 @@ export const orderSlice = createSlice({
           order._id === action.payload.order._id ? action.payload.order : order
         );
         state.loading = false;
-        state.error = null; 
+        state.error = null;
       })
 
       .addCase(deleteOrder.fulfilled, (state, action) => {

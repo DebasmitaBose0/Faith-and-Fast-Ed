@@ -1,6 +1,6 @@
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import ProductModel from "../models/productModel.js";
-import { writeAuditLog } from "../utils/auditLogger.js";
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import ProductModel from '../models/productModel.js';
+import { writeAuditLog } from '../utils/auditLogger.js';
 
 /**
  * Admin Inventory Management
@@ -22,8 +22,8 @@ export const getInventoryOverview = catchAsyncErrors(async (req, res) => {
 
   // Pull only the fields the inventory view needs — keeps the payload lean.
   const products = await ProductModel.find()
-    .select("name category price stock images lastUpdatedBy")
-    .populate("lastUpdatedBy", "name email")
+    .select('name category price stock images lastUpdatedBy')
+    .populate('lastUpdatedBy', 'name email')
     .sort({ stock: 1 }); // lowest stock first — the items needing attention
 
   // Compute health buckets and totals in a single pass.
@@ -40,13 +40,13 @@ export const getInventoryOverview = catchAsyncErrors(async (req, res) => {
 
     let status;
     if (stock === 0) {
-      status = "OUT_OF_STOCK";
+      status = 'OUT_OF_STOCK';
       outOfStockCount += 1;
     } else if (stock <= threshold) {
-      status = "LOW_STOCK";
+      status = 'LOW_STOCK';
       lowStockCount += 1;
     } else {
-      status = "IN_STOCK";
+      status = 'IN_STOCK';
       healthyCount += 1;
     }
 
@@ -57,13 +57,13 @@ export const getInventoryOverview = catchAsyncErrors(async (req, res) => {
       price: p.price,
       stock,
       status,
-      image: p.images?.[0]?.url || "",
+      image: p.images?.[0]?.url || '',
       lastUpdatedBy: p.lastUpdatedBy,
     };
   });
 
   return res.status(200).json({
-    message: "Inventory overview fetched successfully",
+    message: 'Inventory overview fetched successfully',
     error: false,
     success: true,
     threshold,
@@ -84,7 +84,7 @@ export const bulkUpdateStock = catchAsyncErrors(async (req, res) => {
 
   if (!Array.isArray(updates) || updates.length === 0) {
     return res.status(400).json({
-      message: "updates must be a non-empty array",
+      message: 'updates must be a non-empty array',
       error: true,
       success: false,
     });
@@ -99,7 +99,7 @@ export const bulkUpdateStock = catchAsyncErrors(async (req, res) => {
 
     if (!productId) {
       return res.status(400).json({
-        message: "Each update must include a productId",
+        message: 'Each update must include a productId',
         error: true,
         success: false,
       });
@@ -135,8 +135,8 @@ export const bulkUpdateStock = catchAsyncErrors(async (req, res) => {
 
     await writeAuditLog({
       actorId: req.user.id || req.user._id,
-      actionType: "INVENTORY_UPDATE",
-      targetType: "Product",
+      actionType: 'INVENTORY_UPDATE',
+      targetType: 'Product',
       targetId: product._id,
       beforeSnapshot: { stock: beforeStock },
       afterSnapshot: { stock: stock },

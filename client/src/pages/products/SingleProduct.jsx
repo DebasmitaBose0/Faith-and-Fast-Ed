@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   getProductDetails,
   getProductReviews,
@@ -9,19 +9,19 @@ import {
   getSimilarProducts,
   getTrendingProducts,
   getFrequentlyBoughtTogether,
-} from "@/store/product-slice/productDetails";
-import ImageSlider from "./ImageSlider";
-import ProductCard from "./ProductCard";
-import RecentlyViewed from "../components/RecentlyViewedProducts";
-import RecommendationSection from "../components/RecommendationSection";
-import ProductDetailsSkeleton from "../components/skeletons/ProductDetailsSkeleton";
-import MetaData from "../extras/MetaData";
-import { Button, Rating } from "@mui/material";
-import { Heart, ShoppingCartIcon } from "lucide-react";
-import { toast } from "react-toastify";
-import PropTypes from "prop-types";
-import { addToCart } from "@/store/add-to-cart/addToCart";
-import { addToWishList } from "@/store/add-to-wishlist/addToWishList";
+} from '@/store/product-slice/productDetails';
+import ImageSlider from './ImageSlider';
+import ProductCard from './ProductCard';
+import RecentlyViewed from '../components/RecentlyViewedProducts';
+import RecommendationSection from '../components/RecommendationSection';
+import ProductDetailsSkeleton from '../components/skeletons/ProductDetailsSkeleton';
+import MetaData from '../extras/MetaData';
+import { Button, Rating } from '@mui/material';
+import { Heart, ShoppingCartIcon } from 'lucide-react';
+import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
+import { addToCart } from '@/store/add-to-cart/addToCart';
+import { addToWishList } from '@/store/add-to-wishlist/addToWishList';
 
 const ProductDetails = ({ products }) => {
   const { productId } = useParams();
@@ -39,11 +39,11 @@ const ProductDetails = ({ products }) => {
   } = useSelector((state) => state.productDetails);
   const { user } = useSelector((state) => state.auth);
 
-  const [reviewText, setReviewText] = useState("");
+  const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
   const [randomSimilar, setRandomSimilar] = useState([]);
-  const [selectedColor, setSelectedColor] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
   const [visibleReviews, setVisibleReviews] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
   const [faqs, setFaqs] = useState([]);
@@ -83,10 +83,10 @@ const ProductDetails = ({ products }) => {
 
   const expectedDate = new Date();
   expectedDate.setDate(expectedDate.getDate() + 5);
-  const formattedDate = expectedDate.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
+  const formattedDate = expectedDate.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
   });
 
   useEffect(() => {
@@ -165,7 +165,7 @@ const ProductDetails = ({ products }) => {
     if (product && product._id) {
       let viewedProducts = [];
       try {
-        const raw = JSON.parse(localStorage.getItem("recentlyViewed"));
+        const raw = JSON.parse(localStorage.getItem('recentlyViewed'));
         if (Array.isArray(raw)) viewedProducts = raw;
       } catch {
         /* ignore corrupt or non-array value */
@@ -179,10 +179,7 @@ const ProductDetails = ({ products }) => {
 
       viewedProducts = viewedProducts.slice(0, 8);
 
-      localStorage.setItem(
-        "recentlyViewed",
-        JSON.stringify(viewedProducts)
-      );
+      localStorage.setItem('recentlyViewed', JSON.stringify(viewedProducts));
 
       const filteredViewed = viewedProducts.filter(
         (item) => item._id !== product._id
@@ -191,7 +188,6 @@ const ProductDetails = ({ products }) => {
       setRecentlyViewed(filteredViewed);
     }
   }, [product]);
-
 
   useEffect(() => {
     const combined = [...(similarProducts || []), ...(products || [])];
@@ -213,28 +209,28 @@ const ProductDetails = ({ products }) => {
         if (Array.isArray(product.coloroptions)) {
           if (
             product.coloroptions.length === 1 &&
-            product.coloroptions[0].includes(",")
+            product.coloroptions[0].includes(',')
           ) {
-            setSelectedColor(product.coloroptions[0].split(",")[0].trim());
+            setSelectedColor(product.coloroptions[0].split(',')[0].trim());
           } else {
             setSelectedColor(product.coloroptions[0]);
           }
-        } else if (typeof product.coloroptions === "string") {
-          setSelectedColor(product.coloroptions.split(",")[0].trim());
+        } else if (typeof product.coloroptions === 'string') {
+          setSelectedColor(product.coloroptions.split(',')[0].trim());
         }
       }
       if (product.sizeoptions) {
         if (Array.isArray(product.sizeoptions)) {
           if (
             product.sizeoptions.length === 1 &&
-            product.sizeoptions[0].includes(",")
+            product.sizeoptions[0].includes(',')
           ) {
-            setSelectedSize(product.sizeoptions[0].split(",")[0].trim());
+            setSelectedSize(product.sizeoptions[0].split(',')[0].trim());
           } else {
             setSelectedSize(product.sizeoptions[0]);
           }
-        } else if (typeof product.sizeoptions === "string") {
-          setSelectedSize(product.sizeoptions.split(",")[0].trim());
+        } else if (typeof product.sizeoptions === 'string') {
+          setSelectedSize(product.sizeoptions.split(',')[0].trim());
         }
       }
     }
@@ -247,15 +243,15 @@ const ProductDetails = ({ products }) => {
         if (
           product.sizeoptions.length === 1 &&
           product.sizeoptions[0] &&
-          product.sizeoptions[0].includes(",")
+          product.sizeoptions[0].includes(',')
         ) {
-          sizeOptions = product.sizeoptions[0].split(",").map((s) => s.trim());
+          sizeOptions = product.sizeoptions[0].split(',').map((s) => s.trim());
         } else {
           sizeOptions = product.sizeoptions;
         }
       }
-    } else if (typeof product.sizeoptions === "string") {
-      sizeOptions = product.sizeoptions.split(",").map((s) => s.trim());
+    } else if (typeof product.sizeoptions === 'string') {
+      sizeOptions = product.sizeoptions.split(',').map((s) => s.trim());
     }
   }
 
@@ -266,29 +262,29 @@ const ProductDetails = ({ products }) => {
         if (
           product.coloroptions.length === 1 &&
           product.coloroptions[0] &&
-          product.coloroptions[0].includes(",")
+          product.coloroptions[0].includes(',')
         ) {
           colorOptions = product.coloroptions[0]
-            .split(",")
+            .split(',')
             .map((c) => c.trim());
         } else {
           colorOptions = product.coloroptions;
         }
       }
-    } else if (typeof product.coloroptions === "string") {
-      colorOptions = product.coloroptions.split(",").map((c) => c.trim());
+    } else if (typeof product.coloroptions === 'string') {
+      colorOptions = product.coloroptions.split(',').map((c) => c.trim());
     }
   }
 
   const handleReviewSubmit = () => {
     if (!user) {
-      return toast.error("Please login to post a review");
+      return toast.error('Please login to post a review');
     }
     if (!rating) {
-      return toast.error("Please select a rating");
+      return toast.error('Please select a rating');
     }
     if (!reviewText) {
-      return toast.error("Please enter a review");
+      return toast.error('Please enter a review');
     }
     dispatch(
       postReview({
@@ -298,18 +294,18 @@ const ProductDetails = ({ products }) => {
     )
       .unwrap()
       .then(() => {
-        toast.success("Review posted successfully");
+        toast.success('Review posted successfully');
         // Re-fetch reviews so the new one appears without a page reload.
         dispatch(getProductReviews(productId));
-        setReviewText("");
+        setReviewText('');
         setRating(0);
       })
-      .catch((err) => toast.error(err?.message || "Failed to post review"));
+      .catch((err) => toast.error(err?.message || 'Failed to post review'));
   };
 
   const handleAddCart = (item) => {
     if (!item) {
-      toast.error("Error: Item not found!");
+      toast.error('Error: Item not found!');
       return;
     }
     dispatch(addToCart({ productId: item._id, selectedColor, selectedSize }));
@@ -321,23 +317,23 @@ const ProductDetails = ({ products }) => {
   // opens once the item is actually in the cart.
   const handleBuyNow = async (item) => {
     if (!item) {
-      toast.error("Error: Item not found!");
+      toast.error('Error: Item not found!');
       return;
     }
     try {
       await dispatch(
         addToCart({ productId: item._id, selectedColor, selectedSize })
       ).unwrap();
-      navigate("/checkout");
+      navigate('/checkout');
     } catch (err) {
-      toast.error(err || "Could not proceed to checkout. Please try again.");
+      toast.error(err || 'Could not proceed to checkout. Please try again.');
     }
   };
 
   const handleAddWishList = (item) => {
-      dispatch(addToWishList(item._id));
-      toast.success(`Successfully added to WishList!`);
-    };
+    dispatch(addToWishList(item._id));
+    toast.success(`Successfully added to WishList!`);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
@@ -430,7 +426,7 @@ const ProductDetails = ({ products }) => {
                         value={product?.ratings}
                         readOnly
                         precision={0.5}
-                        sx={{ color: "#FFD700" }}
+                        sx={{ color: '#FFD700' }}
                       />
                       <span className="text-gray-600 dark:text-gray-300">
                         ({reviews.length} reviews)
@@ -450,8 +446,8 @@ const ProductDetails = ({ products }) => {
                           whileTap={{ scale: 0.9 }}
                           className={`px-4 py-2 rounded-full font-medium transition-all duration-200 ${
                             selectedColor === color
-                              ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-md"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-md'
+                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                           }`}
                         >
                           {color}
@@ -472,8 +468,8 @@ const ProductDetails = ({ products }) => {
                           whileTap={{ scale: 0.9 }}
                           className={`px-4 py-2 rounded-full font-medium transition-all duration-200 ${
                             selectedSize === size
-                              ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-md"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-md'
+                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                           }`}
                         >
                           {size}
@@ -488,21 +484,21 @@ const ProductDetails = ({ products }) => {
                       disabled={loading || product?.stock === 0}
                       sx={{
                         background:
-                          "linear-gradient(to right, #f59e0b, #f97316)",
-                        color: "white",
-                        padding: "12px 24px",
-                        borderRadius: "9999px",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        "&:hover": {
+                          'linear-gradient(to right, #f59e0b, #f97316)',
+                        color: 'white',
+                        padding: '12px 24px',
+                        borderRadius: '9999px',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        '&:hover': {
                           background:
-                            "linear-gradient(to right, #d97706, #ea580c)",
+                            'linear-gradient(to right, #d97706, #ea580c)',
                         },
-                        "&:disabled": { opacity: 0.5 },
+                        '&:disabled': { opacity: 0.5 },
                       }}
                       startIcon={<ShoppingCartIcon />}
                     >
-                      {product?.stock === 0 ? "Out of Stock" : "Add to Cart"}
+                      {product?.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                     </Button>
                   </motion.div>
                   <motion.div variants={itemVariants}>
@@ -512,21 +508,21 @@ const ProductDetails = ({ products }) => {
                       disabled={loading || product?.stock === 0}
                       sx={{
                         background:
-                          "linear-gradient(to right, #16a34a, #15803d)",
-                        color: "white",
-                        padding: "12px 24px",
-                        borderRadius: "9999px",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        "&:hover": {
+                          'linear-gradient(to right, #16a34a, #15803d)',
+                        color: 'white',
+                        padding: '12px 24px',
+                        borderRadius: '9999px',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        '&:hover': {
                           background:
-                            "linear-gradient(to right, #15803d, #166534)",
+                            'linear-gradient(to right, #15803d, #166534)',
                         },
-                        "&:disabled": { opacity: 0.5 },
+                        '&:disabled': { opacity: 0.5 },
                       }}
                       startIcon={<ShoppingCartIcon />}
                     >
-                      {product?.stock === 0 ? "Unavailable" : "Buy Now"}
+                      {product?.stock === 0 ? 'Unavailable' : 'Buy Now'}
                     </Button>
                   </motion.div>
                   <motion.div variants={itemVariants}>
@@ -536,17 +532,17 @@ const ProductDetails = ({ products }) => {
                       disabled={loading}
                       sx={{
                         background:
-                          "linear-gradient(to right, #f59e0b, #f97316)",
-                        color: "white",
-                        padding: "12px 24px",
-                        borderRadius: "9999px",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        "&:hover": {
+                          'linear-gradient(to right, #f59e0b, #f97316)',
+                        color: 'white',
+                        padding: '12px 24px',
+                        borderRadius: '9999px',
+                        fontSize: '16px',
+                        fontWeight: 'bold',
+                        '&:hover': {
                           background:
-                            "linear-gradient(to right, #d97706, #ea580c)",
+                            'linear-gradient(to right, #d97706, #ea580c)',
                         },
-                        "&:disabled": { opacity: 0.5 },
+                        '&:disabled': { opacity: 0.5 },
                       }}
                       startIcon={<Heart />}
                     >
@@ -575,10 +571,10 @@ const ProductDetails = ({ products }) => {
                   🚚 Free Delivery
                 </p>
                 <p className="text-lg text-gray-600 dark:text-gray-300">
-                  📅 Delivery by{" "}
+                  📅 Delivery by{' '}
                   <span className="font-semibold text-indigo-500 dark:text-indigo-400">
                     {formattedDate}
-                  </span>{" "}
+                  </span>{' '}
                   (Expected)
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400 italic">
@@ -696,16 +692,16 @@ const ProductDetails = ({ products }) => {
                             value={review?.rating || 0}
                             readOnly
                             size="small"
-                            sx={{ color: "#FFD700" }}
+                            sx={{ color: '#FFD700' }}
                           />
                           <span className="ml-2 text-gray-500 dark:text-gray-400 text-sm">
                             {review?.createdAt
                               ? new Date(review.createdAt).toLocaleDateString()
-                              : "No date"}
+                              : 'No date'}
                           </span>
                         </div>
                         <p className="text-gray-600 dark:text-gray-300 text-sm">
-                          {review?.comment || "No comment"}
+                          {review?.comment || 'No comment'}
                         </p>
                       </motion.div>
                     ))
@@ -746,9 +742,9 @@ const ProductDetails = ({ products }) => {
                         onChange={(e, newValue) => setRating(newValue)}
                         size="large"
                         sx={{
-                          color: "#FFD700",
-                          "& .MuiRating-iconEmpty": {
-                            color: "rgba(189, 189, 189, 0.5)",
+                          color: '#FFD700',
+                          '& .MuiRating-iconEmpty': {
+                            color: 'rgba(189, 189, 189, 0.5)',
                           },
                         }}
                       />
@@ -761,7 +757,7 @@ const ProductDetails = ({ products }) => {
                       disabled={reviewPosting}
                       className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-3 rounded-full font-semibold flex items-center justify-center gap-2 disabled:opacity-50 shadow-md transition-all duration-300 mx-auto"
                     >
-                      {reviewPosting ? "Submitting..." : "Submit Review"}
+                      {reviewPosting ? 'Submitting...' : 'Submit Review'}
                     </motion.button>
                   </div>
                 </div>
@@ -828,7 +824,7 @@ const ProductDetails = ({ products }) => {
                       variants={cardVariants}
                       whileHover={{
                         y: -5,
-                        boxShadow: "0 10px 20px rgba(0, 0, 0, 0.1)",
+                        boxShadow: '0 10px 20px rgba(0, 0, 0, 0.1)',
                       }}
                     >
                       <ProductCard product={prod} />

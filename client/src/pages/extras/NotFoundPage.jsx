@@ -1,16 +1,19 @@
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { FiArrowLeft } from "react-icons/fi";
-import "./NotFoundPage.css";
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { FiArrowLeft } from 'react-icons/fi';
+import './NotFoundPage.css';
 
 const NotFoundPage = () => {
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 px-6 not-found-wrapper" role="main">
+    <main
+      className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 px-6 not-found-wrapper"
+      role="main"
+    >
       <motion.div
         className="text-center not-found-card"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
+        transition={{ duration: 0.8, ease: 'easeInOut' }}
       >
         <motion.h1
           className="text-8xl font-extrabold text-yellow-500 dark:text-red-600 not-found-title"

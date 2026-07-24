@@ -1,12 +1,12 @@
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import ProductModel from "../models/productModel.js";
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import ProductModel from '../models/productModel.js';
 
 // Returns top rated reviews from all products
 export const getPopularReviews = catchAsyncErrors(async (req, res) => {
   // Let's find products that have reviews
-  const products = await ProductModel.find({ "reviews.0": { $exists: true } })
+  const products = await ProductModel.find({ 'reviews.0': { $exists: true } })
     .limit(10)
-    .select("name images price reviews");
+    .select('name images price reviews');
 
   const popularReviews = [];
 
@@ -16,10 +16,10 @@ export const getPopularReviews = catchAsyncErrors(async (req, res) => {
         popularReviews.push({
           productId: product._id,
           productName: product.name,
-          productImage: product.images?.[0]?.url || "",
+          productImage: product.images?.[0]?.url || '',
           price: product.price,
           reviewId: review._id,
-          userName: review.name || "Anonymous",
+          userName: review.name || 'Anonymous',
           rating: review.rating,
           comment: review.comment,
           createdAt: review.createdAt || new Date(),

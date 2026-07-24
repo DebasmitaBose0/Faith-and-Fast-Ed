@@ -1,18 +1,18 @@
-import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
-import { motion } from "framer-motion";
-import { FiClock, FiTruck, FiCheckCircle, FiMapPin } from "react-icons/fi";
-import { cancelOrder, getSingleOrder } from "@/store/order-slice/order";
-import MetaData from "../extras/MetaData";
-import { Alert, CircularProgress } from "@mui/material";
-import { FaCheck } from "react-icons/fa6";
-import { toast } from "react-toastify";
-import ConfirmationModal from "../extras/ConfirmationModal";
-import { format } from "date-fns";
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { FiClock, FiTruck, FiCheckCircle, FiMapPin } from 'react-icons/fi';
+import { cancelOrder, getSingleOrder } from '@/store/order-slice/order';
+import MetaData from '../extras/MetaData';
+import { Alert, CircularProgress } from '@mui/material';
+import { FaCheck } from 'react-icons/fa6';
+import { toast } from 'react-toastify';
+import ConfirmationModal from '../extras/ConfirmationModal';
+import { format } from 'date-fns';
 
-const statusOrder = ["PENDING", "SHIPPED", "DELIVERED"];
+const statusOrder = ['PENDING', 'SHIPPED', 'DELIVERED'];
 
 const StatusStep = ({ step, index, currentStatus }) => {
   const currentIndex = statusOrder.indexOf(currentStatus);
@@ -24,12 +24,12 @@ const StatusStep = ({ step, index, currentStatus }) => {
         className={`h-14 w-14 rounded-full flex items-center justify-center text-2xl 
           ${
             isCompleted
-              ? "bg-gradient-to-br from-green-400 to-blue-500 text-white shadow-lg"
-              : "bg-gray-100 dark:bg-gray-700 text-gray-400"
+              ? 'bg-gradient-to-br from-green-400 to-blue-500 text-white shadow-lg'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-400'
           }`}
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ delay: index * 0.1, type: "spring" }}
+        transition={{ delay: index * 0.1, type: 'spring' }}
       >
         {isCompleted ? (
           <FaCheck className="text-xl" />
@@ -44,8 +44,8 @@ const StatusStep = ({ step, index, currentStatus }) => {
       <motion.span
         className={`mt-2 text-sm font-medium ${
           isCompleted
-            ? "text-green-600 dark:text-green-400"
-            : "text-gray-500 dark:text-gray-300"
+            ? 'text-green-600 dark:text-green-400'
+            : 'text-gray-500 dark:text-gray-300'
         }`}
       >
         {step}
@@ -56,7 +56,7 @@ const StatusStep = ({ step, index, currentStatus }) => {
           <motion.div
             className="h-full bg-gradient-to-r from-green-400 to-blue-500"
             initial={{ width: 0 }}
-            animate={{ width: isCompleted ? "100%" : "0%" }}
+            animate={{ width: isCompleted ? '100%' : '0%' }}
             transition={{ delay: 0.3, duration: 0.5 }}
           />
         </div>
@@ -84,16 +84,16 @@ const OrderDetails = () => {
 
   const handleStatus = (status) => {
     switch (status) {
-      case "DELIVERED":
-        return "bg-green-200 dark:bg-green-800 text-green-900 dark:text-green-100 px-2 py-1 rounded-md font-semibold";
-      case "PENDING":
-        return "bg-orange-200 dark:bg-orange-800 text-orange-900 dark:text-orange-100 px-2 py-1 rounded-md font-semibold";
-      case "SHIPPED":
-        return "bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100 px-2 py-1 rounded-md font-semibold";
-      case "CANCELLED":
-        return "bg-red-200 dark:bg-red-800 text-red-900 dark:text-red-100 px-2 py-1 rounded-md font-semibold";
+      case 'DELIVERED':
+        return 'bg-green-200 dark:bg-green-800 text-green-900 dark:text-green-100 px-2 py-1 rounded-md font-semibold';
+      case 'PENDING':
+        return 'bg-orange-200 dark:bg-orange-800 text-orange-900 dark:text-orange-100 px-2 py-1 rounded-md font-semibold';
+      case 'SHIPPED':
+        return 'bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100 px-2 py-1 rounded-md font-semibold';
+      case 'CANCELLED':
+        return 'bg-red-200 dark:bg-red-800 text-red-900 dark:text-red-100 px-2 py-1 rounded-md font-semibold';
       default:
-        return "bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1 rounded-md font-semibold";
+        return 'bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1 rounded-md font-semibold';
     }
   };
 
@@ -103,55 +103,55 @@ const OrderDetails = () => {
     setIsLoading(true);
     try {
       await dispatch(cancelOrder(order._id)).unwrap();
-      toast.success("Order canceled successfully!");
+      toast.success('Order canceled successfully!');
       // Re-fetch this order so the status updates in place, no full reload.
       dispatch(getSingleOrder(Id));
     } catch (error) {
-      toast.error(error || "Failed to cancel order.");
+      toast.error(error || 'Failed to cancel order.');
     } finally {
       setIsLoading(false);
       setIsModalOpen(false);
     }
   };
 
-   const formatDeliveryDate = (date) => {
-      if (!date || date === "To be delivered") return "To be delivered";
-  
-      const deliveryDate = new Date(date);
-      const today = new Date();
-      const tomorrow = new Date();
-      tomorrow.setDate(today.getDate() + 1);
-  
-      const yearFormat =
-        deliveryDate.getFullYear() === today.getFullYear()
-          ? "MMMM dd"
-          : "MMMM dd, yyyy";
-  
-      if (
-        deliveryDate.toDateString() === today.toDateString() &&
-        deliveryDate.getTime() > today.getTime()
-      ) {
-        return "Arriving today by 10 PM";
-      }
-  
-      if (deliveryDate.toDateString() === tomorrow.toDateString()) {
-        return "Arriving tomorrow by 10 PM";
-      }
-  
-      if (deliveryDate > today) {
-        return `Expected delivery on ${format(deliveryDate, yearFormat)}`;
-      }
-  
-      if (
-        deliveryDate.getDate() === today.getDate() &&
-        deliveryDate.getMonth() === today.getMonth() &&
-        deliveryDate.getFullYear() === today.getFullYear()
-      ) {
-        return `Delivered today, ${format(deliveryDate, "MMMM dd")}`;
-      }
-  
-      return `Delivered on ${format(deliveryDate, yearFormat)}`;
-    };
+  const formatDeliveryDate = (date) => {
+    if (!date || date === 'To be delivered') return 'To be delivered';
+
+    const deliveryDate = new Date(date);
+    const today = new Date();
+    const tomorrow = new Date();
+    tomorrow.setDate(today.getDate() + 1);
+
+    const yearFormat =
+      deliveryDate.getFullYear() === today.getFullYear()
+        ? 'MMMM dd'
+        : 'MMMM dd, yyyy';
+
+    if (
+      deliveryDate.toDateString() === today.toDateString() &&
+      deliveryDate.getTime() > today.getTime()
+    ) {
+      return 'Arriving today by 10 PM';
+    }
+
+    if (deliveryDate.toDateString() === tomorrow.toDateString()) {
+      return 'Arriving tomorrow by 10 PM';
+    }
+
+    if (deliveryDate > today) {
+      return `Expected delivery on ${format(deliveryDate, yearFormat)}`;
+    }
+
+    if (
+      deliveryDate.getDate() === today.getDate() &&
+      deliveryDate.getMonth() === today.getMonth() &&
+      deliveryDate.getFullYear() === today.getFullYear()
+    ) {
+      return `Delivered today, ${format(deliveryDate, 'MMMM dd')}`;
+    }
+
+    return `Delivered on ${format(deliveryDate, yearFormat)}`;
+  };
 
   return (
     <div className="container mx-auto p-6 min-h-screen">
@@ -186,10 +186,10 @@ const OrderDetails = () => {
                 Order ID: <span className="font-mono">{order._id}</span>
               </h3>
               <p className="text-gray-600 dark:text-gray-300 mt-1">
-                {new Date(order.createdAt).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
+                {new Date(order.createdAt).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
                 })}
               </p>
             </div>
@@ -202,7 +202,7 @@ const OrderDetails = () => {
             </span>
           </div>
 
-          {["PENDING", "SHIPPED", "DELIVERED"].includes(order.orderStatus) && (
+          {['PENDING', 'SHIPPED', 'DELIVERED'].includes(order.orderStatus) && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -234,7 +234,7 @@ const OrderDetails = () => {
               <div className="space-y-3 text-gray-600 dark:text-gray-300">
                 <p>{order.address.address_line}</p>
                 <p>
-                  {order.address.city}, {order.address.state}{" "}
+                  {order.address.city}, {order.address.state}{' '}
                   {order.address.pincode}
                 </p>
                 <p>{order.address.country}</p>
@@ -258,11 +258,11 @@ const OrderDetails = () => {
                   <strong>Total Amount:</strong> ₹{order.totalAmount}
                 </p>
                 <p>
-                  <strong>Tracking ID:</strong>{" "}
-                  {order.trackingId || "Not available yet"}
+                  <strong>Tracking ID:</strong>{' '}
+                  {order.trackingId || 'Not available yet'}
                 </p>
                 <p>
-                  <strong>Delivery:</strong>{" "}
+                  <strong>Delivery:</strong>{' '}
                   {formatDeliveryDate(order.deliveryDate)}
                 </p>
               </div>
@@ -287,7 +287,7 @@ const OrderDetails = () => {
                   <Link to={`/product/${item.product._id}`} className="block">
                     <img
                       src={
-                        item.product?.images?.[0]?.url || "/default-image.jpg"
+                        item.product?.images?.[0]?.url || '/default-image.jpg'
                       }
                       alt={item.product?.name}
                       className="w-20 h-20 object-contain rounded-lg"
@@ -300,7 +300,7 @@ const OrderDetails = () => {
                         <span>Quantity: {item.quantity}</span>
                         {item.selectedColor && (
                           <span className="flex items-center">
-                            Color:{" "}
+                            Color:{' '}
                             <span
                               className="ml-1 w-4 h-4 rounded-full border"
                               style={{ backgroundColor: item.selectedColor }}
@@ -326,13 +326,13 @@ const OrderDetails = () => {
             >
               View Invoice
             </Link>
-            {order.orderStatus === "PENDING" && (
+            {order.orderStatus === 'PENDING' && (
               <button
                 className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => setIsModalOpen(true)}
                 disabled={isLoading}
               >
-                {isLoading ? "Canceling..." : "Cancel Order"}
+                {isLoading ? 'Canceling...' : 'Cancel Order'}
               </button>
             )}
           </div>
