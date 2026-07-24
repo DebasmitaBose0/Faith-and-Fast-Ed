@@ -100,6 +100,7 @@ const ProductReviewPage = () => {
   };
 
   // Star rating component (custom, without MUI)
+  // eslint-disable-next-line no-unused-vars
   const StarRating = ({ value, onChange }) => {
     const stars = Array.from({ length: 5 }, (_, index) => (
       <span
@@ -290,6 +291,7 @@ const ProductReviewPage = () => {
 };
 
 // Custom Star rating component
+// eslint-disable-next-line no-unused-vars
 const StarRating = ({ value, onChange, readOnly = false }) => {
   const stars = Array.from({ length: 5 }, (_, index) => (
     <span
