@@ -18,6 +18,7 @@ import adminAnalyticsReducer from './order-slice/analyticsSlice';
 import paymentSettingsReducer from './extra-slice/paymentSettingsSlice';
 import contactReducer from './extra-slice/contactSlice';
 import inventoryReducer from './extra-slice/inventorySlice';
+import currencyReducer from './currency-slice/currencySlice';
 
 const store = configureStore({
   reducer: {
@@ -39,6 +40,7 @@ const store = configureStore({
     paymentSettings: paymentSettingsReducer,
     contact: contactReducer,
     inventory: inventoryReducer,
+    currency: currencyReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(authPersistMiddleware),
