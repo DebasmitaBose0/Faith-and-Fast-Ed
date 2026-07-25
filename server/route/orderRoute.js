@@ -17,10 +17,16 @@ import admin from '../middleware/Admin.js';
 import upload from '../middleware/multer.js';
 import { getOrderAnalytics } from '../controllers/analyticsController.js';
 import { orderLimiter } from '../middleware/rateLimiter.js';
+import { cacheMiddleware, invalidateCache } from '../utils/cache.js';
 
 const orderRouter = express.Router();
 
-orderRouter.post('/create', auth, orderLimiter, createOrder);
+const clearOrderAnalyticsCache = async (req, res, next) => {
+  await invalidateCache('orders:analytics*');
+  next();
+};
+
+orderRouter.post('/create', auth, clearOrderAnalyticsCache, orderLimiter, createOrder);
 
 orderRouter.post(
   '/upload-payment-screenshot',
@@ -33,7 +39,7 @@ orderRouter.put(
   '/admin/verify-payment/:orderId',
   auth,
   admin,
-
+  clearOrderAnalyticsCache,
   verifyPayment
 );
 
@@ -41,17 +47,23 @@ orderRouter.get('/myorder', auth, myOrders);
 
 orderRouter.get('/get/admin', auth, admin, getAllOrders);
 
-orderRouter.get('/admin/analytics', auth, admin, getOrderAnalytics);
+orderRouter.get(
+  '/admin/analytics',
+  auth,
+  admin,
+  cacheMiddleware('orders:analytics', 3600),
+  getOrderAnalytics
+);
 
 orderRouter.get('/get/:orderId', auth, getSingleOrder);
 
-orderRouter.put('/admin/update/:orderId', auth, admin, updateOrderStatus);
+orderRouter.put('/admin/update/:orderId', auth, admin, clearOrderAnalyticsCache, updateOrderStatus);
 
-orderRouter.put('/cancel/:orderId', auth, cancelOrder);
+orderRouter.put('/cancel/:orderId', auth, clearOrderAnalyticsCache, cancelOrder);
 
-orderRouter.delete('/admin/delete/:orderId', auth, admin, deleteOrder);
+orderRouter.delete('/admin/delete/:orderId', auth, admin, clearOrderAnalyticsCache, deleteOrder);
 
-orderRouter.delete('/admin/delete-all', auth, admin, deleteAllOrders);
+orderRouter.delete('/admin/delete-all', auth, admin, clearOrderAnalyticsCache, deleteAllOrders);
 
 orderRouter.get('/invoice/:orderId', auth, downloadInvoice);
 
