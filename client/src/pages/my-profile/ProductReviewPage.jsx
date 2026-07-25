@@ -100,7 +100,7 @@ const ProductReviewPage = () => {
   };
 
   // Star rating component (custom, without MUI)
-  // eslint-disable-next-line no-unused-vars
+  
   const StarRating = ({ value, onChange }) => {
     const stars = Array.from({ length: 5 }, (_, index) => (
       <span
@@ -290,24 +290,4 @@ const ProductReviewPage = () => {
   );
 };
 
-// Custom Star rating component
-// eslint-disable-next-line no-unused-vars
-const StarRating = ({ value, onChange, readOnly = false }) => {
-  const stars = Array.from({ length: 5 }, (_, index) => (
-    <span
-      key={index}
-      className={`cursor-pointer text-2xl ${
-        index < value
-          ? 'text-yellow-500'
-          : 'text-gray-300 dark:text-gray-600 hover:text-yellow-400'
-      } ${readOnly ? 'cursor-default' : ''}`}
-      onClick={!readOnly ? () => onChange(index + 1) : undefined}
-    >
-      ★
-    </span>
-  ));
-  return <div className="flex space-x-1">{stars}</div>;
-};
-
 export default ProductReviewPage;
-
