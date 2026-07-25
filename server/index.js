@@ -86,6 +86,7 @@ app.get('/ready', (req, res) => {
 //routes
 import addressRouter from './route/addressRoute.js';
 import backupRouter from './route/backupRoute.js';
+import bulkProductRouter from './route/bulkProductRoute.js';
 import cartRouter from './route/cartRoute.js';
 import categoryRouter from './route/categoryRoute.js';
 import currencyRouter from './route/currencyRoute.js';
@@ -117,7 +118,7 @@ app.use('/api/support', supportRouter);
 app.use('/api/user', userRouter);
 app.use('/api/wishlist', wishListRouter);
 app.use('/api/review', reviewRouter);
-app.use('/api/currency', currencyRouter);
+app.use('/api/bulk-product', bulkProductRouter);
 app.use('/api/backup', backupRouter);
 
 app.use(errorMiddleware);
