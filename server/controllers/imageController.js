@@ -1,4 +1,4 @@
-import { uploadImage, deleteImage } from '../utils/cloudinary.js';
+import { uploadImage, deleteImage, validateImageFile } from '../utils/cloudinary.js';
 
 const uploadImageController = async (req, res) => {
   try {

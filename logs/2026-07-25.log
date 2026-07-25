@@ -1,0 +1,25 @@
+{"level":"info","timestamp":"2026-07-25T13:22:15.926Z","message":"Database connected successfully"}
+{"level":"info","timestamp":"2026-07-25T13:22:15.984Z","message":"Starting system monitoring with interval 300000ms"}
+{"level":"warn","timestamp":"2026-07-25T13:22:16.018Z","message":"System memory usage exceeds threshold","memoryUsagePercent":94,"threshold":90,"freeMemoryMB":479}
+{"level":"info","timestamp":"2026-07-25T13:22:16.141Z","message":"Server is running on port 5000"}
+{"level":"info","timestamp":"2026-07-25T13:22:25.285Z","message":"[GET] /api/discount/all -> 200","method":"GET","url":"/api/discount/all","status":200,"duration":"107ms","ip":"::1"}
+{"level":"info","timestamp":"2026-07-25T13:22:55.031Z","message":"Database connected successfully"}
+{"level":"info","timestamp":"2026-07-25T13:22:55.076Z","message":"Starting system monitoring with interval 300000ms"}
+{"level":"warn","timestamp":"2026-07-25T13:22:55.085Z","message":"System memory usage exceeds threshold","memoryUsagePercent":91,"threshold":90,"freeMemoryMB":675}
+{"level":"info","timestamp":"2026-07-25T13:22:55.091Z","message":"Server is running on port 5000"}
+{"level":"info","timestamp":"2026-07-25T13:22:59.497Z","message":"[POST] /api/user/login -> 200","method":"POST","url":"/api/user/login","status":200,"duration":"281ms","ip":"::1"}
+{"level":"warn","timestamp":"2026-07-25T13:22:59.742Z","message":"[GET] /api/cart/get -> 404","method":"GET","url":"/api/cart/get","status":404,"duration":"187ms","ip":"::1"}
+{"level":"warn","timestamp":"2026-07-25T13:22:59.768Z","message":"[GET] /api/wishlist/get -> 404","method":"GET","url":"/api/wishlist/get","status":404,"duration":"199ms","ip":"::1"}
+{"level":"info","timestamp":"2026-07-25T13:22:59.934Z","message":"[GET] /api/product/top-reviews -> 200","method":"GET","url":"/api/product/top-reviews","status":200,"duration":"291ms","ip":"::1"}
+{"level":"info","timestamp":"2026-07-25T13:22:59.983Z","message":"[GET] /api/user/me -> 200","method":"GET","url":"/api/user/me","status":200,"duration":"408ms","ip":"::1"}
+{"level":"info","timestamp":"2026-07-25T13:23:00.422Z","message":"[GET] /api/product/get -> 200","method":"GET","url":"/api/product/get","status":200,"duration":"770ms","ip":"::1"}
+{"level":"info","timestamp":"2026-07-25T13:24:07.942Z","message":"Database connected successfully"}
+{"level":"info","timestamp":"2026-07-25T13:24:07.945Z","message":"Starting system monitoring with interval 300000ms"}
+{"level":"warn","timestamp":"2026-07-25T13:24:07.947Z","message":"System memory usage exceeds threshold","memoryUsagePercent":95,"threshold":90,"freeMemoryMB":406}
+{"level":"info","timestamp":"2026-07-25T13:24:07.955Z","message":"Server is running on port 5000"}
+{"level":"info","timestamp":"2026-07-25T13:24:08.582Z","message":"[GET] /api/product/get -> 304","method":"GET","url":"/api/product/get","status":304,"duration":"575ms","ip":"::1"}
+{"level":"warn","timestamp":"2026-07-25T13:24:08.799Z","message":"[GET] /api/cart/get -> 404","method":"GET","url":"/api/cart/get","status":404,"duration":"772ms","ip":"::1"}
+{"level":"warn","timestamp":"2026-07-25T13:24:08.811Z","message":"[GET] /api/wishlist/get -> 404","method":"GET","url":"/api/wishlist/get","status":404,"duration":"775ms","ip":"::1"}
+{"level":"info","timestamp":"2026-07-25T13:25:16.840Z","message":"Database connected successfully"}
+{"level":"info","timestamp":"2026-07-25T13:25:16.844Z","message":"Starting system monitoring with interval 300000ms"}
+{"level":"info","timestamp":"2026-07-25T13:25:16.854Z","message":"Server is running on port 5000"}
