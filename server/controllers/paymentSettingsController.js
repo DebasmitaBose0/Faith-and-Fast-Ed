@@ -1,7 +1,7 @@
 import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
 import PaymentSettingsModel from '../models/paymentSettingsModel.js';
 import { uploadImage, deleteImage } from '../utils/cloudinary.js';
-import { encrypt, decrypt } from '../utils/encryption.js';
+import { encrypt, decryptIfEncrypted } from '../utils/encryption.js';
 
 // Public — the checkout page needs the UPI ID and QR to show online-payment instructions.
 export const getPaymentSettings = catchAsyncErrors(async (req, res) => {
@@ -17,11 +17,15 @@ export const getPaymentSettings = catchAsyncErrors(async (req, res) => {
 
     const response = settings.toObject();
     if (response.upiId) {
-      response.upiId = decrypt(response.upiId);
+      response.upiId = decryptIfEncrypted(response.upiId);
     }
     res.status(200).json({ success: true, settings: response });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('getPaymentSettings failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Could not load payment settings',
+    });
   }
 });
 
@@ -73,7 +77,7 @@ export const updatePaymentSettings = catchAsyncErrors(async (req, res) => {
 
     const response = settings.toObject();
     if (response.upiId) {
-      response.upiId = decrypt(response.upiId);
+      response.upiId = decryptIfEncrypted(response.upiId);
     }
 
     res.status(200).json({
@@ -82,6 +86,10 @@ export const updatePaymentSettings = catchAsyncErrors(async (req, res) => {
       settings: response,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('updatePaymentSettings failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Could not update payment settings',
+    });
   }
 });
