@@ -11,6 +11,7 @@ import {
   updateOrderStatus,
   uploadPaymentScreenshot,
   verifyPayment,
+  downloadInvoice,
 } from '../controllers/orderController.js';
 import admin from '../middleware/Admin.js';
 import upload from '../middleware/multer.js';
@@ -51,5 +52,7 @@ orderRouter.put('/cancel/:orderId', auth, cancelOrder);
 orderRouter.delete('/admin/delete/:orderId', auth, admin, deleteOrder);
 
 orderRouter.delete('/admin/delete-all', auth, admin, deleteAllOrders);
+
+orderRouter.get('/invoice/:orderId', auth, downloadInvoice);
 
 export default orderRouter;

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 const SkeletonBlock = ({ className = '' }) => (
   <div
     className={`animate-pulse bg-gray-300 dark:bg-gray-600 rounded ${className}`}
@@ -37,3 +38,4 @@ const ContactSkeleton = () => (
 );
 
 export default ContactSkeleton;
+
