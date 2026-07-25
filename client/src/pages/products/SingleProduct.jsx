@@ -16,6 +16,8 @@ import RecentlyViewed from '../components/RecentlyViewedProducts';
 import RecommendationSection from '../components/RecommendationSection';
 import ProductDetailsSkeleton from '../components/skeletons/ProductDetailsSkeleton';
 import MetaData from '../extras/MetaData';
+import ProductGallery from '../components/ProductGallery';
+import '../components/ProductZoomLens.css';
 import { Button, Rating } from '@mui/material';
 import { Heart, ShoppingCartIcon } from 'lucide-react';
 import { toast } from 'react-toastify';
