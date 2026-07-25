@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import MetaData from './MetaData';
-import contactConfig from '../../config/contact';
+import contactConfig from '../../config/supportConfig';
 
 const faqs = [
   {
