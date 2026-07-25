@@ -1,4 +1,6 @@
-import { uploadImage, deleteImage, validateImageFile } from '../utils/cloudinary.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
+import { getCloudinaryUploadOptions, processImage } from '../utils/imageCompressor.js';
+import { validateImageFile } from '../utils/cloudinaryValidator.js';
 
 const uploadImageController = async (req, res) => {
   try {
@@ -12,6 +14,9 @@ const uploadImageController = async (req, res) => {
         success: false,
       });
     }
+
+    // Process image buffer locally with sharp before uploading
+    file.buffer = await processImage(file.buffer);
 
     const uploadOptions = getCloudinaryUploadOptions();
     const uploadResult = await uploadImage(file, uploadOptions);
