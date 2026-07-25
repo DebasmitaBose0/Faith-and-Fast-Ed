@@ -11,7 +11,6 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { clearError, signupUser } from '@/store/auth-slice/user';
-import gsap from 'gsap';
 
 const SignUp = () => {
   const [name, setName] = useState('');
@@ -49,8 +48,6 @@ const SignUp = () => {
       toast.error(error);
       dispatch(clearError());
     }
-
-    gsap.from('.login-form', { opacity: 0, y: -30, duration: 1 });
   }, [dispatch, error, navigate]);
 
   return (
