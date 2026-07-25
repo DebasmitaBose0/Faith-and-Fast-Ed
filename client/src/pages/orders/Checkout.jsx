@@ -30,6 +30,8 @@ const stripePromise = stripePublishableKey
   ? loadStripe(stripePublishableKey)
   : null;
 
+import CheckoutWizard from './CheckoutWizard';
+import './CheckoutWizard.css';
 const CreateOrder = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
