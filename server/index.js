@@ -93,6 +93,7 @@ import cartRouter from './route/cartRoute.js';
 import categoryRouter from './route/categoryRoute.js';
 import currencyRouter from './route/currencyRoute.js';
 import discountRouter from './route/discountRoute.js';
+import faqRouter from './route/faqRoute.js';
 import healthRouter from './route/healthRoute.js';
 import inventoryRouter from './route/inventoryRoute.js';
 import orderRouter from './route/orderRoute.js';
@@ -125,6 +126,7 @@ app.use('/api/review', reviewRouter);
 app.use('/api/audit', userAuditRouter);
 app.use('/api/bulk-product', bulkProductRouter);
 app.use('/api/backup', backupRouter);
+app.use('/api/faq', faqRouter);
 app.use('/api/ticket', ticketRouter);
 
 app.use(errorMiddleware);
