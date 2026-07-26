@@ -11,6 +11,7 @@ import {
   CreditCard,
   Boxes,
   Database,
+  HelpCircle,
   LifeBuoy,
 } from 'lucide-react';
 import AdminUsers from './AdminUsers';
@@ -23,6 +24,7 @@ import AdminAnalytics from './AdminAnalytics';
 import AdminPaymentSettings from './AdminPaymentSettings';
 import AdminInventory from './AdminInventory';
 import AdminBackup from './AdminBackup';
+import AdminFAQ from './AdminFAQ';
 import AdminTickets from './AdminTickets';
 
 const AdminDashboard = () => {
@@ -63,6 +65,8 @@ const AdminDashboard = () => {
         return <AdminAnalytics />;
       case 'Payment Settings':
         return <AdminPaymentSettings />;
+      case 'FAQs':
+        return <AdminFAQ />;
       case 'Tickets':
         return <AdminTickets />;
       case 'Backup':
@@ -99,6 +103,7 @@ const AdminDashboard = () => {
             { icon: Tag, text: 'Discounts', path: '/admin/discounts' },
             { icon: CreditCard, text: 'Payment Settings' },
             { icon: Database, text: 'Backup' },
+            { icon: HelpCircle, text: 'FAQs' },
             { icon: LifeBuoy, text: 'Tickets' },
           ].map((item) => (
             <button

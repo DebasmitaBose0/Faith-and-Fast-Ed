@@ -1,12 +1,19 @@
 const generateReceiptHTML = (order) => {
   const {
     user,
+    guestInfo,
     products,
     totalAmount,
     orderStatus,
     paymentMethod,
     deliveryDate,
   } = order;
+
+  const customerName = user
+    ? user.name
+    : guestInfo
+      ? guestInfo.name
+      : 'Customer';
 
   const formatDateOnly = (date) => {
     if (!date) return 'To be delivered';
@@ -59,7 +66,7 @@ const generateReceiptHTML = (order) => {
       <body>
         <div class="container">
           <h2>Order Confirmation</h2>
-          <p>Dear ${user.name},</p>
+          <p>Dear ${customerName},</p>
           <p>Thank you for shopping with Faith AND Fast. Your order has been successfully placed. Below are the order details:</p>
 
           <h3>Order Details:</h3>
@@ -101,6 +108,7 @@ const generateReceiptHTML = (order) => {
             </a>
           </div>
         </div>
+
       </body>
     </html>
   `;
