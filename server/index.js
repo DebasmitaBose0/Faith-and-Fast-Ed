@@ -106,6 +106,7 @@ import userAuditRouter from './route/userAuditRoute.js';
 import ticketRouter from './route/ticketRoute.js';
 import userRouter from './route/userRoute.js';
 import wishListRouter from './route/wishlistRoute.js';
+import vendorRouter from './route/vendorRoute.js';
 import { startMonitoring } from './utils/systemMonitor.js';
 import { healthConfig } from './config/healthAndBackupConfig.js';
 
@@ -122,6 +123,7 @@ app.use('/api/product', productRouter);
 app.use('/api/support', supportRouter);
 app.use('/api/user', userRouter);
 app.use('/api/wishlist', wishListRouter);
+app.use('/api/vendor', vendorRouter);
 app.use('/api/review', reviewRouter);
 app.use('/api/audit', userAuditRouter);
 app.use('/api/bulk-product', bulkProductRouter);
