@@ -5,7 +5,12 @@ const orderSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
-      required: [true, 'User ID is required'],
+      required: false,
+    },
+    guestInfo: {
+      name: { type: String, trim: true },
+      email: { type: String, trim: true },
+      mobile: { type: String, trim: true },
     },
     address: {
       type: mongoose.Schema.ObjectId,
