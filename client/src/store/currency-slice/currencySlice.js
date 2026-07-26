@@ -1,24 +1,26 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
 export const fetchRates = createAsyncThunk(
-  "currency/fetchRates",
+  'currency/fetchRates',
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await axiosInstance.get("/api/currency/rates");
+      const { data } = await axiosInstance.get('/api/currency/rates');
       return data.rates;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch rates");
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch rates'
+      );
     }
   }
 );
 
 const currencySlice = createSlice({
-  name: "currency",
+  name: 'currency',
   initialState: {
-    selectedCurrency: "INR",
+    selectedCurrency: 'INR',
     rates: { INR: 1, USD: 0.012, EUR: 0.011, GBP: 0.0095 },
-    symbols: { INR: "₹", USD: "$", EUR: "€", GBP: "£" },
+    symbols: { INR: '₹', USD: '$', EUR: '€', GBP: '£' },
     loading: false,
     error: null,
   },

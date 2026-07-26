@@ -14,6 +14,9 @@ const cartProductSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'User',
     },
+    guestId: {
+      type: String,
+    },
     selectedColor: {
       type: String,
       required: true,
@@ -29,8 +32,10 @@ const cartProductSchema = new mongoose.Schema(
 );
 
 cartProductSchema.index({ userId: 1 });
+cartProductSchema.index({ guestId: 1 });
 cartProductSchema.index({ productId: 1 });
 cartProductSchema.index({ userId: 1, productId: 1 });
+cartProductSchema.index({ guestId: 1, productId: 1 });
 
 const CartProductModel = mongoose.model('cartProduct', cartProductSchema);
 

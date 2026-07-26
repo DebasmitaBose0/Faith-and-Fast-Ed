@@ -4,8 +4,17 @@ import UserModel from '../models/userModel.js';
 
 export const addToCartItemController = catchAsyncErrors(async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user?._id;
+    const guestId = req.headers['x-guest-id'];
     const { productId, selectedColor, selectedSize } = req.body;
+
+    if (!userId && !guestId) {
+      return res.status(401).json({
+        message: 'Authentication or Guest ID required',
+        error: true,
+        success: false,
+      });
+    }
 
     if (!productId || !selectedColor || !selectedSize) {
       return res.status(402).json({
@@ -17,28 +26,31 @@ export const addToCartItemController = catchAsyncErrors(async (req, res) => {
 
     const cartItem = new CartProductModel({
       quantity: 1,
-      userId: userId,
+      userId: userId || undefined,
+      guestId: !userId ? guestId : undefined,
       productId: productId,
       selectedColor,
       selectedSize,
     });
     const savedCartItem = await cartItem.save();
 
-    const updateCartUser = await UserModel.updateOne(
-      { _id: userId },
-      {
-        $addToSet: {
-          shoppingCart: savedCartItem._id,
-        },
-      }
-    );
+    if (userId) {
+      const updateCartUser = await UserModel.updateOne(
+        { _id: userId },
+        {
+          $addToSet: {
+            shoppingCart: savedCartItem._id,
+          },
+        }
+      );
 
-    if (updateCartUser.modifiedCount === 0) {
-      return res.status(500).json({
-        message: 'Failed to update user cart',
-        error: true,
-        success: false,
-      });
+      if (updateCartUser.modifiedCount === 0) {
+        return res.status(500).json({
+          message: 'Failed to update user cart',
+          error: true,
+          success: false,
+        });
+      }
     }
 
     return res.json({
@@ -58,11 +70,19 @@ export const addToCartItemController = catchAsyncErrors(async (req, res) => {
 
 export const getCartItemController = catchAsyncErrors(async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user?._id;
+    const guestId = req.headers['x-guest-id'];
 
-    const cartItems = await CartProductModel.find({
-      userId: userId,
-    }).populate('productId');
+    if (!userId && !guestId) {
+      return res.status(401).json({
+        message: 'Authentication or Guest ID required',
+        error: true,
+        success: false,
+      });
+    }
+
+    const query = userId ? { userId } : { guestId };
+    const cartItems = await CartProductModel.find(query).populate('productId');
 
     if (cartItems.length === 0) {
       return res.status(404).json({
@@ -89,7 +109,17 @@ export const getCartItemController = catchAsyncErrors(async (req, res) => {
 export const updateCartItemQtyController = catchAsyncErrors(
   async (req, res) => {
     try {
-      const userId = req.user._id;
+      const userId = req.user?._id;
+      const guestId = req.headers['x-guest-id'];
+
+      if (!userId && !guestId) {
+        return res.status(401).json({
+          message: 'Authentication or Guest ID required',
+          error: true,
+          success: false,
+        });
+      }
+
       const { _id, qty } = req.body;
 
       if (!_id || qty === undefined || qty === null || qty === '') {
@@ -114,10 +144,12 @@ export const updateCartItemQtyController = catchAsyncErrors(
 
       // Load the cart item (with its product) so the requested quantity can be
       // bounded by the product's available stock before it is written.
-      const cartItem = await CartProductModel.findOne({
-        _id: _id,
-        userId: userId,
-      }).populate('productId');
+      const query = { _id: _id };
+      if (userId) query.userId = userId;
+      else query.guestId = guestId;
+
+      const cartItem =
+        await CartProductModel.findOne(query).populate('productId');
 
       if (!cartItem) {
         return res.status(404).json({
@@ -162,7 +194,17 @@ export const updateCartItemQtyController = catchAsyncErrors(
 export const deleteCartItemQtyController = catchAsyncErrors(
   async (req, res) => {
     try {
-      const userId = req.user._id;
+      const userId = req.user?._id;
+      const guestId = req.headers['x-guest-id'];
+
+      if (!userId && !guestId) {
+        return res.status(401).json({
+          message: 'Authentication or Guest ID required',
+          error: true,
+          success: false,
+        });
+      }
+
       const { _id } = req.body;
 
       if (!_id) {
@@ -173,10 +215,11 @@ export const deleteCartItemQtyController = catchAsyncErrors(
         });
       }
 
-      const deleteResult = await CartProductModel.deleteOne({
-        _id: _id,
-        userId: userId,
-      });
+      const query = { _id: _id };
+      if (userId) query.userId = userId;
+      else query.guestId = guestId;
+
+      const deleteResult = await CartProductModel.deleteOne(query);
 
       if (deleteResult.deletedCount === 0) {
         return res.status(404).json({
