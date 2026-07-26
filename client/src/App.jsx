@@ -51,11 +51,11 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Only fetch cart and wishlist for authenticated users. Guests have no
-    // token, so these calls would 401 and surface as error states. Gating
-    // here also re-runs the fetch right after login (isAuthenticated flips).
+    // Guests get a cart via a generated guestId stored in localStorage,
+    // so we fetch the cart regardless of authentication state.
+    dispatch(getCartItems());
+
     if (isAuthenticated) {
-      dispatch(getCartItems());
       dispatch(getWishListItems());
     }
   }, [dispatch, isAuthenticated]);
@@ -110,14 +110,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/checkout"
-            element={
-              <ProtectedRoute>
-                <CreateOrder />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/checkout" element={<CreateOrder />} />
           <Route
             path="/order-success"
             element={
@@ -152,14 +145,7 @@ const App = () => {
           />
           <Route path="/products" element={<Products />} />
           <Route path="/product/:productId" element={<ProductDetails />} />
-          <Route
-            path="/cart"
-            element={
-              <ProtectedRoute>
-                <Cart />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/cart" element={<Cart />} />
           <Route
             path="/wishlist"
             element={

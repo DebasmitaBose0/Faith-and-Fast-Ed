@@ -5,29 +5,31 @@ import mongoose from 'mongoose';
 
 export const addAddress = catchAsyncErrors(async (req, res) => {
   try {
-    const userId = req.user._id;
+    const userId = req.user ? req.user._id : null;
     const { address_line, city, state, pincode, country, mobile } = req.body;
 
-    const user = await UserModel.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        message: 'User not found',
-        error: true,
-        success: false,
-      });
-    }
+    if (userId) {
+      const user = await UserModel.findById(userId);
+      if (!user) {
+        return res.status(404).json({
+          message: 'User not found',
+          error: true,
+          success: false,
+        });
+      }
 
-    const existingAddress = await AddressModel.findOne({
-      userId,
-      address_line,
-      pincode,
-    });
-    if (existingAddress) {
-      return res.status(400).json({
-        message: 'This address already exists',
-        error: true,
-        success: false,
+      const existingAddress = await AddressModel.findOne({
+        userId,
+        address_line,
+        pincode,
       });
+      if (existingAddress) {
+        return res.status(400).json({
+          message: 'This address already exists',
+          error: true,
+          success: false,
+        });
+      }
     }
 
     const newAddress = new AddressModel({
@@ -42,13 +44,15 @@ export const addAddress = catchAsyncErrors(async (req, res) => {
 
     const savedAddress = await newAddress.save();
 
-    await UserModel.findByIdAndUpdate(
-      userId,
-      {
-        $push: { addressDetails: savedAddress._id },
-      },
-      { new: true }
-    );
+    if (userId) {
+      await UserModel.findByIdAndUpdate(
+        userId,
+        {
+          $push: { addressDetails: savedAddress._id },
+        },
+        { new: true }
+      );
+    }
 
     return res.status(201).json({
       message: 'Address created successfully',

@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { FaRightLong } from 'react-icons/fa6';
 import StockBadge from '../components/StockBadge';
 
+import LazyImage from '../components/LazyImage';
+
 const ProductCard = ({ product }) => {
   const imageUrl = product.images?.[0]?.url || '/fallback-image.jpg';
 
@@ -16,15 +18,10 @@ const ProductCard = ({ product }) => {
     >
       <StockBadge stock={product.stock ?? 10} />
       <Link to={`/product/${product._id}`} className="block">
-        <img
+        <LazyImage
           src={imageUrl}
           alt={product.name || 'Product Image'}
-          className="w-full h-40 sm:h-64 object-cover"
-          width={400}
-          height={256}
-          loading="lazy"
-          decoding="async"
-          onError={(e) => (e.target.src = '/fallback-image.jpg')}
+          className="w-full h-40 sm:h-64"
         />
       </Link>
       <div className="p-4">
