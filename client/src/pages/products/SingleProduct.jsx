@@ -16,6 +16,8 @@ import RecentlyViewed from '../components/RecentlyViewedProducts';
 import RecommendationSection from '../components/RecommendationSection';
 import ProductDetailsSkeleton from '../components/skeletons/ProductDetailsSkeleton';
 import MetaData from '../extras/MetaData';
+import ProductGallery from '../components/ProductGallery';
+import '../components/ProductZoomLens.css';
 import { Button, Rating } from '@mui/material';
 import { Heart, ShoppingCartIcon } from 'lucide-react';
 import { toast } from 'react-toastify';
@@ -46,6 +48,8 @@ const ProductDetails = ({ products }) => {
   const [selectedSize, setSelectedSize] = useState('');
   const [visibleReviews, setVisibleReviews] = useState([]);
   const [recentlyViewed, setRecentlyViewed] = useState([]);
+  const [faqs, setFaqs] = useState([]);
+  const [questionText, setQuestionText] = useState("");
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -100,11 +104,50 @@ const ProductDetails = ({ products }) => {
     });
   };
 
+  const fetchFaqs = useCallback(async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/faq/product/${productId}`);
+      const data = await response.json();
+      if (data.success) {
+        setFaqs(data.faqs || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch product FAQs:", err);
+    }
+  }, [productId]);
+
+  const handleAskQuestion = async () => {
+    if (!questionText.trim()) {
+      toast.error("Please type a question.");
+      return;
+    }
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/faq/ask`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("token")}`
+        },
+        body: JSON.stringify({ productId, question: questionText.trim() })
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Question submitted! It will appear after admin approval.");
+        setQuestionText("");
+      } else {
+        toast.error(data.message || "Failed to ask question");
+      }
+    } catch (err) {
+      toast.error("Failed to ask question");
+    }
+  };
+
   // Fetch product data
   useEffect(() => {
     dispatch(getProductDetails(productId));
     dispatch(getProductReviews(productId));
-  }, [dispatch, productId]);
+    fetchFaqs();
+  }, [dispatch, productId, fetchFaqs]);
 
   useEffect(() => {
     if (product?.category) {
@@ -720,6 +763,55 @@ const ProductDetails = ({ products }) => {
                     </motion.button>
                   </div>
                 </div>
+              </motion.section>
+
+              <motion.section
+                variants={itemVariants}
+                className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl space-y-6"
+              >
+                <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+                  Product Q&A / FAQs
+                </h2>
+                <div className="space-y-4">
+                  {faqs && faqs.length > 0 ? (
+                    faqs.map((faq) => (
+                      <div key={faq._id} className="p-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl space-y-2">
+                        <p className="font-semibold text-gray-800 dark:text-gray-100">
+                          Q: {faq.question}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          A: {faq.answer || <span className="text-gray-400 italic">No answer provided yet.</span>}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-500">No questions have been answered for this product yet.</p>
+                  )}
+                </div>
+                {user ? (
+                  <div className="border-t pt-6 border-gray-200 dark:border-gray-700 space-y-4">
+                    <h3 className="text-xl font-semibold">Have a Question? Ask here:</h3>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={questionText}
+                        onChange={(e) => setQuestionText(e.target.value)}
+                        placeholder="Type your question about the product..."
+                        className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700"
+                      />
+                      <button
+                        onClick={handleAskQuestion}
+                        className="px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl font-semibold shadow-md hover:opacity-95 transition"
+                      >
+                        Ask Question
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                    Please log in to ask a question about this product.
+                  </p>
+                )}
               </motion.section>
 
               {/* Similar Products Section */}

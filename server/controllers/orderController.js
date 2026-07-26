@@ -13,6 +13,7 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
   try {
     const {
       userId,
+      guestInfo,
       addressId,
       products,
       paymentMethod,
@@ -21,6 +22,13 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
       paymentScreenshot,
       idempotencyKey,
     } = req.body;
+
+    if (!userId && (!guestInfo || !guestInfo.email || !guestInfo.name)) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID or valid Guest Info is required',
+      });
+    }
 
     // NOTE: totalAmount and discountAmount are intentionally NOT read from the
     // request body — they are recomputed server-side below from real DB prices
@@ -31,14 +39,18 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
     const createdAt = new Date();
     deliveryDate = new Date(createdAt);
 
-    // Enforce idempotency for checkout retries. For a given user + key,
+    // Enforce idempotency for checkout retries. For a given user (or email) + key,
     // createOrder returns the previously created order instead of creating
     // duplicates.
     if (idempotencyKey && String(idempotencyKey).trim()) {
-      const existing = await OrderModel.findOne({
-        user: userId,
-        idempotencyKey: String(idempotencyKey).trim(),
-      })
+      const query = { idempotencyKey: String(idempotencyKey).trim() };
+      if (userId) {
+        query.user = userId;
+      } else {
+        query['guestInfo.email'] = guestInfo.email;
+      }
+
+      const existing = await OrderModel.findOne(query)
         .populate('user', 'name email')
         .populate('products.product', 'name price images');
 
@@ -156,7 +168,8 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
     }
 
     const newOrder = new OrderModel({
-      user: userId,
+      user: userId || undefined,
+      guestInfo: !userId ? guestInfo : undefined,
       address: addressId,
       products: orderItems,
       totalAmount,
@@ -194,10 +207,12 @@ export const createOrder = catchAsyncErrors(async (req, res) => {
     // only after an admin verifies the payment (see verifyPayment below).
     if (method === 'COD') {
       const receiptHTML = generateReceiptHTML(populatedOrder);
-      const user = await UserModel.findById(userId);
+      const emailTo = populatedOrder.user
+        ? populatedOrder.user.email
+        : populatedOrder.guestInfo.email;
 
       sendEmail({
-        sendTo: user.email,
+        sendTo: emailTo,
         subject: 'Order Confirmation',
         html: receiptHTML,
       });
@@ -278,8 +293,9 @@ export const verifyPayment = catchAsyncErrors(async (req, res) => {
       await order.save();
 
       const receiptHTML = generateReceiptHTML(order);
+      const emailTo = order.user ? order.user.email : order.guestInfo.email;
       sendEmail({
-        sendTo: order.user.email,
+        sendTo: emailTo,
         subject: 'Payment Verified — Your Receipt - Faith AND Fast',
         html: receiptHTML,
       });

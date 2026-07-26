@@ -30,6 +30,8 @@ const stripePromise = stripePublishableKey
   ? loadStripe(stripePublishableKey)
   : null;
 
+import CheckoutWizard from './CheckoutWizard';
+import './CheckoutWizard.css';
 const CreateOrder = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -60,7 +62,15 @@ const CreateOrder = () => {
 
   const [orderData, setOrderData] = useState({
     userId: '',
+    guestInfo: { name: '', email: '', mobile: '' },
     addressId: '',
+    address: {
+      address_line: '',
+      city: '',
+      state: '',
+      pincode: '',
+      country: 'India',
+    },
     products: [],
     paymentMethod: 'COD',
     totalAmount: finalTotal.toFixed(2),
@@ -202,8 +212,24 @@ const CreateOrder = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!orderData.addressId) {
+    const isGuest = !user?._id;
+
+    if (!isGuest && !orderData.addressId) {
       toast.error('Please select an address!');
+      return;
+    }
+
+    if (
+      isGuest &&
+      (!orderData.guestInfo.name ||
+        !orderData.guestInfo.email ||
+        !orderData.guestInfo.mobile ||
+        !orderData.address.address_line ||
+        !orderData.address.city ||
+        !orderData.address.state ||
+        !orderData.address.pincode)
+    ) {
+      toast.error('Please fill in all guest details and address fields!');
       return;
     }
 
@@ -323,66 +349,176 @@ const CreateOrder = () => {
             <label className="block text-lg font-semibold text-gray-800 dark:text-gray-200">
               Select Address
             </label>
-            {address.length === 0 ? (
-              <motion.div
-                variants={itemVariants}
-                className="text-center bg-red-100 dark:bg-red-900 rounded-lg p-4 shadow-md"
-              >
-                <p className="text-red-500 dark:text-red-400 mb-4">
-                  No addresses available. Please add an address to continue.
-                </p>
-                <Link to="/saved-address">
-                  <Button
-                    sx={{
-                      background: 'linear-gradient(to right, #f59e0b, #f97316)',
-                      color: 'white',
-                      padding: '10px 20px',
-                      borderRadius: '9999px',
-                      fontSize: '14px',
-                      fontWeight: 'bold',
-                      '&:hover': {
+            {user?._id ? (
+              address.length === 0 ? (
+                <motion.div
+                  variants={itemVariants}
+                  className="text-center bg-red-100 dark:bg-red-900 rounded-lg p-4 shadow-md"
+                >
+                  <p className="text-red-500 dark:text-red-400 mb-4">
+                    No addresses available. Please add an address to continue.
+                  </p>
+                  <Link to="/saved-address">
+                    <Button
+                      sx={{
                         background:
-                          'linear-gradient(to right, #d97706, #ea580c)',
-                      },
-                    }}
-                  >
-                    Add Address
-                  </Button>
-                </Link>
-              </motion.div>
-            ) : (
-              <div className="space-y-3">
-                <AnimatePresence>
-                  {address.map((addr) => (
-                    <motion.div
-                      key={addr._id}
-                      variants={itemVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      whileHover={{ scale: 1.02 }}
-                      className="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+                          'linear-gradient(to right, #f59e0b, #f97316)',
+                        color: 'white',
+                        padding: '10px 20px',
+                        borderRadius: '9999px',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        '&:hover': {
+                          background:
+                            'linear-gradient(to right, #d97706, #ea580c)',
+                        },
+                      }}
                     >
-                      <input
-                        type="radio"
-                        name="addressId"
-                        value={addr._id}
-                        onChange={handleChange}
-                        className="mr-4 w-5 h-5 text-yellow-500 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-yellow-500 transition duration-200"
-                        required
-                      />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          {`${addr.address_line}, ${addr.city}, ${addr.state}, ${addr.pincode}`}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {addr.mobile}
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
+                      Add Address
+                    </Button>
+                  </Link>
+                </motion.div>
+              ) : (
+                <div className="space-y-3">
+                  <AnimatePresence>
+                    {address.map((addr) => (
+                      <motion.div
+                        key={addr._id}
+                        variants={itemVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        whileHover={{ scale: 1.02 }}
+                        className="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl shadow-md hover:shadow-lg transition-all duration-300"
+                      >
+                        <input
+                          type="radio"
+                          name="addressId"
+                          value={addr._id}
+                          onChange={handleChange}
+                          className="mr-4 w-5 h-5 text-yellow-500 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-yellow-500 transition duration-200"
+                          required
+                        />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {`${addr.address_line}, ${addr.city}, ${addr.state}, ${addr.pincode}`}
+                          </p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {addr.mobile}
+                          </p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )
+            ) : (
+              <motion.div variants={itemVariants} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Full Name *"
+                    value={orderData.guestInfo.name}
+                    onChange={(e) =>
+                      setOrderData({
+                        ...orderData,
+                        guestInfo: {
+                          ...orderData.guestInfo,
+                          name: e.target.value,
+                        },
+                      })
+                    }
+                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email Address *"
+                    value={orderData.guestInfo.email}
+                    onChange={(e) =>
+                      setOrderData({
+                        ...orderData,
+                        guestInfo: {
+                          ...orderData.guestInfo,
+                          email: e.target.value,
+                        },
+                      })
+                    }
+                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Mobile Number *"
+                    value={orderData.guestInfo.mobile}
+                    onChange={(e) =>
+                      setOrderData({
+                        ...orderData,
+                        guestInfo: {
+                          ...orderData.guestInfo,
+                          mobile: e.target.value,
+                        },
+                      })
+                    }
+                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Address Line *"
+                    value={orderData.address.address_line}
+                    onChange={(e) =>
+                      setOrderData({
+                        ...orderData,
+                        address: {
+                          ...orderData.address,
+                          address_line: e.target.value,
+                        },
+                      })
+                    }
+                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="City *"
+                    value={orderData.address.city}
+                    onChange={(e) =>
+                      setOrderData({
+                        ...orderData,
+                        address: { ...orderData.address, city: e.target.value },
+                      })
+                    }
+                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="State *"
+                    value={orderData.address.state}
+                    onChange={(e) =>
+                      setOrderData({
+                        ...orderData,
+                        address: {
+                          ...orderData.address,
+                          state: e.target.value,
+                        },
+                      })
+                    }
+                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Pincode *"
+                    value={orderData.address.pincode}
+                    onChange={(e) =>
+                      setOrderData({
+                        ...orderData,
+                        address: {
+                          ...orderData.address,
+                          pincode: e.target.value,
+                        },
+                      })
+                    }
+                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
+                  />
+                </div>
+              </motion.div>
             )}
           </motion.div>
 
@@ -522,9 +658,14 @@ const CreateOrder = () => {
                   <StripeCardForm
                     orderData={orderData}
                     customerName={user?.name}
-                    billingAddress={address.find(
-                      (a) => a._id === orderData.addressId
-                    )}
+                    billingAddress={
+                      user?._id
+                        ? address.find((a) => a._id === orderData.addressId)
+                        : {
+                            ...orderData.address,
+                            mobile: orderData.guestInfo.mobile,
+                          }
+                    }
                     onSuccess={() => {
                       cartItems.forEach((item) => {
                         dispatch(deleteCartItem(item._id));

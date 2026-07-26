@@ -16,6 +16,7 @@ import {
 import admin from '../middleware/Admin.js';
 import upload from '../middleware/multer.js';
 import { getOrderAnalytics } from '../controllers/analyticsController.js';
+import optionalAuth from '../middleware/optionalAuth.js';
 import { orderLimiter } from '../middleware/rateLimiter.js';
 import { cacheMiddleware, invalidateCache } from '../utils/cache.js';
 
@@ -26,11 +27,11 @@ const clearOrderAnalyticsCache = async (req, res, next) => {
   next();
 };
 
-orderRouter.post('/create', auth, clearOrderAnalyticsCache, orderLimiter, createOrder);
+orderRouter.post('/create', optionalAuth, clearOrderAnalyticsCache, orderLimiter, createOrder);
 
 orderRouter.post(
   '/upload-payment-screenshot',
-  auth,
+  optionalAuth,
   upload.single('screenshot'),
   uploadPaymentScreenshot
 );
