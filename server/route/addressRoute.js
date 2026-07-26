@@ -1,5 +1,6 @@
 import express from 'express';
 import auth from '../middleware/auth.js';
+import optionalAuth from '../middleware/optionalAuth.js';
 import {
   addAddress,
   deleteAddress,
@@ -9,7 +10,7 @@ import {
 
 const addressRouter = express.Router();
 
-addressRouter.post('/create', auth, addAddress);
+addressRouter.post('/create', optionalAuth, addAddress);
 
 addressRouter.get('/get', auth, getAddress);
 

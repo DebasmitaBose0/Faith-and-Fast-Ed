@@ -1,18 +1,30 @@
 import axiosInstance from '@/api';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { v4 as uuidv4 } from 'uuid';
+
+const getGuestId = () => {
+  let guestId = localStorage.getItem('guestId');
+  if (!guestId) {
+    guestId = uuidv4();
+    localStorage.setItem('guestId', guestId);
+  }
+  return guestId;
+};
 
 export const addToCart = createAsyncThunk(
   'cart/addToCart',
   async ({ productId, selectedColor, selectedSize }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
+      const headers = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
+      else headers['x-guest-id'] = getGuestId();
+
       const response = await axiosInstance.post(
         '/api/cart/create',
         { productId, selectedColor, selectedSize },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
           withCredentials: true,
         }
       );
@@ -30,11 +42,12 @@ export const getCartItems = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axiosInstance.get('/api/cart/get', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const headers = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
+      else headers['x-guest-id'] = getGuestId();
 
+      const response = await axiosInstance.get('/api/cart/get', {
+        headers,
         withCredentials: true,
       });
       return response.data;
@@ -56,13 +69,15 @@ export const updateCartItemQty = createAsyncThunk(
   async ({ _id, qty }, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
+      const headers = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
+      else headers['x-guest-id'] = getGuestId();
+
       const response = await axiosInstance.put(
         '/api/cart/update',
         { _id, qty },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
           withCredentials: true,
         }
       );
@@ -80,13 +95,14 @@ export const deleteCartItem = createAsyncThunk(
   async (_id, { rejectWithValue }) => {
     try {
       const token = localStorage.getItem('token');
+      const headers = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
+      else headers['x-guest-id'] = getGuestId();
+
       const response = await axiosInstance.delete('/api/cart/delete', {
         data: { _id },
         withCredentials: true,
-
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers,
       });
       return response.data;
     } catch (error) {
