@@ -40,7 +40,7 @@ const addressSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
-      required: [true, 'User ID is required'],
+      required: false,
     },
   },
   {
