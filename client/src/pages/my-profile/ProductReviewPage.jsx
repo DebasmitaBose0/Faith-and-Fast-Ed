@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -25,7 +26,7 @@ const ProductReviewPage = () => {
 
     loading,
     error,
-    reviewPosting,
+    
   } = useSelector((state) => state.productDetails);
 
   const [rating, setRating] = useState(0);
@@ -99,6 +100,7 @@ const ProductReviewPage = () => {
   };
 
   // Star rating component (custom, without MUI)
+  
   const StarRating = ({ value, onChange }) => {
     const stars = Array.from({ length: 5 }, (_, index) => (
       <span
@@ -286,24 +288,6 @@ const ProductReviewPage = () => {
       </motion.div>
     </motion.div>
   );
-};
-
-// Custom Star rating component
-const StarRating = ({ value, onChange, readOnly = false }) => {
-  const stars = Array.from({ length: 5 }, (_, index) => (
-    <span
-      key={index}
-      className={`cursor-pointer text-2xl ${
-        index < value
-          ? 'text-yellow-500'
-          : 'text-gray-300 dark:text-gray-600 hover:text-yellow-400'
-      } ${readOnly ? 'cursor-default' : ''}`}
-      onClick={!readOnly ? () => onChange(index + 1) : undefined}
-    >
-      ★
-    </span>
-  ));
-  return <div className="flex space-x-1">{stars}</div>;
 };
 
 export default ProductReviewPage;

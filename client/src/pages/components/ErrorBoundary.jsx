@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FiAlertTriangle, FiRefreshCw, FiHome } from 'react-icons/fi';
@@ -87,3 +88,4 @@ class ErrorBoundary extends React.Component {
 }
 
 export default ErrorBoundary;
+

@@ -11,6 +11,7 @@ import {
   Boxes,
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import AdminBulkUpload from './AdminBulkUpload';
 import {
   getInventoryOverview,
   bulkUpdateStock,
@@ -28,6 +29,7 @@ const AdminInventory = () => {
   // Local map of productId -> edited stock value (only dirty rows are tracked).
   const [edits, setEdits] = useState({});
   const [thresholdInput, setThresholdInput] = useState(5);
+  const [activeTab, setActiveTab] = useState("overview");
 
   useEffect(() => {
     dispatch(getInventoryOverview(5));
@@ -137,10 +139,35 @@ const AdminInventory = () => {
       transition={{ duration: 0.4 }}
       className="space-y-6"
     >
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Inventory Management
-        </h1>
+      <div className="flex gap-4 border-b border-gray-200 dark:border-gray-700 mb-6">
+        <button
+          onClick={() => setActiveTab("overview")}
+          className={`pb-2 text-sm font-semibold border-b-2 transition-all duration-200 ${
+            activeTab === "overview"
+              ? "border-yellow-500 text-yellow-600 dark:border-red-600 dark:text-red-500"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Inventory Overview
+        </button>
+        <button
+          onClick={() => setActiveTab("bulk")}
+          className={`pb-2 text-sm font-semibold border-b-2 transition-all duration-200 ${
+            activeTab === "bulk"
+              ? "border-yellow-500 text-yellow-600 dark:border-red-600 dark:text-red-500"
+              : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Bulk Actions
+        </button>
+      </div>
+
+      {activeTab === "overview" ? (
+        <>
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              Inventory Management
+            </h1>
         <div className="flex items-center gap-2">
           <TextField
             label="Low-stock threshold"
@@ -299,6 +326,10 @@ const AdminInventory = () => {
           </tbody>
         </table>
       </div>
+      </>
+      ) : (
+        <AdminBulkUpload />
+      )}
     </motion.div>
   );
 };
