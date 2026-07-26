@@ -6,6 +6,7 @@ import DiscountModel from '../models/discountModel.js';
 import { writeAuditLog } from '../utils/auditLogger.js';
 import sendEmail from '../config/sendEmail.js';
 import generateReceiptHTML from '../utils/generateReceipt.js';
+import { generateInvoicePDF } from '../utils/generateInvoice.js';
 import { uploadImage } from '../utils/cloudinary.js';
 
 export const createOrder = catchAsyncErrors(async (req, res) => {
@@ -756,5 +757,40 @@ export const deleteAllOrders = catchAsyncErrors(async (req, res) => {
       success: false,
       message: 'Internal server error',
     });
+  }
+});
+
+export const downloadInvoice = catchAsyncErrors(async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await OrderModel.findById(orderId).populate('user').populate('products.product');
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    if (order.user._id.toString() !== req.user._id.toString() && req.user.role !== 'ADMIN') {
+      return res.status(403).json({ success: false, message: 'Unauthorized to download this invoice' });
+    }
+
+    // Format products for invoice generator
+    const formattedOrder = {
+      ...order.toObject(),
+      orderItems: order.products.map(p => ({
+        name: p.product.name,
+        quantity: p.quantity,
+        price: p.product.price,
+      }))
+    };
+
+    const pdfBuffer = generateInvoicePDF(formattedOrder);
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="invoice-${order._id}.pdf"`);
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.error('Error generating invoice PDF:', error);
+    res.status(500).json({ success: false, message: 'Internal server error generating PDF' });
   }
 });

@@ -88,6 +88,7 @@ app.get('/ready', (req, res) => {
 //routes
 import addressRouter from './route/addressRoute.js';
 import backupRouter from './route/backupRoute.js';
+import bulkProductRouter from './route/bulkProductRoute.js';
 import cartRouter from './route/cartRoute.js';
 import categoryRouter from './route/categoryRoute.js';
 import currencyRouter from './route/currencyRoute.js';
@@ -101,8 +102,9 @@ import productRouter from './route/productRoute.js';
 import reviewRouter from './route/reviewRoute.js';
 import supportRouter from './route/supportRoute.js';
 import userAuditRouter from './route/userAuditRoute.js';
+import ticketRouter from './route/ticketRoute.js';
 import userRouter from './route/userRoute.js';
-import wishListRouter from './route/wishListRoute.js';
+import wishListRouter from './route/wishlistRoute.js';
 import { startMonitoring } from './utils/systemMonitor.js';
 import { healthConfig } from './config/healthAndBackupConfig.js';
 
@@ -121,7 +123,9 @@ app.use('/api/user', userRouter);
 app.use('/api/wishlist', wishListRouter);
 app.use('/api/review', reviewRouter);
 app.use('/api/audit', userAuditRouter);
+app.use('/api/bulk-product', bulkProductRouter);
 app.use('/api/backup', backupRouter);
+app.use('/api/ticket', ticketRouter);
 
 app.use(errorMiddleware);
 

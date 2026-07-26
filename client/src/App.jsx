@@ -39,6 +39,7 @@ import { getCartItems } from './store/add-to-cart/addToCart';
 import { getWishListItems } from './store/add-to-wishlist/addToWishList';
 import NotFoundPage from './pages/extras/NotFoundPage';
 import FAQPage from './pages/extras/FAQPage';
+import SupportTickets from './pages/extras/SupportTickets';
 import PrivacyPolicy from './pages/extras/PrivacyPolicy';
 import TermsAndServices from './pages/extras/TermsAndServices';
 import Sitemap from './pages/extras/Sitemap';
@@ -169,6 +170,14 @@ const App = () => {
           />
           <Route path="/About" element={<About />} />
           <Route path="/ContactUs" element={<ContactUs />} />
+          <Route
+            path="/support-tickets"
+            element={
+              <ProtectedRoute>
+                <SupportTickets />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/faqs" element={<FAQPage />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
