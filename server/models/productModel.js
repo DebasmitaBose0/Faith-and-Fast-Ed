@@ -92,6 +92,14 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'User',
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
 
   {
@@ -113,6 +121,24 @@ productSchema.index({ category: 1 });
 productSchema.index({ ratings: -1 });
 productSchema.index({ category: 1, price: 1 });
 productSchema.index({ stock: 1 });
+productSchema.index({ isDeleted: 1 });
+
+// Soft delete middleware
+productSchema.pre(['find', 'findOne', 'countDocuments', 'aggregate'], function(next) {
+  // Check if we are doing an aggregate, as 'this' behaves differently
+  if (this.pipeline) {
+    // If includeDeleted option is not explicitly passed in some custom way (aggregate doesn't support options directly easily)
+    // we just prepend a $match
+    this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  } else {
+    // For find, findOne, countDocuments
+    const options = this.getOptions();
+    if (!options.includeDeleted) {
+      this.where({ isDeleted: { $ne: true } });
+    }
+  }
+  next();
+});
 
 const Product = mongoose.model('Product', productSchema);
 
