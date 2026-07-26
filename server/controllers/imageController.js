@@ -1,6 +1,7 @@
 import { uploadImage, deleteImage } from '../utils/cloudinary.js';
 import { validateImageFile } from '../utils/cloudinaryValidator.js';
 import { getCloudinaryUploadOptions } from '../utils/imageCompressor.js';
+import { uploadImage, deleteImage, validateImageFile } from '../utils/cloudinary.js';
 
 const uploadImageController = async (req, res) => {
   try {

@@ -31,6 +31,7 @@ import {
   Download,
   ArrowUpRight,
   ArrowDownRight,
+  Printer,
 } from 'lucide-react';
 import { getOrderAnalytics } from '@/store/order-slice/analyticsSlice';
 import MetaData from '../extras/MetaData';
@@ -326,6 +327,14 @@ const AdminAnalytics = () => {
             >
               <Download className="w-4 h-4" />
               Export CSV
+            </button>
+            <button
+              onClick={() => window.print()}
+              disabled={!hasAnyData}
+              className="px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-white flex items-center gap-1"
+            >
+              <Printer className="w-4 h-4" />
+              Print Report
             </button>
           </div>
         </div>

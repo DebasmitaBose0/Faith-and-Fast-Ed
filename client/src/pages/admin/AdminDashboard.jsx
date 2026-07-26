@@ -12,6 +12,7 @@ import {
   Boxes,
   Database,
   HelpCircle,
+  LifeBuoy,
 } from 'lucide-react';
 import AdminUsers from './AdminUsers';
 import { useNavigate } from 'react-router-dom';
@@ -24,6 +25,7 @@ import AdminPaymentSettings from './AdminPaymentSettings';
 import AdminInventory from './AdminInventory';
 import AdminBackup from './AdminBackup';
 import AdminFAQ from './AdminFAQ';
+import AdminTickets from './AdminTickets';
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -65,6 +67,8 @@ const AdminDashboard = () => {
         return <AdminPaymentSettings />;
       case 'FAQs':
         return <AdminFAQ />;
+      case 'Tickets':
+        return <AdminTickets />;
       case 'Backup':
         return <AdminBackup />;
 
@@ -100,6 +104,7 @@ const AdminDashboard = () => {
             { icon: CreditCard, text: 'Payment Settings' },
             { icon: Database, text: 'Backup' },
             { icon: HelpCircle, text: 'FAQs' },
+            { icon: LifeBuoy, text: 'Tickets' },
           ].map((item) => (
             <button
               key={item.text}
