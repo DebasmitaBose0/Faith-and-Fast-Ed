@@ -90,14 +90,6 @@ const userSchema = new mongoose.Schema(
         return this.role === 'ADMIN' ? ['*'] : [];
       },
     },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
-    deletedAt: {
-      type: Date,
-      default: null,
-    },
   },
   {
     timestamps: true,
@@ -138,20 +130,6 @@ userSchema.methods.getResetPasswordToken = function () {
 userSchema.index({ email: 1 }, { unique: true });
 userSchema.index({ status: 1 });
 userSchema.index({ role: 1 });
-userSchema.index({ isDeleted: 1 });
-
-// Soft delete middleware
-userSchema.pre(['find', 'findOne', 'countDocuments', 'aggregate'], function(next) {
-  if (this.pipeline) {
-    this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
-  } else {
-    const options = this.getOptions();
-    if (!options.includeDeleted) {
-      this.where({ isDeleted: { $ne: true } });
-    }
-  }
-  next();
-});
 
 const User = mongoose.model('User', userSchema);
 

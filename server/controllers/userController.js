@@ -813,16 +813,16 @@ export const deleteUser = catchAsyncErrors(async (req, res) => {
       });
     }
 
-    // Avatar is NOT deleted from Cloudinary so it can be restored later
+    if (user.avatar) {
+      const publicId = user.avatar.split('/').pop().split('.')[0];
 
-    await UserModel.findByIdAndUpdate(
-      userId,
-      { isDeleted: true, deletedAt: new Date(), status: 'Suspended' },
-      { new: true, includeDeleted: true }
-    );
+      await deleteImage(`ff/${publicId}`);
+    }
+
+    await UserModel.findByIdAndDelete(userId);
 
     return res.json({
-      message: 'User deleted successfully',
+      message: 'User and avatar deleted successfully',
       success: true,
       error: false,
     });

@@ -295,11 +295,9 @@ export const deleteProduct = catchAsyncErrors(async (req, res) => {
       });
     }
 
-    const product = await ProductModel.findByIdAndUpdate(
-      deleteId,
-      { isDeleted: true, deletedAt: new Date() },
-      { new: true, includeDeleted: true }
-    );
+    const product = await ProductModel.findByIdAndDelete(deleteId, {
+      returnDocument: 'before',
+    });
     if (!product) {
       return res.status(404).json({
         message: 'Product not found.',
@@ -308,11 +306,15 @@ export const deleteProduct = catchAsyncErrors(async (req, res) => {
       });
     }
 
-    // Images are NOT deleted from Cloudinary so they can be restored later
+    if (product.images && product.images.length > 0) {
+      await Promise.all(
+        product.images.map((img) => deleteImage(img.public_id))
+      );
+    }
 
     await writeAuditLog({
       actorId: req.user.id || req.user._id,
-      actionType: 'PRODUCT_SOFT_DELETE',
+      actionType: 'PRODUCT_DELETE',
       targetType: 'Product',
       targetId: product._id,
       beforeSnapshot: {
@@ -321,10 +323,7 @@ export const deleteProduct = catchAsyncErrors(async (req, res) => {
         stock: product.stock,
         category: product.category,
       },
-      afterSnapshot: {
-        isDeleted: true,
-        deletedAt: product.deletedAt,
-      },
+      afterSnapshot: null,
     });
 
     return res.json({
