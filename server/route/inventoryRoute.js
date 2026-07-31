@@ -7,6 +7,8 @@ import {
   bulkUpdateStock,
 } from '../controllers/inventoryController.js';
 import { invalidateCache } from '../utils/cache.js';
+import validate from '../middleware/validate.js';
+import { bulkUpdateStockSchema } from '../validation/inventoryValidation.js';
 
 const inventoryRouter = express.Router();
 
@@ -24,6 +26,7 @@ inventoryRouter.put(
   auth,
   admin,
   clearProductsCache,
+  validate(bulkUpdateStockSchema),
   bulkUpdateStock
 );
 

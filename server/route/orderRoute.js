@@ -19,6 +19,8 @@ import { getOrderAnalytics } from '../controllers/analyticsController.js';
 import optionalAuth from '../middleware/optionalAuth.js';
 import { orderLimiter } from '../middleware/rateLimiter.js';
 import { cacheMiddleware, invalidateCache } from '../utils/cache.js';
+import validate from '../middleware/validate.js';
+import { createOrderSchema } from '../validation/orderValidation.js';
 
 const orderRouter = express.Router();
 
@@ -27,7 +29,14 @@ const clearOrderAnalyticsCache = async (req, res, next) => {
   next();
 };
 
-orderRouter.post('/create', optionalAuth, clearOrderAnalyticsCache, orderLimiter, createOrder);
+orderRouter.post(
+  '/create',
+  optionalAuth,
+  clearOrderAnalyticsCache,
+  orderLimiter,
+  validate(createOrderSchema),
+  createOrder
+);
 
 orderRouter.post(
   '/upload-payment-screenshot',
