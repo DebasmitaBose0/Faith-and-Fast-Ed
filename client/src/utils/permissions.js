@@ -1,6 +1,18 @@
+import {
+  checkPermission,
+  getRolePermissions,
+  getRoleMap,
+} from './permissionService.js';
+
+export { checkPermission, getRolePermissions, getRoleMap };
+
 export const hasPermission = (user, permission) => {
-  if (!user) return false;
-  if (user.role !== 'ADMIN') return false;
-  const permissions = user.permissions || [];
-  return permissions.includes('*') || permissions.includes(permission);
+  return checkPermission(user, permission);
+};
+
+export default {
+  checkPermission,
+  hasPermission,
+  getRolePermissions,
+  getRoleMap,
 };
