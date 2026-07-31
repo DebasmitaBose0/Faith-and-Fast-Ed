@@ -1,73 +1,37 @@
 import helmet from 'helmet';
+import { getHelmetOptions } from './helmetOptions.js';
+import customHeaders from './customHeaders.js';
 
-const isProduction = process.env.NODE_ENV === 'production';
-const CSP_REPORT_URI = process.env.CSP_REPORT_URI || '';
+/**
+ * Creates a composed security middleware instance.
+ *
+ * @param {Object} [options={}] - Custom configuration options.
+ * @returns {Function} Express middleware function.
+ */
+export const createSecurityMiddleware = (options = {}) => {
+  const helmetMiddleware = helmet(getHelmetOptions(options));
 
-const cspDirectives = {
-  defaultSrc: ["'self'"],
-  baseUri: ["'self'"],
-  objectSrc: ["'none'"],
-  scriptSrc: [
-    "'self'",
-    ...(isProduction ? [] : ["'unsafe-eval'"]),
-    'https://checkout.stripe.com',
-  ],
-  scriptSrcAttr: ["'unsafe-inline'"],
-  connectSrc: [
-    "'self'",
-    'https://api.stripe.com',
-    'https://api.cloudinary.com',
-  ],
-  frameSrc: ["'self'", 'https://js.stripe.com', 'https://hooks.stripe.com'],
-  imgSrc: [
-    "'self'",
-    'data:',
-    'blob:',
-    'https://res.cloudinary.com',
-    'https://*.stripe.com',
-  ],
-  styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-  fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-  formAction: ["'self'"],
-  frameAncestors: ["'none'"],
-  manifestSrc: ["'self'"],
-  upgradeInsecureRequests: [],
-  ...(CSP_REPORT_URI ? { reportUri: CSP_REPORT_URI } : {}),
+  return (req, res, next) => {
+    helmetMiddleware(req, res, (err) => {
+      if (err) return next(err);
+      customHeaders(req, res, next);
+    });
+  };
 };
 
-const securityMiddleware = (app) => {
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        useDefaults: false,
-        directives: cspDirectives,
-      },
-      crossOriginEmbedderPolicy: !isProduction
-        ? false
-        : { policy: 'require-corp' },
-      crossOriginResourcePolicy: { policy: 'cross-origin' },
-      originAgentCluster: true,
-      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
-      hsts: {
-        maxAge: 63072000,
-        includeSubDomains: true,
-        preload: true,
-      },
-      xFrameOptions: { action: 'deny' },
-      xContentTypeOptions: true,
-      xDnsPrefetchControl: { allow: true },
-      xXssProtection: true,
-    })
-  );
+/**
+ * Default composed security middleware.
+ * Supports both function invocation `securityMiddleware(app)` and Express middleware `app.use(securityMiddleware)`.
+ */
+const securityMiddleware = (appOrReq, res, next) => {
+  if (appOrReq && typeof appOrReq.use === 'function') {
+    appOrReq.use(helmet(getHelmetOptions()));
+    appOrReq.use(customHeaders);
+    return;
+  }
 
-  app.use((_req, res, next) => {
-    res.setHeader(
-      'Permissions-Policy',
-      'camera=(), microphone=(), geolocation=(), payment=(self)'
-    );
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
-    next();
-  });
+  const middleware = createSecurityMiddleware();
+  return middleware(appOrReq, res, next);
 };
 
 export default securityMiddleware;
