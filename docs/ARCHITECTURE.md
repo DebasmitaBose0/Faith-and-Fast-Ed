@@ -12,15 +12,15 @@ flowchart TD
     Client([Client App / Browser])
 
     %% Third-party Services
-    Stripe[Stripe API<br/>(Payments)]
-    Cloudinary[Cloudinary API<br/>(Image Storage)]
-    EmailProvider[Email Service<br/>(OTP/Notifications)]
+    Stripe["Stripe API<br/>(Payments)"]
+    Cloudinary["Cloudinary API<br/>(Image Storage)"]
+    EmailProvider["Email Service<br/>(OTP/Notifications)"]
 
     %% Application Layer
     subgraph Backend [Node.js + Express Server]
         Router[API Router]
-        Auth[Authentication &<br/>Authorization Middleware]
-        Security[Security Middleware<br/>Helmet, CORS, Rate Limiter]
+        Auth["Authentication &<br/>Authorization Middleware"]
+        Security["Security Middleware<br/>Helmet, CORS, Rate Limiter"]
 
         subgraph Controllers [Controllers]
             UserCtrl[User Controller]
@@ -42,7 +42,7 @@ flowchart TD
     end
 
     %% Database
-    MongoDB[(MongoDB<br/>Database)]
+    MongoDB[("MongoDB<br/>Database")]
 
     %% Flow
     Client -- HTTP Requests --> Security
