@@ -21,6 +21,12 @@ import admin from '../middleware/Admin.js';
 import auth from '../middleware/auth.js';
 import upload from '../middleware/multer.js';
 import { cacheMiddleware, invalidateCache } from '../utils/cache.js';
+import validate from '../middleware/validate.js';
+import {
+  createProductSchema,
+  updateProductSchema,
+  addReviewSchema,
+} from '../validation/productValidation.js';
 
 const productRouter = express.Router();
 
@@ -35,6 +41,7 @@ productRouter.post(
   admin,
   clearProductsCache,
   upload.array('images', 10),
+  validate(createProductSchema),
   createProduct
 );
 
@@ -58,6 +65,7 @@ productRouter.put(
   admin,
   clearProductsCache,
   upload.array('images', 10),
+  validate(updateProductSchema),
   updateProductDetails
 );
 
@@ -97,6 +105,7 @@ productRouter.post(
   '/review/:productId',
   auth,
   clearProductsCache,
+  validate(addReviewSchema),
   postProductReview
 );
 
