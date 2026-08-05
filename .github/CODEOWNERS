@@ -1,0 +1,18 @@
+# Global owners (fallback for all files)
+*       @SRV30 @rohitkumarnaidu
+
+# Client-side (React/Frontend)
+/client/  @SRV30 @rohitkumarnaidu
+
+# Server-side (Node/Backend)
+/server/  @SRV30 @rohitkumarnaidu
+
+# Configuration files
+/config/  @SRV30 @rohitkumarnaidu
+
+# Documentation
+/docs/    @SRV30 @rohitkumarnaidu
+*.md      @SRV30 @rohitkumarnaidu
+
+# GitHub Actions workflows & configuration
+/.github/ @SRV30 @rohitkumarnaidu
