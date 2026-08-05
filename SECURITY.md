@@ -79,6 +79,19 @@ This project implements the following HTTP security headers via Helmet middlewar
 
 Dependencies are audited regularly. Known vulnerabilities are tracked via `npm audit` and patched in the next release. For critical CVEs, hotfixes are released outside the normal schedule.
 
+## Vulnerability Disclosure Workflow
+
+```mermaid
+stateDiagram-v2
+    [*] --> Reported: Researcher emails security@faith-and-fast.example.com
+    Reported --> Acknowledged: Security team replies (within 48 hrs)
+    Acknowledged --> Triaged: Team assesses impact (Critical, High, Medium, Low)
+    Triaged --> Fixed: Patch developed
+    Fixed --> Released: New secure version published
+    Released --> Disclosed: Public security advisory & Hall of Fame credit
+    Disclosed --> [*]
+```
+
 ---
 
-_This policy is maintained by the Faith & Fast security team. Last updated: 2026-07-08._
+_This policy is maintained by the Faith & Fast security team. Last updated: 2026-08-05._
