@@ -68,7 +68,7 @@ flowchart TD
     OrderModel --> MongoDB
 
     %% Styling
-    classDef external fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef external fill:#f9f,stroke:#333,stroke-width:2px,color:#000;
     class Stripe,Cloudinary,EmailProvider external;
 ```
 
