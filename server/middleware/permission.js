@@ -1,3 +1,5 @@
+import { checkPermission } from '../services/permissionService.js';
+
 export const requirePermission = (permission) => {
   return (req, res, next) => {
     if (!req.user) {
@@ -7,21 +9,14 @@ export const requirePermission = (permission) => {
       });
     }
 
-    if (req.user.role !== 'ADMIN') {
+    if (!checkPermission(req.user, permission)) {
       return res.status(403).json({
         success: false,
-        message: 'Access Denied: Admins Only',
+        message: `Forbidden: Missing required permission '${permission}'`,
       });
     }
 
-    const userPermissions = req.user.permissions || [];
-    if (userPermissions.includes('*') || userPermissions.includes(permission)) {
-      return next();
-    }
-
-    return res.status(403).json({
-      success: false,
-      message: `Forbidden: Missing required permission '${permission}'`,
-    });
+    return next();
   };
 };
+
