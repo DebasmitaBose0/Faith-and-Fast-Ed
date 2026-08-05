@@ -10,6 +10,11 @@ import {
   updateDiscount,
 } from '../controllers/discountController.js';
 import { invalidateCache } from '../utils/cache.js';
+import validate from '../middleware/validate.js';
+import {
+  createDiscountSchema,
+  applyDiscountSchema,
+} from '../validation/discountValidation.js';
 
 const router = express.Router();
 
@@ -18,8 +23,8 @@ const clearProductsCache = async (req, res, next) => {
   next();
 };
 
-router.post('/create', clearProductsCache, createDiscount);
-router.post('/apply', clearProductsCache, applyDiscount);
+router.post('/create', clearProductsCache, validate(createDiscountSchema), createDiscount);
+router.post('/apply', clearProductsCache, validate(applyDiscountSchema), applyDiscount);
 router.get('/all', getAllDiscounts);
 router.put('/update/:discountId', clearProductsCache, updateDiscount);
 router.delete('/delete/:discountId', clearProductsCache, deleteDiscount);
