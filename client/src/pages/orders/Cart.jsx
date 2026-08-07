@@ -5,7 +5,6 @@ import { FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   deleteCartItem,
-  getCartItems,
   updateCartItemQty,
 } from '@/store/add-to-cart/addToCart';
 import MetaData from '../extras/MetaData';
@@ -40,16 +39,12 @@ const Cart = () => {
   }
   const handleUpdateQty = (id, qty) => {
     if (qty > 0) {
-      dispatch(updateCartItemQty({ _id: id, qty })).then(() => {
-        dispatch(getCartItems());
-      });
+      dispatch(updateCartItemQty({ _id: id, qty }));
     }
   };
 
   const handleDeleteItem = (id) => {
-    dispatch(deleteCartItem(id)).then(() => {
-      dispatch(getCartItems());
-    });
+    dispatch(deleteCartItem(id));
   };
 
   const totalPrice = useMemo(() => {
