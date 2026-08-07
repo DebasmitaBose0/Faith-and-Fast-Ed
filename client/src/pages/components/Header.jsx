@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Heart, ShoppingCart, Menu, X, User } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '@/store/auth-slice/user';
 import { toast } from 'react-toastify';
@@ -65,13 +65,13 @@ export default function Header() {
   return (
     <header className="header bg-yellow-500 dark:bg-gray-900 flex items-center justify-between px-6 py-3 sticky top-0 z-50 shadow-md transition-all duration-300">
       <div className="flex items-center">
-        <a href="/" className="hover:opacity-80 transition-opacity">
+        <Link to="/" className="hover:opacity-80 transition-opacity">
           <img
             src={darkMode ? logo : logoLight}
             alt="Faith AND Fast Logo"
             className="h-12 w-auto"
           />
-        </a>
+        </Link>
       </div>
 
       <nav className="hidden md:flex space-x-6 lg:space-x-10 font-semibold text-gray-700 dark:text-gray-300 lg:ml-50">
@@ -88,9 +88,9 @@ export default function Header() {
                     : '';
 
           return (
-            <a
+            <Link
               key={index}
-              href={path}
+              to={path}
               className={`relative group px-3 py-2 rounded-lg transition-all duration-300 ${
                 isActiveRoute(path)
                   ? 'text-red-600 dark:text-red-400 border-b-2 border-red-600 dark:border-red-400'
@@ -99,33 +99,33 @@ export default function Header() {
             >
               {label}
               <span className="absolute left-0 bottom-0 w-full h-[2px] bg-red-600 dark:bg-red-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
-            </a>
+            </Link>
           );
         })}
       </nav>
 
       <div className="flex items-center space-x-4 text-black dark:text-white">
-        <a href="/products">
+        <Link to="/products">
           <Search className="w-6 h-6 cursor-pointer hover:text-red-600 transition-colors" />
-        </a>
+        </Link>
 
-        <a href="/wishlist" className="relative">
+        <Link to="/wishlist" className="relative">
           <Heart className="w-6 h-6 cursor-pointer hover:text-red-600 transition-colors" />
           {WishListItems.length > 0 && (
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white text-xs font-semibold flex items-center justify-center rounded-full">
               {WishListItems.length}
             </span>
           )}
-        </a>
+        </Link>
 
-        <a href="/cart" className="relative">
+        <Link to="/cart" className="relative">
           <ShoppingCart className="w-6 h-6 cursor-pointer hover:text-red-600 transition-colors" />
           {cartItems.length > 0 && (
             <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-600 text-white text-xs font-semibold flex items-center justify-center rounded-full">
               {cartItems.length}
             </span>
           )}
-        </a>
+        </Link>
 
         <div onClick={toggleDarkMode} className="cursor-pointer text-white">
           <DarkModeToggle />
@@ -145,17 +145,17 @@ export default function Header() {
                 <>
                   {user.role === 'ADMIN' && (
                     <DropdownLink
-                      href="/admin/dashboard"
+                      to="/admin/dashboard"
                       text="Admin Dashboard"
                     />
                   )}
-                  <DropdownLink href="/my-profile" text="My Profile" />
-                  <DropdownLink href="/my-orders" text="My Orders" />
+                  <DropdownLink to="/my-profile" text="My Profile" />
+                  <DropdownLink to="/my-orders" text="My Orders" />
                   <DropdownLink
-                    href="/update-password"
+                    to="/update-password"
                     text="Update Password"
                   />
-                  <DropdownLink href="/update-profile" text="Edit Profile" />
+                  <DropdownLink to="/update-profile" text="Edit Profile" />
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border-t border-gray-300 dark:border-gray-700 transition-all duration-200 ease-in-out"
@@ -165,8 +165,8 @@ export default function Header() {
                 </>
               ) : (
                 <>
-                  <DropdownLink href="/login" text="Login" />
-                  <DropdownLink href="/signup" text="Signup" />
+                  <DropdownLink to="/login" text="Login" />
+                  <DropdownLink to="/signup" text="Signup" />
                 </>
               )}
             </div>
@@ -193,9 +193,9 @@ export default function Header() {
                       : '';
 
             return (
-              <a
+              <Link
                 key={index}
-                href={path}
+                to={path}
                 className={`text-lg font-bold transition-transform ${
                   isActiveRoute(path)
                     ? 'text-red-600 dark:text-red-400'
@@ -203,7 +203,7 @@ export default function Header() {
                 }`}
               >
                 {label}
-              </a>
+              </Link>
             );
           })}
         </nav>
@@ -212,16 +212,16 @@ export default function Header() {
   );
 }
 
-const DropdownLink = ({ href, text }) => (
-  <a
-    href={href}
+const DropdownLink = ({ to, text }) => (
+  <Link
+    to={to}
     className="block px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
   >
     {text}
-  </a>
+  </Link>
 );
 
 DropdownLink.propTypes = {
-  href: PropTypes.string.isRequired,
+  to: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
 };
