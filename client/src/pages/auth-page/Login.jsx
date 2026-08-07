@@ -6,11 +6,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getSingleDetail, loginUser } from '@/store/auth-slice/user';
 import { toast } from 'react-toastify';
 import MetaData from '../extras/MetaData';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema } from '@/validation/schemas';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
 
   const dispatch = useDispatch();
   const { loading, error, isAuthenticated } = useSelector(
@@ -22,9 +31,8 @@ const Login = () => {
   const location = useLocation();
   const redirect = location.search ? location.search.split('=')[1] : '/';
 
-  const loginSubmit = (e) => {
-    e.preventDefault();
-    dispatch(loginUser({ email, password }));
+  const onLoginSubmit = (data) => {
+    dispatch(loginUser({ email: data.email, password: data.password }));
   };
 
   useEffect(() => {
@@ -62,60 +70,70 @@ const Login = () => {
       >
         <h2 className="text-2xl font-bold mb-4">Login</h2>
 
-        <div className="mb-3 flex items-center border rounded-lg px-3 bg-white text-black dark:bg-gray-900 dark:text-white">
-          <Email className="text-gray-400" />
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 focus:outline-none bg-transparent"
-          />
-        </div>
-
-        <div className="mb-3 flex items-center border rounded-lg px-3 bg-white text-black dark:bg-gray-900 dark:text-white">
-          <Lock className="text-gray-400" />
-          <input
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-2 focus:outline-none bg-transparent"
-          />
-          {showPassword ? (
-            <VisibilityOff
-              className="text-gray-400 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
+        <form onSubmit={handleSubmit(onLoginSubmit)}>
+          <div className="mb-1 flex items-center border rounded-lg px-3 bg-white text-black dark:bg-gray-900 dark:text-white">
+            <Email className="text-gray-400" />
+            <input
+              type="email"
+              placeholder="Enter your email"
+              {...register('email')}
+              className="w-full p-2 focus:outline-none bg-transparent"
             />
-          ) : (
-            <Visibility
-              className="text-gray-400 cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            />
+          </div>
+          {errors.email && (
+            <p className="text-red-500 text-xs text-left mb-2 pl-1">
+              {errors.email.message}
+            </p>
           )}
-        </div>
 
-        <div className="flex justify-between items-center mb-3">
-          <label className="flex items-center text-gray-600">
-            <input type="checkbox" className="mr-1" /> Keep me logged in
-          </label>
-          <Link
-            to="/forgot-password"
-            className="text-sm text-yellow-500 hover:underline"
+          <div className="mb-1 mt-3 flex items-center border rounded-lg px-3 bg-white text-black dark:bg-gray-900 dark:text-white">
+            <Lock className="text-gray-400" />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Enter your password"
+              {...register('password')}
+              className="w-full p-2 focus:outline-none bg-transparent"
+            />
+            {showPassword ? (
+              <VisibilityOff
+                className="text-gray-400 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              />
+            ) : (
+              <Visibility
+                className="text-gray-400 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              />
+            )}
+          </div>
+          {errors.password && (
+            <p className="text-red-500 text-xs text-left mb-2 pl-1">
+              {errors.password.message}
+            </p>
+          )}
+
+          <div className="flex justify-between items-center my-3">
+            <label className="flex items-center text-gray-600 dark:text-gray-400 text-sm">
+              <input type="checkbox" className="mr-1" /> Keep me logged in
+            </label>
+            <Link
+              to="/forgot-password"
+              className="text-sm text-yellow-500 hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-yellow-500 text-white font-bold py-2 rounded-lg transition-transform transform hover:scale-105 hover:bg-yellow-600"
+            disabled={loading}
           >
-            Forgot password?
-          </Link>
-        </div>
+            {loading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
 
-        <button
-          className="w-full bg-yellow-500 text-white font-bold py-2 rounded-lg transition-transform transform hover:scale-105 hover:bg-yellow-600"
-          disabled={loading}
-          onClick={loginSubmit}
-        >
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-
-        <p className="text-gray-600 mt-4">
+        <p className="text-gray-600 dark:text-gray-400 mt-4">
           Not a member yet?
           <Link
             to="/signup"
