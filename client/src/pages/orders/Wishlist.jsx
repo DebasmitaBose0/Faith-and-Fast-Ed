@@ -7,7 +7,8 @@ import {
   deleteWishListItem,
   getWishListItems,
 } from '@/store/add-to-wishlist/addToWishList';
-import { Link, useNavigate } from 'react-router-dom';
+import { addToCart } from '@/store/add-to-cart/addToCart';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import WishlistSkeleton from '../components/skeletons/WishlistSkeleton';
 import EmptyState from '../components/EmptyState';
@@ -19,14 +20,23 @@ const WishlistPage = () => {
     (state) => state.wishList
   );
 
-  const navigate = useNavigate();
   useEffect(() => {
     dispatch(getWishListItems());
   }, [dispatch]);
 
-  const handleAddCart = (item) => {
-    navigate(`/product/${item._id}`);
-    toast.info('Add item to Cart from Product page!');
+  const handleAddCart = async (product) => {
+    try {
+      await dispatch(
+        addToCart({
+          productId: product._id,
+          selectedColor: product.colors?.[0] || 'Default',
+          selectedSize: product.sizes?.[0] || 'Standard',
+        })
+      ).unwrap();
+      toast.success('Item added to cart!');
+    } catch (err) {
+      toast.error(typeof err === 'string' ? err : 'Failed to add item to cart');
+    }
   };
 
   return (
