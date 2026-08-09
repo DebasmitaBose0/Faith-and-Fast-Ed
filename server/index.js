@@ -10,6 +10,7 @@ import connectDB from "./config/connectDB.js";
 import validateEnv from "./config/validateEnv.js";
 import errorMiddleware from "./middleware/error.js";
 import config from "./config/index.js";
+import errorMonitor from "./middleware/errorMonitor.js";
 dotenv.config();
 validateEnv();
 
@@ -45,10 +46,9 @@ app.use(
     crossOriginResourcePolicy: false,
   })
 );
-app.use(generalLimiter);
-app.use(requestLogger);
-app.use(userAuditMiddleware);
-app.use(morgan('combined'));
+app.use(limiter);
+app.use(morgan("combined"));
+app.use(errorMonitor);
 app.use(errorMiddleware);
 app.disable('x-powered-by');
 
@@ -91,6 +91,7 @@ import userAuditRouter from './route/userAuditRoute.js';
 import ticketRouter from './route/ticketRoute.js';
 import userRouter from './route/userRoute.js';
 import wishListRouter from './route/wishlistRoute.js';
+import emailRouter from './route/emailTemplateRoute.js';
 import adminAuditRouter from './route/adminAuditRoute.js';
 import referralRouter from './route/referralRoute.js';
 import { startMonitoring } from './utils/systemMonitor.js';
@@ -109,6 +110,7 @@ app.use('/api/product', productRouter);
 app.use('/api/support', supportRouter);
 app.use('/api/user', userRouter);
 app.use('/api/wishlist', wishListRouter);
+app.use('/api/email-templates', emailRouter);
 app.use('/api/admin-audit', adminAuditRouter);
 app.use('/api/referral', referralRouter);
 app.use('/api/review', reviewRouter);
@@ -127,26 +129,5 @@ connectDB().then(() => {
     logger.info(`Server is running on port ${PORT}`)
   );
 
-  const shutdown = (reason, code = 1) => {
-    logger.error(`Server shutting down: reason=${reason} code=${code}`);
-    server.close(() => process.exit(code));
-    setTimeout(() => process.exit(code), 10_000).unref();
-  };
-
-  process.on('unhandledRejection', (err) => {
-    logger.error(`Unhandled rejection: ${err?.message ?? err}`, {
-      stack: err?.stack,
-    });
-    shutdown('unhandledRejection');
-  });
-
-  process.on('uncaughtException', (err) => {
-    logger.error(`Uncaught exception: ${err?.message ?? err}`, {
-      stack: err?.stack,
-    });
-    shutdown('uncaughtException');
-  });
-
-  process.on('SIGTERM', () => shutdown('SIGTERM', 0));
-  process.on('SIGINT', () => shutdown('SIGINT', 0));
+  setupShutdownHandlers(server);
 });
