@@ -1,21 +1,20 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { FiMinus, FiPlus, FiTrash2 } from "react-icons/fi";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   deleteCartItem,
-  getCartItems,
   updateCartItemQty,
-} from "@/store/add-to-cart/addToCart";
-import MetaData from "../extras/MetaData";
-import CartSkeleton from "../components/skeletons/CartSkeleton";
-import RecommendationSection from "../components/RecommendationSection";
-import EmptyState from "../components/EmptyState";
-import { ShoppingCart } from "lucide-react";
-import { getTrendingProducts } from "@/store/product-slice/productDetails";
-import { IconButton } from "@mui/material";
-import { ShoppingCartCheckout } from "@mui/icons-material";
+} from '@/store/add-to-cart/addToCart';
+import MetaData from '../extras/MetaData';
+import CartSkeleton from '../components/skeletons/CartSkeleton';
+import RecommendationSection from '../components/RecommendationSection';
+import EmptyState from '../components/EmptyState';
+import { ShoppingCart } from 'lucide-react';
+import { getTrendingProducts } from '@/store/product-slice/productDetails';
+import { IconButton } from '@mui/material';
+import { ShoppingCartCheckout } from '@mui/icons-material';
 
 const Cart = () => {
   // eslint-disable-next-line no-unused-vars
@@ -35,52 +34,52 @@ const Cart = () => {
     dispatch(getTrendingProducts(8));
   }, [dispatch]);
 
-  if (loading){
+  if (loading) {
     return <CartSkeleton />;
   }
   const handleUpdateQty = (id, qty) => {
     if (qty > 0) {
-      dispatch(updateCartItemQty({ _id: id, qty })).then(() => {
-        dispatch(getCartItems());
-      });
+      dispatch(updateCartItemQty({ _id: id, qty }));
     }
   };
 
   const handleDeleteItem = (id) => {
-    dispatch(deleteCartItem(id)).then(() => {
-      dispatch(getCartItems());
-    });
+    dispatch(deleteCartItem(id));
   };
 
-  const totalPrice = cartItems.reduce(
-    (total, item) => total + (item.productId?.price || 0) * item.quantity,
-    0
-  );
+  const totalPrice = useMemo(() => {
+    return cartItems.reduce(
+      (total, item) => total + (item.productId?.price || 0) * item.quantity,
+      0
+    );
+  }, [cartItems]);
 
-  const totalDiscount = cartItems.reduce(
-    (total, item) =>
-      total +
-      ((item.productId?.price * (item.productId?.discount || 0)) / 100) *
-        item.quantity,
-    0
-  );
+  const totalDiscount = useMemo(() => {
+    return cartItems.reduce(
+      (total, item) =>
+        total +
+        ((item.productId?.price * (item.productId?.discount || 0)) / 100) *
+          item.quantity,
+      0
+    );
+  }, [cartItems]);
 
   const shipping = () => {
     return 0;
   };
 
-  const finalTotal = () => {
+  const finalTotal = useMemo(() => {
     const finaltotalprice = totalPrice - totalDiscount;
     return finaltotalprice + shipping();
-  };
+  }, [totalPrice, totalDiscount]);
 
-  const appliedCouponAmount = () => {
-    const total = finalTotal();
+  const appliedCouponAmount = useMemo(() => {
+    const total = finalTotal;
     if (discounts?.discountValue) {
       return Math.max(total * (1 - discounts.discountValue / 100), 0);
     }
     return total;
-  };
+  }, [finalTotal, discounts]);
 
   return (
     <>
@@ -227,14 +226,14 @@ const Cart = () => {
                     Total
                   </p>
                   <p className="text-lg font-bold text-gray-800 dark:text-white">
-                    ₹{appliedCouponAmount().toFixed(2)}
+                    ₹{appliedCouponAmount.toFixed(2)}
                   </p>
                 </div>
               </div>
 
               <button
                 className="bg-yellow-500 hover:bg-yellow-700 dark:bg-red-600 dark:hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 m-auto mt-4"
-                onClick={() => navigate("/checkout")}
+                onClick={() => navigate('/checkout')}
               >
                 <ShoppingCartCheckout /> Proceed to Checkout
               </button>

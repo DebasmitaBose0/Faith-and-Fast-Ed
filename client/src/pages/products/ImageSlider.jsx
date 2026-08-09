@@ -1,10 +1,11 @@
-import PropTypes from "prop-types";
-import { motion } from "framer-motion";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
+import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import LazyImage from '../components/LazyImage';
 
 const ImageSlider = ({ images }) => {
   const slideVariants = {
@@ -52,16 +53,11 @@ const ImageSlider = ({ images }) => {
               transition={{ duration: 0.8 }}
               className="relative aspect-video"
             >
-              <img
+              <LazyImage
                 src={image}
-                alt={`Product showcase ${
-                  index + 1
-                } - High quality product visual`}
-                className="w-80% sm:w-full h-120 rounded-lg object-fit"
-                loading="lazy"
-                width={1000}
-                height={450}
-                onError={(e) => (e.target.src = "/fallback-image.jpg")}
+                alt={`Product showcase ${index + 1} - High quality product visual`}
+                className="w-[80%] sm:w-full h-120 rounded-lg"
+                objectFit="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             </motion.div>

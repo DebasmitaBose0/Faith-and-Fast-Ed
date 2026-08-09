@@ -1,14 +1,14 @@
-import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import logoLight from "../../assets/logo-light.png";
-import logoDark from "../../assets/logoLight.png";
-import MetaData from "../extras/MetaData";
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import logoLight from '../../assets/logo-light.png';
+import logoDark from '../../assets/logoLight.png';
+import MetaData from '../extras/MetaData';
 
 const AboutUs = () => {
   const navigate = useNavigate();
 
   const handleExploreClick = () => {
-    navigate("/products");
+    navigate('/products');
   };
 
   return (
@@ -28,13 +28,13 @@ const AboutUs = () => {
           className="space-y-6 mb-16 text-center"
         >
           <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
-            About{" "}
+            About{' '}
             <span className="text-yellow-500 dark:text-red-600 inline-block hover:scale-105 transition-transform">
               Faith AND Fast
             </span>
           </h1>
           <p className="text-xl max-w-3xl mx-auto leading-relaxed text-gray-700 dark:text-gray-300">
-            Welcome to{" "}
+            Welcome to{' '}
             <span className="font-semibold text-yellow-500 dark:text-red-600">
               Faith AND Fast
             </span>
@@ -75,7 +75,7 @@ const AboutUs = () => {
             className="space-y-8"
           >
             <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300">
-              At{" "}
+              At{' '}
               <span className="font-semibold text-yellow-500 dark:text-red-600">
                 Faith AND Fast
               </span>
@@ -93,7 +93,7 @@ const AboutUs = () => {
             {/* Why Choose Us Section */}
             <div className="pt-4">
               <h2 className="text-3xl font-bold mb-6">
-                Why Choose{" "}
+                Why Choose{' '}
                 <span className="text-yellow-500 dark:text-red-600">
                   Faith AND Fast
                 </span>
@@ -101,10 +101,10 @@ const AboutUs = () => {
               </h2>
               <ul className="space-y-4">
                 {[
-                  "Premium Quality Fabrics – Designed for durability and comfort.",
-                  "Trendy & Timeless Styles – Stay ahead with the latest fashion.",
-                  "Affordable Prices – Fashion that fits your budget.",
-                  "Customer Satisfaction – Your happiness is our priority.",
+                  'Premium Quality Fabrics – Designed for durability and comfort.',
+                  'Trendy & Timeless Styles – Stay ahead with the latest fashion.',
+                  'Affordable Prices – Fashion that fits your budget.',
+                  'Customer Satisfaction – Your happiness is our priority.',
                 ].map((item, index) => (
                   <motion.li
                     key={index}
@@ -134,7 +134,7 @@ const AboutUs = () => {
       >
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-4xl font-bold mb-8 leading-tight">
-            Join us in redefining fashion with{" "}
+            Join us in redefining fashion with{' '}
             <span className="text-yellow-500 dark:text-red-600">
               Faith AND Fast
             </span>

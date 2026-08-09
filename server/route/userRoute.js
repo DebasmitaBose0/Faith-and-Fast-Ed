@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 import {
   deleteUser,
   forgotPassword,
@@ -16,48 +16,62 @@ import {
   uploadAvatar,
   verifyEmailOtp,
   verifyOtp,
-} from "../controllers/userController.js";
-import auth from "../middleware/auth.js";
-import upload from "../middleware/multer.js";
-import admin from "../middleware/Admin.js";
+} from '../controllers/userController.js';
+import auth from '../middleware/auth.js';
+import upload from '../middleware/multer.js';
+import admin from '../middleware/Admin.js';
+import {
+  authLimiter,
+  passwordResetLimiter,
+} from '../middleware/rateLimiter.js';
+import validate from '../middleware/validate.js';
+import {
+  registerSchema,
+  loginSchema,
+  verifyEmailOtpSchema,
+  resendOtpSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  updateUserRoleSchema,
+} from '../validation/userValidation.js';
 
 const userRouter = express.Router();
 
-userRouter.post("/register", registerUser);
+userRouter.post('/register', authLimiter, validate(registerSchema), registerUser);
 
-userRouter.post("/verify-email", verifyEmailOtp);
+userRouter.post('/verify-email', authLimiter, validate(verifyEmailOtpSchema), verifyEmailOtp);
 
-userRouter.post("/resend-otp", resendOtp);
+userRouter.post('/resend-otp', authLimiter, validate(resendOtpSchema), resendOtp);
 
-userRouter.post("/login", loginUser);
+userRouter.post('/login', authLimiter, validate(loginSchema), loginUser);
 
-userRouter.get("/logout", logoutUser);
+userRouter.get('/logout', logoutUser);
 
-userRouter.put("/upload-avatar", upload.single("avatar"), auth, uploadAvatar);
+userRouter.put('/upload-avatar', upload.single('avatar'), auth, uploadAvatar);
 
-userRouter.put("/forgot-password", forgotPassword);
+userRouter.put('/forgot-password', passwordResetLimiter, validate(forgotPasswordSchema), forgotPassword);
 
-userRouter.put("/verify-otp", verifyOtp);
+userRouter.put('/verify-otp', authLimiter, validate(verifyEmailOtpSchema), verifyOtp);
 
-userRouter.put("/reset-password", resetPassword);
+userRouter.put('/reset-password', passwordResetLimiter, validate(resetPasswordSchema), resetPassword);
 
-userRouter.get("/me", auth, getUserDetails);
+userRouter.get('/me', auth, getUserDetails);
 
 userRouter.put(
-  "/update-user",
+  '/update-user',
   auth,
-  upload.single("avatar"),
+  upload.single('avatar'),
   updateUserDetails
 );
 
-userRouter.get("/admin/get", auth, admin, getAllUsers);
+userRouter.get('/admin/get', auth, admin, getAllUsers);
 
-userRouter.get("/admin/get/:id", auth, admin, getSingleUser);
+userRouter.get('/admin/get/:id', auth, admin, getSingleUser);
 
-userRouter.put("/admin/update", auth, admin, updateUserRole);
+userRouter.put('/admin/update', auth, admin, validate(updateUserRoleSchema), updateUserRole);
 
-userRouter.delete("/admin/delete/:id", auth, admin, deleteUser);
+userRouter.delete('/admin/delete/:id', auth, admin, deleteUser);
 
-userRouter.patch("/admin/:id/status", auth, admin, updateUserStatus);
+userRouter.patch('/admin/:id/status', auth, admin, updateUserStatus);
 
 export default userRouter;

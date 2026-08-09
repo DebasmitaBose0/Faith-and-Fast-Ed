@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { motion, AnimatePresence } from "framer-motion";
-import { fetchDiscounts } from "@/store/extra-slice/discount";
-import ConfirmationModal from "../extras/ConfirmationModel";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fetchDiscounts } from '@/store/extra-slice/discount';
+import ConfirmationModal from '../extras/ConfirmationModal';
 
 const DiscountHeader = () => {
   const dispatch = useDispatch();
@@ -12,7 +12,7 @@ const DiscountHeader = () => {
 
   useEffect(() => {
     // Check if the header was closed within the past 2 hours
-    const closedTime = localStorage.getItem("discountHeaderClosedAt");
+    const closedTime = localStorage.getItem('discountHeaderClosedAt');
     if (closedTime && Date.now() - closedTime < 2 * 60 * 60 * 1000) {
       setIsVisible(false);
     } else {
@@ -29,7 +29,7 @@ const DiscountHeader = () => {
   const handleConfirmClose = () => {
     setIsModalOpen(false);
     setIsVisible(false);
-    localStorage.setItem("discountHeaderClosedAt", Date.now());
+    localStorage.setItem('discountHeaderClosedAt', Date.now());
   };
 
   // If the user cancels, simply close the modal without hiding the header
@@ -89,13 +89,13 @@ const DiscountHeader = () => {
                 {error && <p className="text-red-500">{error}</p>}
                 {!loading && !error && discountToShow && (
                   <p className="font-bold text-lg">
-                    Use coupon code{" "}
-                    <span className="underline">{discountToShow.name}</span> for{" "}
-                    {discountToShow.discountType === "FIXED"
+                    Use coupon code{' '}
+                    <span className="underline">{discountToShow.name}</span> for{' '}
+                    {discountToShow.discountType === 'FIXED'
                       ? `$${discountToShow.discountValue}`
-                      : `${discountToShow.discountValue}%`}{" "}
-                    discount! Expires in {hoursRemaining}{" "}
-                    {hoursRemaining === 1 ? "hour" : "hours"}.
+                      : `${discountToShow.discountValue}%`}{' '}
+                    discount! Expires in {hoursRemaining}{' '}
+                    {hoursRemaining === 1 ? 'hour' : 'hours'}.
                   </p>
                 )}
                 {!loading && !error && !discountToShow && (

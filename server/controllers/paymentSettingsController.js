@@ -1,6 +1,7 @@
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import PaymentSettingsModel from "../models/paymentSettingsModel.js";
-import { uploadImage, deleteImage } from "../utils/cloudinary.js";
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import PaymentSettingsModel from '../models/paymentSettingsModel.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
+import { encrypt, decryptIfEncrypted } from '../utils/encryption.js';
 
 // Public — the checkout page needs the UPI ID and QR to show online-payment instructions.
 export const getPaymentSettings = catchAsyncErrors(async (req, res) => {
@@ -9,14 +10,22 @@ export const getPaymentSettings = catchAsyncErrors(async (req, res) => {
 
     if (!settings) {
       settings = await PaymentSettingsModel.create({
-        upiId: "",
-        qrCode: { public_id: "", url: "" },
+        upiId: '',
+        qrCode: { public_id: '', url: '' },
       });
     }
 
-    res.status(200).json({ success: true, settings });
+    const response = settings.toObject();
+    if (response.upiId) {
+      response.upiId = decryptIfEncrypted(response.upiId);
+    }
+    res.status(200).json({ success: true, settings: response });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('getPaymentSettings failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Could not load payment settings',
+    });
   }
 });
 
@@ -28,13 +37,24 @@ export const updatePaymentSettings = catchAsyncErrors(async (req, res) => {
     let settings = await PaymentSettingsModel.findOne();
     if (!settings) {
       settings = new PaymentSettingsModel({
-        upiId: "",
-        qrCode: { public_id: "", url: "" },
+        upiId: '',
+        qrCode: { public_id: '', url: '' },
       });
     }
 
-    if (typeof upiId === "string") {
-      settings.upiId = upiId.trim();
+    if (typeof upiId === 'string') {
+      const upiTrimmed = upiId.trim();
+      if (upiTrimmed !== '') {
+        // Standard UPI validation regex (e.g. username@bankname)
+        const upiRegex = /^[\w.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+        if (!upiRegex.test(upiTrimmed)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid UPI ID format. Correct format is name@bank',
+          });
+        }
+      }
+      settings.upiId = encrypt(upiTrimmed);
     }
 
     if (req.file) {
@@ -55,12 +75,21 @@ export const updatePaymentSettings = catchAsyncErrors(async (req, res) => {
 
     await settings.save();
 
+    const response = settings.toObject();
+    if (response.upiId) {
+      response.upiId = decryptIfEncrypted(response.upiId);
+    }
+
     res.status(200).json({
       success: true,
-      message: "Payment settings updated",
-      settings,
+      message: 'Payment settings updated',
+      settings: response,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error('updatePaymentSettings failed:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Could not update payment settings',
+    });
   }
 });

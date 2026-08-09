@@ -1,78 +1,84 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
 export const getProducts = createAsyncThunk(
-  "products/getProducts",
+  'products/getProducts',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/api/product/get");
+      const response = await axiosInstance.get('/api/product/get');
       return response.data.data;
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch products"
+        err.response?.data?.message || 'Failed to fetch products'
       );
     }
   }
 );
 
 export const getProductByFilter = createAsyncThunk(
-  "products/getProductByFilter",
+  'products/getProductByFilter',
   async (
     {
       page = 1,
       limit = 10,
-      searchQuery = "",
+      searchQuery = '',
       selectedCategories = [],
       selectedSubcategories = [],
       selectedColors = [],
       selectedColorOptions = [],
       selectedSizes = [],
       selectedSizeOptions = [],
-      sortBy = "relevant",
+      sortBy = 'relevant',
       priceRange = [0, 20000],
+      rating = '',
+      availability = '',
+      discount = '',
     },
     { rejectWithValue }
   ) => {
     try {
-      const response = await axiosInstance.get("/api/product/get/filter", {
+      const response = await axiosInstance.get('/api/product/get/filter', {
         params: {
           page,
           limit,
           search: searchQuery,
           category:
             selectedCategories.length > 0
-              ? selectedCategories.join(",")
+              ? selectedCategories.join(',')
               : undefined,
           subcategory:
             selectedSubcategories.length > 0
-              ? selectedSubcategories.join(",")
+              ? selectedSubcategories.join(',')
               : undefined,
           color:
-            selectedColors.length > 0 ? selectedColors.join(",") : undefined,
+            selectedColors.length > 0 ? selectedColors.join(',') : undefined,
           coloroptions:
             selectedColorOptions.length > 0
-              ? selectedColorOptions.join(",")
+              ? selectedColorOptions.join(',')
               : undefined,
-          size: selectedSizes.length > 0 ? selectedSizes.join(",") : undefined,
+          size: selectedSizes.length > 0 ? selectedSizes.join(',') : undefined,
           sizeoptions:
             selectedSizeOptions.length > 0
-              ? selectedSizeOptions.join(",")
+              ? selectedSizeOptions.join(',')
               : undefined,
           sortBy,
           minPrice: priceRange?.[0] ?? 0,
           maxPrice: priceRange?.[1] ?? 20000,
+          rating: rating || undefined,
+          availability: availability || undefined,
+          discount: discount || undefined,
         },
       });
 
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Error fetching products");
+      return rejectWithValue(error.response?.data || 'Error fetching products');
     }
   }
 );
 
 export const getProductsByGender = createAsyncThunk(
-  "products/getByGender",
+  'products/getByGender',
   async (category, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.get(
@@ -95,7 +101,7 @@ const initialState = {
 };
 
 const productSlice = createSlice({
-  name: "product",
+  name: 'product',
   initialState,
   reducers: {
     clearProductErrors: (state) => {
