@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, Heart, ShoppingCart, Menu, X, User } from 'lucide-react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,12 +8,19 @@ import DarkModeToggle from '../extras/DarkModeToggle';
 import logoLight from '../../assets/logo-light.png';
 import logo from '../../assets/logoLight.png';
 import PropTypes from 'prop-types';
+import useClickOutside from '@/hooks/useClickOutside';
 
 export default function Header() {
   const [darkMode, setDarkMode] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const location = useLocation();
+
+  const dropdownRef = useRef(null);
+  const menuRef = useRef(null);
+
+  useClickOutside(dropdownRef, () => setDropdownOpen(false));
+  useClickOutside(menuRef, () => setMenuOpen(false));
 
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { cartItems = [] } = useSelector((state) => state.cart);
@@ -47,20 +54,6 @@ export default function Header() {
   };
 
   const isActiveRoute = (route) => location.pathname === route;
-
-  useEffect(() => {
-    if (menuOpen) {
-      const timer = setTimeout(() => setMenuOpen(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [menuOpen]);
-
-  useEffect(() => {
-    if (dropdownOpen) {
-      const timer = setTimeout(() => setDropdownOpen(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [dropdownOpen]);
 
   return (
     <header className="header bg-yellow-500 dark:bg-gray-900 flex items-center justify-between px-6 py-3 sticky top-0 z-50 shadow-md transition-all duration-300">
@@ -131,7 +124,7 @@ export default function Header() {
           <DarkModeToggle />
         </div>
 
-        <div className="relative">
+        <div className="relative" ref={dropdownRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="w-9 h-9 bg-red-600 text-white flex items-center justify-center rounded-full hover:scale-110 transition-transform"
@@ -173,41 +166,43 @@ export default function Header() {
           )}
         </div>
 
-        <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
-        </button>
+        <div ref={menuRef} className="md:hidden">
+          <button onClick={() => setMenuOpen(!menuOpen)}>
+            {menuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+          </button>
+
+          {menuOpen && (
+            <nav className="absolute top-16 left-0 w-full bg-yellow-500 dark:bg-gray-900 flex flex-col items-center space-y-4 py-4 shadow-lg">
+              {['/', '/products', '/about', '/contactus'].map((path, index) => {
+                const label =
+                  path === '/'
+                    ? 'Home'
+                    : path === '/products'
+                      ? 'Products'
+                      : path === '/about'
+                        ? 'About'
+                        : path === '/contactus'
+                          ? 'Contact Us'
+                          : '';
+
+                return (
+                  <Link
+                    key={index}
+                    to={path}
+                    className={`text-lg font-bold transition-transform ${
+                      isActiveRoute(path)
+                        ? 'text-red-600 dark:text-red-400'
+                        : 'hover:text-red-600 dark:hover:text-white'
+                    }`}
+                  >
+                    {label}
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
+        </div>
       </div>
-
-      {menuOpen && (
-        <nav className="absolute top-16 left-0 w-full bg-yellow-500 dark:bg-gray-900 md:hidden flex flex-col items-center space-y-4 py-4 shadow-lg">
-          {['/', '/products', '/about', '/contactus'].map((path, index) => {
-            const label =
-              path === '/'
-                ? 'Home'
-                : path === '/products'
-                  ? 'Products'
-                  : path === '/about'
-                    ? 'About'
-                    : path === '/contactus'
-                      ? 'Contact Us'
-                      : '';
-
-            return (
-              <Link
-                key={index}
-                to={path}
-                className={`text-lg font-bold transition-transform ${
-                  isActiveRoute(path)
-                    ? 'text-red-600 dark:text-red-400'
-                    : 'hover:text-red-600 dark:hover:text-white'
-                }`}
-              >
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-      )}
     </header>
   );
 }

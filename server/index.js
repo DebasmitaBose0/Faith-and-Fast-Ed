@@ -108,6 +108,8 @@ import ticketRouter from './route/ticketRoute.js';
 import userRouter from './route/userRoute.js';
 import wishListRouter from './route/wishlistRoute.js';
 import emailRouter from './route/emailTemplateRoute.js';
+import adminAuditRouter from './route/adminAuditRoute.js';
+import referralRouter from './route/referralRoute.js';
 import { startMonitoring } from './utils/systemMonitor.js';
 import { healthConfig } from './config/healthAndBackupConfig.js';
 
@@ -125,6 +127,8 @@ app.use('/api/support', supportRouter);
 app.use('/api/user', userRouter);
 app.use('/api/wishlist', wishListRouter);
 app.use('/api/email-templates', emailRouter);
+app.use('/api/admin-audit', adminAuditRouter);
+app.use('/api/referral', referralRouter);
 app.use('/api/review', reviewRouter);
 app.use('/api/recommendations', recommendationRouter);
 app.use('/api/bulk-product', bulkProductRouter);

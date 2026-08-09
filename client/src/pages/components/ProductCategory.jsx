@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { addToWishList } from '@/store/add-to-wishlist/addToWishList';
+import { addToCart } from '@/store/add-to-cart/addToCart';
 import StockBadge from './StockBadge';
 
 const ProductCategory = ({ title, items }) => {
@@ -58,9 +59,19 @@ const ProductCategory = ({ title, items }) => {
     setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
   };
 
-  const handleAddCart = (item) => {
-    navigate(`/product/${item._id}`);
-    toast.info('Add item to Cart from Product page!');
+  const handleAddCart = async (item) => {
+    try {
+      await dispatch(
+        addToCart({
+          productId: item._id,
+          selectedColor: item.colors?.[0] || 'Default',
+          selectedSize: item.sizes?.[0] || 'Standard',
+        })
+      ).unwrap();
+      toast.success('Item added to cart!');
+    } catch (err) {
+      toast.error(typeof err === 'string' ? err : 'Failed to add item to cart');
+    }
   };
   const handleAddWishList = (item) => {
     dispatch(addToWishList(item._id));
