@@ -1,28 +1,27 @@
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 import {
   deleteUser,
   getSingleUser,
   updateUserRole,
   updateUserStatus,
-} from "@/store/auth-slice/user";
-import Spinner from "../extras/Spinner";
-import ConfirmationModal from "../extras/ConfirmationModel";
-import { toast } from "react-toastify";
-import { ArrowLeft, Delete, Edit } from "lucide-react";
-import { Update } from "@mui/icons-material";
-import PropTypes from "prop-types";
+} from '@/store/auth-slice/user';
+import ConfirmationModal from '../extras/ConfirmationModal';
+import { toast } from 'react-toastify';
+import { ArrowLeft, Delete, Edit, Loader } from 'lucide-react';
+import { Update } from '@mui/icons-material';
+import PropTypes from 'prop-types';
 
 const SingleUser = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedRole, setSelectedRole] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedRole, setSelectedRole] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { singleUser, loading, error } = useSelector((state) => state.auth);
@@ -41,9 +40,9 @@ const SingleUser = () => {
   const handleStatusChange = async () => {
     try {
       await dispatch(updateUserStatus({ userId: id, status: selectedStatus }));
-      toast.success("Status updated successfully");
+      toast.success('Status updated successfully');
     } catch (err) {
-      toast.error(err || "Failed to update status");
+      toast.error(err || 'Failed to update status');
     }
   };
 
@@ -52,24 +51,24 @@ const SingleUser = () => {
       await dispatch(
         updateUserRole({ email: singleUser.email, role: selectedRole })
       );
-      toast.success("Role updated successfully");
-      navigate("/admin/users");
+      toast.success('Role updated successfully');
+      navigate('/admin/users');
     } catch (error) {
-      toast.error(error || "Failed to update role");
+      toast.error(error || 'Failed to update role');
     }
   };
 
   const handleDeleteConfirm = async () => {
     try {
-      console.log("Deleting user...");
+      console.log('Deleting user...');
       await dispatch(deleteUser(id));
 
-      toast.success("User deleted successfully");
+      toast.success('User deleted successfully');
 
-      navigate("/admin/users");
+      navigate('/admin/users');
     } catch (error) {
-      console.error("Delete Error:", error);
-      toast.error(error?.message || "Failed to delete user");
+      console.error('Delete Error:', error);
+      toast.error(error?.message || 'Failed to delete user');
     } finally {
       setShowDeleteModal(false);
     }
@@ -78,7 +77,7 @@ const SingleUser = () => {
   if (loading)
     return (
       <div className="flex justify-center items-center h-64">
-        <Spinner size="lg" className="text-yellow-600 dark:text-red-600" />
+        <Loader size="lg" className="text-yellow-600 dark:text-red-600" />
       </div>
     );
   if (error) return <div className="text-red-500 p-4">{error}</div>;
@@ -91,7 +90,7 @@ const SingleUser = () => {
       className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8"
     >
       <Helmet>
-        <title>{singleUser?.name || "User"} - Admin Dashboard</title>
+        <title>{singleUser?.name || 'User'} - Admin Dashboard</title>
         <meta
           name="description"
           content={`Manage ${singleUser?.name}'s account details and permissions`}
@@ -183,13 +182,13 @@ const SingleUser = () => {
                   </div>
                 </div>
 
-                <DetailItem label="Mobile" value={singleUser.mobile || "N/A"} />
+                <DetailItem label="Mobile" value={singleUser.mobile || 'N/A'} />
                 <DetailItem
                   label="Address"
                   value={
                     singleUser.addressDetails?.length
-                      ? singleUser.addressDetails.join(", ")
-                      : "N/A"
+                      ? singleUser.addressDetails.join(', ')
+                      : 'N/A'
                   }
                 />
                 <DetailItem
@@ -216,7 +215,7 @@ const SingleUser = () => {
 const DetailItem = ({ label, value, copyable = false }) => {
   const handleCopy = () => {
     navigator.clipboard.writeText(value);
-    toast.success("Copied to clipboard!");
+    toast.success('Copied to clipboard!');
   };
 
   return (

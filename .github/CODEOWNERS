@@ -1,0 +1,57 @@
+# ==============================================================================
+# Faith-and-Fast CODEOWNERS
+# ==============================================================================
+# This file defines who owns specific code paths in the repository.
+# GitHub will automatically request reviews from the individuals or teams
+# listed below when a pull request modifies files matching the pattern.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Default Owners
+# ------------------------------------------------------------------------------
+# By default, any file that does not match a more specific rule below
+# requires review from the core maintainer.
+*                                   @SRV30
+
+# ------------------------------------------------------------------------------
+# GitHub & CI/CD Configuration
+# ------------------------------------------------------------------------------
+# Changes to GitHub Actions workflows, PR templates, and dependabot
+# configurations require strict review to prevent CI/CD breakage.
+/.github/workflows/                 @SRV30
+/.github/dependabot.yml             @SRV30
+/.github/PULL_REQUEST_TEMPLATE.md   @SRV30
+
+# ------------------------------------------------------------------------------
+# Project Configuration & Build Tools
+# ------------------------------------------------------------------------------
+# Modifications to dependencies, package management, or formatting rules.
+/package.json                       @SRV30
+/package-lock.json                  @SRV30
+/.prettierrc                        @SRV30
+
+# ------------------------------------------------------------------------------
+# Documentation
+# ------------------------------------------------------------------------------
+# Anyone can contribute to docs, but they are reviewed by the core team
+# to ensure accuracy, high-quality formatting, and correct mermaid diagrams.
+/docs/                              @SRV30
+/README.md                          @SRV30
+/SECURITY.md                        @SRV30
+
+# ------------------------------------------------------------------------------
+# Backend Source Code (Node.js/Express)
+# ------------------------------------------------------------------------------
+# The primary API and business logic.
+/server/                            @SRV30
+/api/                               @SRV30
+/config/                            @SRV30
+/models/                            @SRV30
+/routes/                            @SRV30
+
+# ------------------------------------------------------------------------------
+# Frontend Source Code
+# ------------------------------------------------------------------------------
+# Client-side UI code.
+/client/                            @SRV30
+/public/                            @SRV30

@@ -1,8 +1,8 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toggleDarkMode } from "@/store/extra-slice/darkModeSlice";
-import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon } from "lucide-react";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleDarkMode } from '@/store/extra-slice/darkModeSlice';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sun, Moon } from 'lucide-react';
 
 const DarkModeToggle = () => {
   const dispatch = useDispatch();
@@ -14,9 +14,9 @@ const DarkModeToggle = () => {
 
   useEffect(() => {
     if (darkMode) {
-      document.documentElement.classList.add("dark");
+      document.documentElement.classList.add('dark');
     } else {
-      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
 
@@ -30,7 +30,7 @@ const DarkModeToggle = () => {
       exit={{ opacity: 0, y: -10 }}
     >
       <motion.div
-        key={darkMode ? "moon" : "sun"}
+        key={darkMode ? 'moon' : 'sun'}
         initial={{ rotate: -180, opacity: 0 }}
         animate={{ rotate: 0, opacity: 1 }}
         exit={{ rotate: 180, opacity: 0 }}
@@ -45,14 +45,14 @@ const DarkModeToggle = () => {
 
       <AnimatePresence mode="wait">
         <motion.span
-          key={darkMode ? "dark" : "light"}
+          key={darkMode ? 'dark' : 'light'}
           initial={{ x: -10, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 10, opacity: 0 }}
           transition={{ duration: 0.4 }}
           className="text-sm font-semibold text-gray-800 dark:text-white hidden sm:block"
         >
-          {darkMode ? "Dark Mode" : "Light Mode"}
+          {darkMode ? 'Dark Mode' : 'Light Mode'}
         </motion.span>
       </AnimatePresence>
     </motion.button>

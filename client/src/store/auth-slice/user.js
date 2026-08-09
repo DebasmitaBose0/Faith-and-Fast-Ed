@@ -1,18 +1,14 @@
-import axiosInstance from "@/api";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { isTokenValid } from "@/utils/tokenUtils";
+import axiosInstance from '@/api';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { isTokenValid } from '@/utils/tokenUtils';
 
 export const loginUser = createAsyncThunk(
-  "auth/loginUser",
+  'auth/loginUser',
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/api/user/login", credentials);
+      const response = await axiosInstance.post('/api/user/login', credentials);
 
       const { token, user, verifyEmail } = response.data;
-
-      localStorage.setItem("verifyEmail", verifyEmail);
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("token", token);
 
       return { user, token, verifyEmail };
     } catch (error) {
@@ -22,38 +18,36 @@ export const loginUser = createAsyncThunk(
 );
 
 export const logoutUser = createAsyncThunk(
-  "auth/logoutUser",
+  'auth/logoutUser',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get("/api/user/logout");
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
+      const response = await axiosInstance.get('/api/user/logout');
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data || { message: "Logout failed!" }
+        error.response?.data || { message: 'Logout failed!' }
       );
     }
   }
 );
 
 export const signupUser = createAsyncThunk(
-  "auth/signupUser",
+  'auth/signupUser',
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
-        "/api/user/register",
+        '/api/user/register',
         userData,
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
 
       if (!response.data || !response.data.success) {
         return rejectWithValue(
-          response.data || { message: "Registration failed. Please try again." }
+          response.data || { message: 'Registration failed. Please try again.' }
         );
       }
 
@@ -65,38 +59,38 @@ export const signupUser = createAsyncThunk(
 );
 
 export const getSingleDetail = createAsyncThunk(
-  "auth/getSingleDetail",
+  'auth/getSingleDetail',
   async (_, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
-      const response = await axiosInstance.get("/api/user/me", {
+      const token = localStorage.getItem('token');
+      const response = await axiosInstance.get('/api/user/me', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("API Response:", response.data);
+      console.log('API Response:', response.data);
 
       return response.data;
     } catch (error) {
       console.error(error);
       return rejectWithValue(
         error.response?.data ||
-          error.message || { message: "Get user details failed!" }
+          error.message || { message: 'Get user details failed!' }
       );
     }
   }
 );
 
 export const updateProfile = createAsyncThunk(
-  "auth/updateProfile",
+  'auth/updateProfile',
   async (formData, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       if (!token) {
-        return rejectWithValue("User is not authenticated");
+        return rejectWithValue('User is not authenticated');
       }
       const response = await axiosInstance.put(
-        "/api/user/update-user",
+        '/api/user/update-user',
         formData,
         {
           headers: {
@@ -107,38 +101,29 @@ export const updateProfile = createAsyncThunk(
 
       const { token: newToken, user } = response.data || {};
 
-      if (user) {
-        localStorage.setItem("user", JSON.stringify(user));
-      }
-      if (newToken) {
-        localStorage.setItem("token", newToken);
-      }
-
-      console.log("Response Data:", response.data);
-
       return { token: newToken, user };
     } catch (error) {
       return rejectWithValue(
-        error.response?.data || { message: "Profile update failed!" }
+        error.response?.data || { message: 'Profile update failed!' }
       );
     }
   }
 );
 
 export const uploadAvatar = createAsyncThunk(
-  "auth/uploadAvatar",
+  'auth/uploadAvatar',
   async (avatarFile, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const formData = new FormData();
-      formData.append("avatar", avatarFile);
+      formData.append('avatar', avatarFile);
 
       const response = await axiosInstance.put(
-        "/api/user/upload-avatar",
+        '/api/user/upload-avatar',
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
 
             Authorization: `Bearer ${token}`,
           },
@@ -148,17 +133,17 @@ export const uploadAvatar = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Upload failed");
+      return rejectWithValue(error.response?.data?.message || 'Upload failed');
     }
   }
 );
 
 // Admin
 export const getAllUsers = createAsyncThunk(
-  "auth/fetchusers",
-  async ({ page = 1, limit = 10, search = "" }, { rejectWithValue }) => {
+  'auth/fetchusers',
+  async ({ page = 1, limit = 10, search = '' }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const { data } = await axiosInstance.get(
         `/api/user/admin/get?page=${page}&limit=${limit}&search=${search}`,
         {
@@ -171,7 +156,7 @@ export const getAllUsers = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch users"
+        error.response?.data?.message || 'Failed to fetch users'
       );
     }
   }
@@ -179,10 +164,10 @@ export const getAllUsers = createAsyncThunk(
 
 // Admin
 export const getSingleUser = createAsyncThunk(
-  "auth/getSingle",
+  'auth/getSingle',
   async (id, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const { data } = await axiosInstance.get(`/api/user/admin/get/${id}`, {
         withCredentials: true,
         headers: {
@@ -192,7 +177,7 @@ export const getSingleUser = createAsyncThunk(
       return data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to fetch user"
+        error.response?.data?.message || 'Failed to fetch user'
       );
     }
   }
@@ -200,10 +185,10 @@ export const getSingleUser = createAsyncThunk(
 
 // Admin
 export const updateUserStatus = createAsyncThunk(
-  "auth/updateUserStatus",
+  'auth/updateUserStatus',
   async ({ userId, status }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.patch(
         `/api/user/admin/${userId}/status`,
         { status },
@@ -222,12 +207,12 @@ export const updateUserStatus = createAsyncThunk(
 
 // Admin
 export const updateUserRole = createAsyncThunk(
-  "admin/updateUserRole",
+  'admin/updateUserRole',
   async ({ email, role }, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await axiosInstance.put(
-        "/api/user/admin/update",
+        '/api/user/admin/update',
         { email, role },
         {
           withCredentials: true,
@@ -245,10 +230,10 @@ export const updateUserRole = createAsyncThunk(
 
 // Admin
 export const deleteUser = createAsyncThunk(
-  "auth/deleteUser",
+  'auth/deleteUser',
   async (userId, { rejectWithValue }) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       await axiosInstance.delete(`/api/user/admin/delete/${userId}`, {
         withCredentials: true,
         headers: {
@@ -262,20 +247,29 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
-const rawToken = localStorage.getItem("token") || null;
+const rawToken = localStorage.getItem('token') || null;
 // Only trust a stored token if it is a valid, unexpired JWT. An expired or
 // malformed token is purged here so the app never boots into a stale
 // "authenticated" state after a refresh.
 const tokenIsValid = isTokenValid(rawToken);
 if (rawToken && !tokenIsValid) {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
 }
 const storedToken = tokenIsValid ? rawToken : null;
-const storedUserRaw = tokenIsValid ? localStorage.getItem("user") : null;
+const storedUserRaw = tokenIsValid ? localStorage.getItem('user') : null;
+
+let parsedUser = null;
+if (storedUserRaw) {
+  try {
+    parsedUser = JSON.parse(storedUserRaw);
+  } catch {
+    localStorage.removeItem('user');
+  }
+}
 
 const initialState = {
-  user: storedUserRaw ? JSON.parse(storedUserRaw) : null,
+  user: parsedUser,
   isAuthenticated: tokenIsValid,
   token: storedToken,
   loading: false,
@@ -289,7 +283,7 @@ const initialState = {
 };
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
     clearError(state) {
@@ -317,7 +311,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Login failed!";
+        state.error = action.payload?.message || 'Login failed!';
       })
 
       .addCase(logoutUser.pending, (state) => {
@@ -329,11 +323,10 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.token = null;
         state.verifyEmail = false;
-        localStorage.removeItem("verifyEmail");
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Logout failed!";
+        state.error = action.payload?.message || 'Logout failed!';
       })
 
       .addCase(signupUser.pending, (state) => {
@@ -365,7 +358,7 @@ const authSlice = createSlice({
       .addCase(getSingleDetail.rejected, (state, action) => {
         state.loading = false;
         state.error =
-          action.payload?.message || "Fetching user details failed!";
+          action.payload?.message || 'Fetching user details failed!';
       })
 
       .addCase(updateProfile.pending, (state) => {
@@ -375,12 +368,10 @@ const authSlice = createSlice({
       .addCase(updateProfile.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.user;
-
-        localStorage.setItem("user", JSON.stringify(state.user));
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Profile update failed!";
+        state.error = action.payload?.message || 'Profile update failed!';
       })
 
       .addCase(uploadAvatar.pending, (state) => {
@@ -390,9 +381,6 @@ const authSlice = createSlice({
       .addCase(uploadAvatar.fulfilled, (state, action) => {
         state.loading = false;
         state.user = { ...state.user, avatar: action.payload.avatar };
-
-        const updatedUser = { ...state.user, avatar: action.payload.avatar };
-        localStorage.setItem("user", JSON.stringify(updatedUser));
       })
       .addCase(uploadAvatar.rejected, (state, action) => {
         state.loading = false;

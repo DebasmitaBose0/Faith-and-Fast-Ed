@@ -1,33 +1,32 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer components {
-    .Pacifico {
-        font-family: "Pacifico", serif;
-        font-style: italic;
-    }
+  .Pacifico {
+    font-family: 'Pacifico', serif;
+    font-style: italic;
+  }
 
-    .lato {
-        font-family: "Lato", sans-serif;
-        font-style: italic;
-    }
+  .lato {
+    font-family: 'Lato', sans-serif;
+    font-style: italic;
+  }
 
-    .fugaz-one-regular {
-        font-family: "Fugaz One", serif;
-        font-weight: 400;
-        font-style: normal;
-    }
+  .fugaz-one-regular {
+    font-family: 'Fugaz One', serif;
+    font-weight: 400;
+    font-style: normal;
+  }
 
-    .pacifico-regular {
-        font-family: "Pacifico", serif;
-        font-weight: 400;
-        font-style: normal;
-    }
+  .pacifico-regular {
+    font-family: 'Pacifico', serif;
+    font-weight: 400;
+    font-style: normal;
+  }
 }
 
 svg {
-    width: auto; 
-    height: auto;
-  }
-  
+  width: auto;
+  height: auto;
+}

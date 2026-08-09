@@ -1,10 +1,14 @@
-import { motion } from "framer-motion";
-import PropTypes from "prop-types";
+import { motion } from 'framer-motion';
+import PropTypes from 'prop-types';
 
 const PrivacyPolicy = () => {
   const containerVariants = {
     hidden: { opacity: 0, y: 50 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: 'easeOut' },
+    },
   };
 
   return (
@@ -78,7 +82,7 @@ const PrivacyPolicy = () => {
             title="9. Contact Us"
             content={
               <>
-                If you have any questions about this Privacy Policy, please{" "}
+                If you have any questions about this Privacy Policy, please{' '}
                 <a
                   href="/contactus"
                   className="text-yellow-500 dark:text-red-600 font-medium hover:underline transition-colors duration-200"
@@ -98,7 +102,11 @@ const PrivacyPolicy = () => {
 const Section = ({ title, content }) => {
   const sectionVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5, ease: 'easeOut' },
+    },
   };
 
   return (

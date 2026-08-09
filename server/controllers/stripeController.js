@@ -1,11 +1,11 @@
-import Stripe from "stripe";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import OrderModel from "../models/orderModel.js";
-import ProductModel from "../models/productModel.js";
-import UserModel from "../models/userModel.js";
-import AddressModel from "../models/addressModel.js";
-import sendEmail from "../config/sendEmail.js";
-import generateReceiptHTML from "../utils/generateReceipt.js";
+import Stripe from 'stripe';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import OrderModel from '../models/orderModel.js';
+import ProductModel from '../models/productModel.js';
+import UserModel from '../models/userModel.js';
+import AddressModel from '../models/addressModel.js';
+import sendEmail from '../config/sendEmail.js';
+import generateReceiptHTML from '../utils/generateReceipt.js';
 
 // Stripe is initialised lazily so the server can still boot in environments
 // where STRIPE_SECRET_KEY is not configured (e.g. a contributor who only works
@@ -30,28 +30,28 @@ const getStripe = () => {
 // since this is an India-based store (INR pricing, 10-digit mobiles, pincodes,
 // and an "India" country default). India compliance specifically needs "IN".
 const COUNTRY_NAME_TO_ISO = {
-  india: "IN",
-  "united states": "US",
-  "united states of america": "US",
-  usa: "US",
-  "united kingdom": "GB",
-  uk: "GB",
-  canada: "CA",
-  australia: "AU",
-  "united arab emirates": "AE",
-  uae: "AE",
-  singapore: "SG",
-  germany: "DE",
-  france: "FR",
-  netherlands: "NL",
-  "new zealand": "NZ",
+  india: 'IN',
+  'united states': 'US',
+  'united states of america': 'US',
+  usa: 'US',
+  'united kingdom': 'GB',
+  uk: 'GB',
+  canada: 'CA',
+  australia: 'AU',
+  'united arab emirates': 'AE',
+  uae: 'AE',
+  singapore: 'SG',
+  germany: 'DE',
+  france: 'FR',
+  netherlands: 'NL',
+  'new zealand': 'NZ',
 };
 
 const toISOCountry = (country) => {
-  if (!country) return "IN";
+  if (!country) return 'IN';
   const value = String(country).trim();
   if (/^[A-Za-z]{2}$/.test(value)) return value.toUpperCase();
-  return COUNTRY_NAME_TO_ISO[value.toLowerCase()] || "IN";
+  return COUNTRY_NAME_TO_ISO[value.toLowerCase()] || 'IN';
 };
 
 // Recompute the order total on the server from the live product prices so the
@@ -61,21 +61,21 @@ const toISOCountry = (country) => {
 // Stripe.
 const computeServerAmount = async (products, discountAmount) => {
   if (!Array.isArray(products) || products.length === 0) {
-    throw new Error("No products provided");
+    throw new Error('No products provided');
   }
 
   let subtotal = 0;
   for (const item of products) {
     if (!item || !item.product) {
-      throw new Error("Invalid product entry");
+      throw new Error('Invalid product entry');
     }
     const dbProduct = await ProductModel.findById(item.product);
     if (!dbProduct) {
-      throw new Error("Product not found");
+      throw new Error('Product not found');
     }
     const quantity = Number(item.quantity);
     if (!Number.isInteger(quantity) || quantity < 1) {
-      throw new Error("Invalid quantity");
+      throw new Error('Invalid quantity');
     }
     subtotal += dbProduct.price * quantity;
   }
@@ -96,18 +96,19 @@ export const createPaymentIntent = catchAsyncErrors(async (req, res) => {
     return res.status(503).json({
       success: false,
       message:
-        "Stripe is not configured on the server. Set STRIPE_SECRET_KEY to enable card payments.",
+        'Stripe is not configured on the server. Set STRIPE_SECRET_KEY to enable card payments.',
     });
   }
 
   try {
-    const { products, discountAmount, addressId } = req.body;
+    const { products, discountAmount, addressId, guestInfo } = req.body;
 
     const amountMajor = await computeServerAmount(products, discountAmount);
     if (amountMajor <= 0) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Order amount must be greater than zero" });
+      return res.status(400).json({
+        success: false,
+        message: 'Order amount must be greater than zero',
+      });
     }
 
     // India Stripe export compliance requires a shipping name + address on the
@@ -115,7 +116,7 @@ export const createPaymentIntent = catchAsyncErrors(async (req, res) => {
     if (!addressId) {
       return res.status(400).json({
         success: false,
-        message: "A delivery address is required for card payments",
+        message: 'A delivery address is required for card payments',
       });
     }
 
@@ -123,10 +124,10 @@ export const createPaymentIntent = catchAsyncErrors(async (req, res) => {
     if (!address) {
       return res
         .status(404)
-        .json({ success: false, message: "Delivery address not found" });
+        .json({ success: false, message: 'Delivery address not found' });
     }
 
-    const currency = process.env.STRIPE_CURRENCY || "inr";
+    const currency = process.env.STRIPE_CURRENCY || 'inr';
     const itemCount = products.reduce(
       (sum, item) => sum + (Number(item?.quantity) || 0),
       0
@@ -138,7 +139,7 @@ export const createPaymentIntent = catchAsyncErrors(async (req, res) => {
     // address travels with the card from the client (billing_details).
     const description = `Faith-and-Fast order - ${itemCount} item(s)`;
     const shipping = {
-      name: req.user?.name || "Customer",
+      name: req.user?.name || guestInfo?.name || 'Customer',
       phone: address.mobile ? String(address.mobile) : undefined,
       address: {
         line1: address.address_line,
@@ -153,8 +154,11 @@ export const createPaymentIntent = catchAsyncErrors(async (req, res) => {
     // cents for USD), hence the * 100.
     // Extract and validate user ID
     const userId = req.user?._id || req.user?.id;
-    if (!userId) {
-      return res.status(400).json({ success: false, message: "User ID is missing in request" });
+    if (!userId && (!guestInfo || !guestInfo.email || !guestInfo.name)) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID or valid Guest Info is required',
+      });
     }
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountMajor * 100,
@@ -163,7 +167,11 @@ export const createPaymentIntent = catchAsyncErrors(async (req, res) => {
       shipping,
       automatic_payment_methods: { enabled: true },
       metadata: {
-        userId: String(userId),
+        userId: userId ? String(userId) : '',
+        guestEmail: !userId ? guestInfo.email : '',
+        guestName: !userId ? guestInfo.name : '',
+        guestMobile: !userId && guestInfo.mobile ? guestInfo.mobile : '',
+        discountAmount: String(Number(discountAmount) || 0),
       },
     });
 
@@ -191,35 +199,27 @@ export const confirmStripePayment = catchAsyncErrors(async (req, res) => {
     return res.status(503).json({
       success: false,
       message:
-        "Stripe is not configured on the server. Set STRIPE_SECRET_KEY to enable card payments.",
+        'Stripe is not configured on the server. Set STRIPE_SECRET_KEY to enable card payments.',
     });
   }
 
   try {
-    const {
-      paymentIntentId,
-      userId,
-      addressId,
-      products,
-      totalAmount,
-      couponCode,
-      discountAmount,
-    } = req.body;
+    const { paymentIntentId, addressId, products, couponCode } = req.body;
 
     if (!paymentIntentId) {
       return res
         .status(400)
-        .json({ success: false, message: "paymentIntentId is required" });
+        .json({ success: false, message: 'paymentIntentId is required' });
     }
 
     // Re-verify with Stripe — never trust the client's word that payment
     // succeeded.
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
-    if (!paymentIntent || paymentIntent.status !== "succeeded") {
+    if (!paymentIntent || paymentIntent.status !== 'succeeded') {
       return res.status(400).json({
         success: false,
-        message: "Payment has not been completed successfully",
+        message: 'Payment has not been completed successfully',
       });
     }
 
@@ -230,7 +230,59 @@ export const confirmStripePayment = catchAsyncErrors(async (req, res) => {
     if (existing) {
       return res.status(409).json({
         success: false,
-        message: "An order already exists for this payment",
+        message: 'An order already exists for this payment',
+      });
+    }
+
+    // The PaymentIntent is the source of truth for who paid and how much; the
+    // request body is attacker-controllable and must not be trusted for these.
+    // Verify the authenticated user matches the user the intent was created for
+    // (createPaymentIntent stores it in metadata.userId).
+    const authUserId = req.user?._id || req.user?.id;
+    const isGuestIntent = !paymentIntent.metadata?.userId;
+
+    if (isGuestIntent && authUserId) {
+      return res.status(403).json({
+        success: false,
+        message: 'Authenticated user attempting to claim a guest payment',
+      });
+    }
+
+    if (
+      !isGuestIntent &&
+      (!authUserId ||
+        String(paymentIntent.metadata?.userId || '') !== String(authUserId))
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: 'This payment does not belong to the authenticated user',
+      });
+    }
+
+    // Authoritative amount actually charged by Stripe, converted back from the
+    // smallest currency unit.
+    const verifiedAmount = paymentIntent.amount / 100;
+
+    // Re-validate the submitted line items against the charge using the same
+    // server-side pricing that created the intent, with the discount taken from
+    // the intent's metadata (not the request body, which could be inflated to
+    // make mismatched items add up). If the items don't reproduce the amount
+    // actually charged, reject rather than storing forged line items.
+    const verifiedDiscount =
+      Number(paymentIntent.metadata?.discountAmount) || 0;
+    let recomputedAmount;
+    try {
+      recomputedAmount = await computeServerAmount(products, verifiedDiscount);
+    } catch {
+      return res.status(400).json({
+        success: false,
+        message: 'Order items are invalid or do not match the payment',
+      });
+    }
+    if (recomputedAmount !== verifiedAmount) {
+      return res.status(400).json({
+        success: false,
+        message: 'Order items do not match the amount that was paid',
       });
     }
 
@@ -239,16 +291,23 @@ export const confirmStripePayment = catchAsyncErrors(async (req, res) => {
     deliveryDate.setDate(createdAt.getDate() + 5);
 
     const newOrder = new OrderModel({
-      user: userId,
+      user: authUserId || undefined,
+      guestInfo: isGuestIntent
+        ? {
+            email: paymentIntent.metadata.guestEmail,
+            name: paymentIntent.metadata.guestName,
+            mobile: paymentIntent.metadata.guestMobile,
+          }
+        : undefined,
       address: addressId,
       products,
-      totalAmount,
-      couponCode: couponCode || "",
-      discountAmount: discountAmount || 0,
-      paymentMethod: "STRIPE",
+      totalAmount: verifiedAmount,
+      couponCode: couponCode || '',
+      discountAmount: verifiedDiscount,
+      paymentMethod: 'STRIPE',
       stripePaymentIntentId: paymentIntentId,
-      orderStatus: "PENDING",
-      paymentStatus: "COMPLETED",
+      orderStatus: 'PENDING',
+      paymentStatus: 'COMPLETED',
       paymentVerifiedAt: new Date(),
       deliveryDate,
     });
@@ -256,26 +315,26 @@ export const confirmStripePayment = catchAsyncErrors(async (req, res) => {
     await newOrder.save();
 
     const populatedOrder = await OrderModel.findById(newOrder._id)
-      .populate("user", "name email")
-      .populate("products.product", "name price images");
+      .populate('user', 'name email')
+      .populate('products.product', 'name price images');
 
     // Card payments are confirmed at creation time, so the receipt email goes
     // out immediately (same as COD), unlike the manual-UPI flow which waits for
     // admin verification.
     try {
-      const user = await UserModel.findById(userId);
+      const user = await UserModel.findById(authUserId);
       if (user?.email) {
         const receiptHTML = generateReceiptHTML(populatedOrder);
         sendEmail({
           sendTo: user.email,
-          subject: "Order Confirmation",
+          subject: 'Order Confirmation',
           html: receiptHTML,
         });
       }
     } catch (emailErr) {
       // A failed receipt email must not fail the order — the payment already
       // went through. Swallow and let the order response succeed.
-      console.error("Receipt email failed:", emailErr.message);
+      console.error('Receipt email failed:', emailErr.message);
     }
 
     return res.status(201).json({ success: true, order: populatedOrder });

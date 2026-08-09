@@ -1,13 +1,13 @@
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import {
   FaTwitter,
   FaFacebook,
   FaLinkedin,
   FaYoutube,
   FaInstagram,
-} from "react-icons/fa";
-import logoLight from "../../assets/logo-light.png";
-import logoDark from "../../assets/logoLight.png";
+} from 'react-icons/fa';
+import logoLight from '../../assets/logo-light.png';
+import logoDark from '../../assets/logoLight.png';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -18,7 +18,7 @@ const Footer = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
         className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center md:items-start space-y-8 md:space-y-0"
       >
         {/* Logo Section */}
@@ -48,24 +48,24 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-sm text-center md:text-left">
           {[
             {
-              title: "Shop",
-              links: ["New Arrivals", "Best Sellers", "All Products"],
-              hrefs: ["/products", "/products", "/products"],
+              title: 'Shop',
+              links: ['New Arrivals', 'Best Sellers', 'All Products'],
+              hrefs: ['/products', '/products', '/products'],
             },
             {
-              title: "Company",
-              links: ["About Us", "Careers", "Our Blog"],
-              hrefs: ["/about", "", ""],
+              title: 'Company',
+              links: ['About Us', 'Careers', 'Our Blog'],
+              hrefs: ['/about', '', ''],
             },
             {
-              title: "Support",
-              links: ["FAQ", "Contact"],
-              hrefs: ["/faqs", "/contactus"],
+              title: 'Support',
+              links: ['FAQ', 'Contact'],
+              hrefs: ['/faqs', '/contactus'],
             },
             {
-              title: "Legal",
-              links: ["Privacy Policy", "Terms of Service"],
-              hrefs: ["/privacy-policy", "/terms"],
+              title: 'Legal',
+              links: ['Privacy Policy', 'Terms of Service'],
+              hrefs: ['/privacy-policy', '/terms'],
             },
           ].map((section, index) => (
             <motion.div
@@ -108,14 +108,14 @@ const Footer = () => {
             className="hover:text-red-700 dark:hover:text-red-400 cursor-pointer"
           >
             Privacy
-          </a>{" "}
+          </a>{' '}
           •
           <a
             href="/terms"
             className="hover:text-red-700 dark:hover:text-red-400 cursor-pointer"
           >
             Terms
-          </a>{" "}
+          </a>{' '}
           •
           <a
             href="/sitemap"

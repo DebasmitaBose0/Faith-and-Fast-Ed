@@ -1,17 +1,18 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import logger from '../utils/logger.js';
 dotenv.config();
 
 if (!process.env.MONGODB_URL) {
-  throw new Error("Please provide MONGODB_URL");
+  throw new Error('Please provide MONGODB_URL');
 }
 
 async function connectDB() {
   try {
     await mongoose.connect(process.env.MONGODB_URL);
-    console.log("connect DB");
+    logger.info('Database connected successfully');
   } catch (error) {
-    console.log("Mongodb connect error", error);
+    logger.error('Database connection error', error);
     process.exit(1);
   }
 }

@@ -68,25 +68,29 @@
 ### 2. Circular Progress for Loader and Data Fetching
 
 ```jsx
-import { CircularProgress } from "@mui/material";
-<CircularProgress />
+import { CircularProgress } from '@mui/material';
+<CircularProgress />;
 ```
 
 ### 3. Implement Dark Mode Theme
+
 ```jsx
 <div className="flex flex-col overflow-hidden bg-white dark:bg-black text-black dark:text-white">
 ```
+
 ### 4. Use Toastify for Alerts
 
 ```jsx
-import { toast } from "react-toastify";
-toast.success("Login successful!");
+import { toast } from 'react-toastify';
+toast.success('Login successful!');
 ```
 
 ### 5. Use Dummy Data
+
 ### 6. Code Comments
 
 ### 7. Terminal Errors
+
 ```jsx
 // eslint-disable-next-line
 ```
@@ -94,20 +98,24 @@ toast.success("Login successful!");
 ### 8. Code Formatting and Readability
 
 ### 9. Buttons
+
 ```jsx
-<button>{submitting ? "Logging in..." : "Login"}</button>
+<button>{submitting ? 'Logging in...' : 'Login'}</button>
 ```
 
 ### 10. Make Pages Responsive for Laptop, Tablet, Mobile
 
 ### 11. TailwindCSS and MUI CSS
+
 ### 12. GSAP and Motion for Animations
 
 ### 13. Use MUI Icons for Icons
+
 ```jsx
-import { IconName } from "@mui/icons-material";
-<IconName />
+import { IconName } from '@mui/icons-material';
+<IconName />;
 ```
 
 ### 14. Simple Routes
+
 ### 15. Use Placeholder Where Required

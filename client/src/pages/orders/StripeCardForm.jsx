@@ -1,41 +1,41 @@
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import {
   createStripeIntent,
   confirmStripePayment,
-} from "@/store/order-slice/order";
-import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { CircularProgress } from "@mui/material";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
+} from '@/store/order-slice/order';
+import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { CircularProgress } from '@mui/material';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 
 // Stripe needs ISO 3166-1 alpha-2 country codes. Addresses store the country as
 // a display name ("India" by default); map the common ones, pass through values
 // that are already 2-letter codes, and fall back to "IN" for this India-based
 // store. Mirrors the same helper on the server (stripeController.js).
 const COUNTRY_NAME_TO_ISO = {
-  india: "IN",
-  "united states": "US",
-  "united states of america": "US",
-  usa: "US",
-  "united kingdom": "GB",
-  uk: "GB",
-  canada: "CA",
-  australia: "AU",
-  "united arab emirates": "AE",
-  uae: "AE",
-  singapore: "SG",
-  germany: "DE",
-  france: "FR",
-  netherlands: "NL",
-  "new zealand": "NZ",
+  india: 'IN',
+  'united states': 'US',
+  'united states of america': 'US',
+  usa: 'US',
+  'united kingdom': 'GB',
+  uk: 'GB',
+  canada: 'CA',
+  australia: 'AU',
+  'united arab emirates': 'AE',
+  uae: 'AE',
+  singapore: 'SG',
+  germany: 'DE',
+  france: 'FR',
+  netherlands: 'NL',
+  'new zealand': 'NZ',
 };
 
 const toISOCountry = (country) => {
-  if (!country) return "IN";
+  if (!country) return 'IN';
   const value = String(country).trim();
   if (/^[A-Za-z]{2}$/.test(value)) return value.toUpperCase();
-  return COUNTRY_NAME_TO_ISO[value.toLowerCase()] || "IN";
+  return COUNTRY_NAME_TO_ISO[value.toLowerCase()] || 'IN';
 };
 
 // The card form lives in its own component because Stripe's useStripe /
@@ -44,7 +44,12 @@ const toISOCountry = (country) => {
 // Stripe flow: create a PaymentIntent on the server, confirm the card in the
 // browser, then ask the server to create the order (the server re-verifies the
 // payment before saving).
-const StripeCardForm = ({ orderData, onSuccess, customerName, billingAddress }) => {
+const StripeCardForm = ({
+  orderData,
+  onSuccess,
+  customerName,
+  billingAddress,
+}) => {
   const stripe = useStripe();
   const elements = useElements();
   const dispatch = useDispatch();
@@ -52,17 +57,17 @@ const StripeCardForm = ({ orderData, onSuccess, customerName, billingAddress }) 
 
   const handlePay = async () => {
     if (!orderData.addressId) {
-      toast.error("Please select an address!");
+      toast.error('Please select an address!');
       return;
     }
     if (!stripe || !elements) {
-      toast.error("Payment form is still loading. Please wait a moment.");
+      toast.error('Payment form is still loading. Please wait a moment.');
       return;
     }
 
     const card = elements.getElement(CardElement);
     if (!card) {
-      toast.error("Card details are not available.");
+      toast.error('Card details are not available.');
       return;
     }
 
@@ -80,7 +85,7 @@ const StripeCardForm = ({ orderData, onSuccess, customerName, billingAddress }) 
       const clientSecret = intentRes?.clientSecret;
       const paymentIntentId = intentRes?.paymentIntentId;
       if (!clientSecret || !paymentIntentId) {
-        throw new Error("Could not start the card payment.");
+        throw new Error('Could not start the card payment.');
       }
 
       // India compliance: the customer's name + billing address must travel
@@ -112,11 +117,11 @@ const StripeCardForm = ({ orderData, onSuccess, customerName, billingAddress }) 
       );
 
       if (error) {
-        throw new Error(error.message || "Card payment failed.");
+        throw new Error(error.message || 'Card payment failed.');
       }
 
-      if (!paymentIntent || paymentIntent.status !== "succeeded") {
-        throw new Error("Card payment was not completed.");
+      if (!paymentIntent || paymentIntent.status !== 'succeeded') {
+        throw new Error('Card payment was not completed.');
       }
 
       // Step 3 — create the order on the server (server re-verifies the intent).
@@ -127,21 +132,21 @@ const StripeCardForm = ({ orderData, onSuccess, customerName, billingAddress }) 
           addressId: orderData.addressId,
           products: orderData.products,
           totalAmount: orderData.totalAmount,
-          couponCode: orderData.couponCode || "",
+          couponCode: orderData.couponCode || '',
           discountAmount: orderData.discountAmount || 0,
         })
       ).unwrap();
 
       if (confirmRes?.success) {
-        toast.success("Payment successful! Your order has been placed.");
+        toast.success('Payment successful! Your order has been placed.');
         onSuccess?.();
       } else {
-        throw new Error("Order could not be created after payment.");
+        throw new Error('Order could not be created after payment.');
       }
     } catch (err) {
       toast.error(
-        "Card payment failed: " +
-          ((typeof err === "object" ? err?.message : err) || "Unknown error")
+        'Card payment failed: ' +
+          ((typeof err === 'object' ? err?.message : err) || 'Unknown error')
       );
     } finally {
       setProcessing(false);
@@ -151,7 +156,7 @@ const StripeCardForm = ({ orderData, onSuccess, customerName, billingAddress }) 
   return (
     <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-xl shadow-md space-y-4">
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        Enter your card details. Use Stripe test card{" "}
+        Enter your card details. Use Stripe test card{' '}
         <span className="font-mono">4242 4242 4242 4242</span>, any future
         expiry, any CVC, and any postal code in test mode.
       </p>
@@ -160,11 +165,11 @@ const StripeCardForm = ({ orderData, onSuccess, customerName, billingAddress }) 
           options={{
             style: {
               base: {
-                fontSize: "16px",
-                color: "#1f2937",
-                "::placeholder": { color: "#9ca3af" },
+                fontSize: '16px',
+                color: '#1f2937',
+                '::placeholder': { color: '#9ca3af' },
               },
-              invalid: { color: "#ef4444" },
+              invalid: { color: '#ef4444' },
             },
           }}
         />
@@ -177,11 +182,11 @@ const StripeCardForm = ({ orderData, onSuccess, customerName, billingAddress }) 
       >
         {processing ? (
           <>
-            <CircularProgress size={18} style={{ color: "#fff" }} />
+            <CircularProgress size={18} style={{ color: '#fff' }} />
             Processing…
           </>
         ) : (
-          "Pay with Card"
+          'Pay with Card'
         )}
       </button>
     </div>

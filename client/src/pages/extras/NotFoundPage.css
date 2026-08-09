@@ -1,0 +1,14 @@
+/* Custom styling for NotFound page */
+.not-found-wrapper {
+  transition: background-color 0.3s ease;
+}
+
+.not-found-card {
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 1rem;
+}
+
+.not-found-title {
+  text-shadow: 2px 4px 10px rgba(0, 0, 0, 0.15);
+}

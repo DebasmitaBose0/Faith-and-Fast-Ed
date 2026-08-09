@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Email, Lock, Visibility, VisibilityOff } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
-import { getSingleDetail, loginUser } from "@/store/auth-slice/user";
-import { toast } from "react-toastify";
-import MetaData from "../extras/MetaData";
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Email, Lock, Visibility, VisibilityOff } from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
+import { getSingleDetail, loginUser } from '@/store/auth-slice/user';
+import { toast } from 'react-toastify';
+import MetaData from '../extras/MetaData';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
@@ -20,7 +20,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const redirect = location.search ? location.search.split("=")[1] : "/";
+  const redirect = location.search ? location.search.split('=')[1] : '/';
 
   const loginSubmit = (e) => {
     e.preventDefault();
@@ -34,14 +34,14 @@ const Login = () => {
     if (isAuthenticated) {
       dispatch(getSingleDetail());
 
-      toast.success("Login successful");
+      toast.success('Login successful');
       navigate(redirect);
 
-      const isEmailVerified = localStorage.getItem("verifyEmail") === "true";
+      const isEmailVerified = localStorage.getItem('verifyEmail') === 'true';
       if (!verifyEmail && !isEmailVerified) {
-        navigate("/verify-email");
+        navigate('/verify-email');
       } else {
-        navigate("/");
+        navigate('/');
       }
     }
   }, [isAuthenticated, error, navigate, redirect, verifyEmail, dispatch]);
@@ -76,7 +76,7 @@ const Login = () => {
         <div className="mb-3 flex items-center border rounded-lg px-3 bg-white text-black dark:bg-gray-900 dark:text-white">
           <Lock className="text-gray-400" />
           <input
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -112,7 +112,7 @@ const Login = () => {
           disabled={loading}
           onClick={loginSubmit}
         >
-          {loading ? "Logging in..." : "Login"}
+          {loading ? 'Logging in...' : 'Login'}
         </button>
 
         <p className="text-gray-600 mt-4">

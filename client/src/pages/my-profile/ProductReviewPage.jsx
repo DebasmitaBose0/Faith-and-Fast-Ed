@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   deleteReview,
   getProductReviews,
   postReview,
-} from "@/store/product-slice/productDetails"; // Adjust path as needed
+} from '@/store/product-slice/productDetails'; // Adjust path as needed
 import {
   Alert,
   CircularProgress,
@@ -15,7 +16,7 @@ import {
   DialogContent,
   DialogTitle,
   Tooltip,
-} from "@mui/material";
+} from '@mui/material';
 
 const ProductReviewPage = () => {
   const { orderId } = useParams();
@@ -25,12 +26,12 @@ const ProductReviewPage = () => {
 
     loading,
     error,
-    reviewPosting,
+    
   } = useSelector((state) => state.productDetails);
 
   const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
-  const [name, setName] = useState(""); // Assuming name is required for reviews
+  const [comment, setComment] = useState('');
+  const [name, setName] = useState(''); // Assuming name is required for reviews
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedReviewId, setSelectedReviewId] = useState(null);
 
@@ -40,7 +41,7 @@ const ProductReviewPage = () => {
 
   const handleSubmitReview = async () => {
     if (rating === 0 || !comment.trim() || !name.trim()) {
-      alert("Please provide a rating, name, and comment.");
+      alert('Please provide a rating, name, and comment.');
       return;
     }
 
@@ -51,13 +52,13 @@ const ProductReviewPage = () => {
     };
 
     dispatch(postReview({ productId: orderId, reviewData })).then((result) => {
-      if (result.meta.requestStatus === "fulfilled") {
+      if (result.meta.requestStatus === 'fulfilled') {
         setRating(0);
-        setComment("");
-        setName("");
+        setComment('');
+        setName('');
         dispatch(getProductReviews(orderId));
       } else {
-        console.error("Review failed:", result.payload);
+        console.error('Review failed:', result.payload);
       }
     });
   };
@@ -71,42 +72,43 @@ const ProductReviewPage = () => {
     dispatch(
       deleteReview({ productId: orderId, reviewId: selectedReviewId })
     ).then((result) => {
-      if (result.meta.requestStatus === "fulfilled") {
+      if (result.meta.requestStatus === 'fulfilled') {
         setOpenDeleteDialog(false);
         setSelectedReviewId(null);
         dispatch(getProductReviews(orderId));
       } else {
-        console.error("Delete failed:", result.payload);
+        console.error('Delete failed:', result.payload);
       }
     });
   };
 
   const formatReviewDate = (date) => {
-    if (!date) return "Just now";
-    return new Date(date).toLocaleString("en-US", {
-      month: "long",
-      day: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    if (!date) return 'Just now';
+    return new Date(date).toLocaleString('en-US', {
+      month: 'long',
+      day: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
       hour12: true,
     });
   };
 
   const isUserReview = (review) => {
-    const userId = localStorage.getItem("userId"); // Adjust how you get the user's ID
+    const userId = localStorage.getItem('userId'); // Adjust how you get the user's ID
     return review.user?.toString() === userId;
   };
 
   // Star rating component (custom, without MUI)
+  
   const StarRating = ({ value, onChange }) => {
     const stars = Array.from({ length: 5 }, (_, index) => (
       <span
         key={index}
         className={`cursor-pointer text-2xl ${
           index < value
-            ? "text-yellow-500"
-            : "text-gray-300 dark:text-gray-600 hover:text-yellow-400"
+            ? 'text-yellow-500'
+            : 'text-gray-300 dark:text-gray-600 hover:text-yellow-400'
         }`}
         onClick={() => onChange(index + 1)}
       >
@@ -223,7 +225,7 @@ const ProductReviewPage = () => {
                         <Tooltip
                           className="inline-block"
                           title="Delete Review"
-                          style={{ display: "inline-block" }}
+                          style={{ display: 'inline-block' }}
                         >
                           <motion.button
                             whileHover={{ scale: 1.1 }}
@@ -286,24 +288,6 @@ const ProductReviewPage = () => {
       </motion.div>
     </motion.div>
   );
-};
-
-// Custom Star rating component
-const StarRating = ({ value, onChange, readOnly = false }) => {
-  const stars = Array.from({ length: 5 }, (_, index) => (
-    <span
-      key={index}
-      className={`cursor-pointer text-2xl ${
-        index < value
-          ? "text-yellow-500"
-          : "text-gray-300 dark:text-gray-600 hover:text-yellow-400"
-      } ${readOnly ? "cursor-default" : ""}`}
-      onClick={!readOnly ? () => onChange(index + 1) : undefined}
-    >
-      ★
-    </span>
-  ));
-  return <div className="flex space-x-1">{stars}</div>;
 };
 
 export default ProductReviewPage;
