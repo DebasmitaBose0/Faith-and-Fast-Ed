@@ -1,19 +1,19 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Please Enter Product Name"],
+      required: [true, 'Please Enter Product Name'],
       trim: true,
     },
     description: {
       type: String,
-      required: [true, "Please Enter Product Description"],
+      required: [true, 'Please Enter Product Description'],
     },
     price: {
       type: Number,
-      required: [true, "Please Enter Product Price"],
+      required: [true, 'Please Enter Product Price'],
       default: 0,
     },
     ratings: {
@@ -36,7 +36,7 @@ const productSchema = new mongoose.Schema(
     ],
     category: {
       type: String,
-      required: [true, "Please specify the target category for the product"],
+      required: [true, 'Please specify the target category for the product'],
     },
     subcategory: {
       type: String,
@@ -51,7 +51,7 @@ const productSchema = new mongoose.Schema(
     },
     size: {
       type: [String],
-      required: [true, "Please specify the target size for the product"],
+      required: [true, 'Please specify the target size for the product'],
     },
     sizeoptions: {
       type: [String],
@@ -59,9 +59,9 @@ const productSchema = new mongoose.Schema(
     },
     stock: {
       type: Number,
-      required: [true, "Please Enter Product Stock"],
+      required: [true, 'Please Enter Product Stock'],
       default: 0,
-      min: [0, "Stock cannot be negative"],
+      min: [0, 'Stock cannot be negative'],
     },
     numOfReviews: {
       type: Number,
@@ -70,7 +70,7 @@ const productSchema = new mongoose.Schema(
     reviews: {
       type: [
         {
-          user: { type: mongoose.Schema.ObjectId, ref: "User", required: true },
+          user: { type: mongoose.Schema.ObjectId, ref: 'User', required: true },
           name: { type: String, required: true },
           rating: { type: Number, required: true, min: 1, max: 5 },
           comment: { type: String, required: true },
@@ -86,7 +86,11 @@ const productSchema = new mongoose.Schema(
     },
     user: {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
+      ref: 'User',
+    },
+    lastUpdatedBy: {
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
     },
   },
 
@@ -95,11 +99,21 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+productSchema.index({ category: 1 });
+productSchema.index({ price: 1 });
+productSchema.index({ ratings: -1 });
+productSchema.index({ createdAt: -1 });
+
 productSchema.index(
-  { name: "text", description: "text" },
+  { name: 'text', description: 'text' },
   { weights: { name: 10, description: 5 } }
 );
+productSchema.index({ price: 1 });
+productSchema.index({ category: 1 });
+productSchema.index({ ratings: -1 });
+productSchema.index({ category: 1, price: 1 });
+productSchema.index({ stock: 1 });
 
-const Product = mongoose.model("Product", productSchema);
+const Product = mongoose.model('Product', productSchema);
 
 export default Product;

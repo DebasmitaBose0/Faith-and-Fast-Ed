@@ -1,21 +1,21 @@
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
 const admin = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
       return res.json({
         success: false,
-        message: "Not Authorized Login Again",
+        message: 'Not Authorized Login Again',
       });
     }
 
     const decodedData = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (decodedData.role !== "ADMIN") {
+    if (decodedData.role !== 'ADMIN') {
       return res.status(401).json({
         success: false,
-        message: "Not Authorized Login Again",
+        message: 'Not Authorized Login Again',
       });
     }
 

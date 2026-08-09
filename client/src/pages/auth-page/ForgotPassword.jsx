@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Email, Lock } from "@mui/icons-material";
-import { toast } from "react-toastify";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Email, Lock } from '@mui/icons-material';
+import { toast } from 'react-toastify';
 import {
   sendResetOtp,
   verifyResetOtp,
   clearPasswordState,
   clearPasswordMessages,
-} from "@/store/auth-slice/updatePasswordSlice";
-import MetaData from "../extras/MetaData";
+} from '@/store/auth-slice/updatePasswordSlice';
+import MetaData from '../extras/MetaData';
 
 const ForgotPassword = () => {
-  const [email, setLocalEmail] = useState("");
-  const [otp, setOtp] = useState("");
+  const [email, setLocalEmail] = useState('');
+  const [otp, setOtp] = useState('');
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -44,14 +44,14 @@ const ForgotPassword = () => {
   // Once the OTP is verified, move to the reset step carrying the email.
   useEffect(() => {
     if (otpVerified) {
-      navigate("/reset-password", { state: { email } });
+      navigate('/reset-password', { state: { email, otp } });
     }
-  }, [otpVerified, navigate, email]);
+  }, [otpVerified, navigate, email, otp]);
 
   const handleEmailSubmit = (e) => {
     e.preventDefault();
     if (!email) {
-      toast.error("Please enter your email");
+      toast.error('Please enter your email');
       return;
     }
     dispatch(sendResetOtp(email));
@@ -60,7 +60,7 @@ const ForgotPassword = () => {
   const handleOtpSubmit = (e) => {
     e.preventDefault();
     if (otp.length !== 6) {
-      toast.error("OTP must be 6 digits");
+      toast.error('OTP must be 6 digits');
       return;
     }
     dispatch(verifyResetOtp({ email, otp }));
@@ -101,7 +101,7 @@ const ForgotPassword = () => {
               disabled={loading}
               className="w-full bg-yellow-500 dark:bg-red-600 text-white font-bold py-2 rounded-lg hover:bg-yellow-600 dark:hover:bg-red-700 transition disabled:opacity-60"
             >
-              {loading ? "Sending..." : "Send OTP"}
+              {loading ? 'Sending...' : 'Send OTP'}
             </button>
           </form>
         ) : (
@@ -119,7 +119,7 @@ const ForgotPassword = () => {
                   placeholder="Enter the OTP"
                   value={otp}
                   onChange={(e) =>
-                    setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                    setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))
                   }
                   className="ml-2 w-full outline-none bg-transparent text-center tracking-widest font-semibold"
                   required
@@ -131,7 +131,7 @@ const ForgotPassword = () => {
               disabled={loading}
               className="w-full bg-yellow-500 dark:bg-red-600 text-white font-bold py-2 rounded-lg hover:bg-yellow-600 dark:hover:bg-red-700 transition disabled:opacity-60"
             >
-              {loading ? "Verifying..." : "Verify OTP"}
+              {loading ? 'Verifying...' : 'Verify OTP'}
             </button>
             <button
               type="button"

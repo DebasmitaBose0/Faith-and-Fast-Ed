@@ -1,5 +1,5 @@
-import express from "express";
-import auth from "../middleware/auth.js";
+import express from 'express';
+import auth from '../middleware/auth.js';
 import {
   cancelOrder,
   createOrder,
@@ -22,33 +22,51 @@ const orderRouter = express.Router();
 orderRouter.post("/create", auth, orderValidation.create, createOrder);
 
 orderRouter.post(
-  "/upload-payment-screenshot",
-  auth,
-  upload.single("screenshot"),
+  '/create',
+  optionalAuth,
+  clearOrderAnalyticsCache,
+  orderLimiter,
+  validate(createOrderSchema),
+  createOrder
+);
+
+orderRouter.post(
+  '/upload-payment-screenshot',
+  optionalAuth,
+  upload.single('screenshot'),
   uploadPaymentScreenshot
 );
 
 orderRouter.put(
-  "/admin/verify-payment/:orderId",
+  '/admin/verify-payment/:orderId',
   auth,
   admin,
+  clearOrderAnalyticsCache,
   verifyPayment
 );
 
-orderRouter.get("/myorder", auth, myOrders);
+orderRouter.get('/myorder', auth, myOrders);
 
-orderRouter.get("/get/admin", auth, admin, getAllOrders);
+orderRouter.get('/get/admin', auth, admin, getAllOrders);
 
-orderRouter.get("/admin/analytics", auth, admin, getOrderAnalytics);
+orderRouter.get(
+  '/admin/analytics',
+  auth,
+  admin,
+  cacheMiddleware('orders:analytics', 3600),
+  getOrderAnalytics
+);
 
-orderRouter.get("/get/:orderId", auth, getSingleOrder);
+orderRouter.get('/get/:orderId', auth, getSingleOrder);
+
+orderRouter.put('/admin/update/:orderId', auth, admin, clearOrderAnalyticsCache, updateOrderStatus);
 
 orderRouter.put("/admin/update/:orderId", auth, admin, orderValidation.updateStatus, updateOrderStatus);
 
-orderRouter.put("/cancel/:orderId", auth, cancelOrder);
+orderRouter.delete('/admin/delete/:orderId', auth, admin, clearOrderAnalyticsCache, deleteOrder);
 
-orderRouter.delete("/admin/delete/:orderId", auth, admin, deleteOrder);
+orderRouter.delete('/admin/delete-all', auth, admin, clearOrderAnalyticsCache, deleteAllOrders);
 
-orderRouter.delete("/admin/delete-all", auth, admin, deleteAllOrders);
+orderRouter.get('/invoice/:orderId', auth, downloadInvoice);
 
 export default orderRouter;

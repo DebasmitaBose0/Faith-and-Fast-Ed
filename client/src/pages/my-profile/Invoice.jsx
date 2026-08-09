@@ -1,12 +1,13 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useParams, Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { CircularProgress, Alert } from "@mui/material";
-import { Download, ArrowLeft } from "lucide-react";
-import { jsPDF } from "jspdf";
-import { getSingleOrder } from "@/store/order-slice/order";
-import MetaData from "../extras/MetaData";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { CircularProgress, Alert } from '@mui/material';
+import { Download, ArrowLeft, Printer } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import { getSingleOrder } from '@/store/order-slice/order';
+import MetaData from '../extras/MetaData';
+import { calculateInvoiceSummary } from '../../utils/invoiceCalculator';
 
 const Invoice = () => {
   const { Id } = useParams();
@@ -19,19 +20,14 @@ const Invoice = () => {
 
   const formatDate = (date) =>
     date
-      ? new Date(date).toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "long",
-          year: "numeric",
+      ? new Date(date).toLocaleDateString('en-IN', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
         })
-      : "—";
+      : '—';
 
-  // Subtotal = sum of line totals before any order-level discount. Each line
-  // already stores its own totalPrice (unit price * quantity) on the order.
-  const subtotal = (order?.products || []).reduce(
-    (sum, item) => sum + (item.totalPrice || 0),
-    0
-  );
+  const { subtotal } = calculateInvoiceSummary(order?.products || []);
   const discount = order?.discountAmount || 0;
 
   const handleDownloadPDF = () => {
@@ -42,10 +38,10 @@ const Invoice = () => {
 
     // Header
     doc.setFontSize(20);
-    doc.text("Faith AND Fast", 14, y);
+    doc.text('Faith AND Fast', 14, y);
     y += 8;
     doc.setFontSize(13);
-    doc.text("Tax Invoice", 14, y);
+    doc.text('Tax Invoice', 14, y);
     y += 10;
 
     // Invoice + order meta
@@ -59,27 +55,27 @@ const Invoice = () => {
 
     // Billing details
     doc.setFontSize(12);
-    doc.text("Billed To", 14, y);
+    doc.text('Billed To', 14, y);
     y += 6;
     doc.setFontSize(10);
-    doc.text(`${order.user?.name || "Customer"}`, 14, y);
+    doc.text(`${order.user?.name || 'Customer'}`, 14, y);
     y += 6;
     if (order.user?.email) {
       doc.text(`${order.user.email}`, 14, y);
       y += 6;
     }
     if (order.address) {
-      doc.text(`${order.address.address_line || ""}`, 14, y);
+      doc.text(`${order.address.address_line || ''}`, 14, y);
       y += 6;
       doc.text(
-        `${order.address.city || ""}, ${order.address.state || ""} ${
-          order.address.pincode || ""
+        `${order.address.city || ''}, ${order.address.state || ''} ${
+          order.address.pincode || ''
         }`,
         14,
         y
       );
       y += 6;
-      doc.text(`${order.address.country || ""}`, 14, y);
+      doc.text(`${order.address.country || ''}`, 14, y);
       y += 6;
       if (order.address.mobile) {
         doc.text(`Phone: ${order.address.mobile}`, 14, y);
@@ -90,13 +86,13 @@ const Invoice = () => {
 
     // Items header
     doc.setFontSize(12);
-    doc.text("Items", 14, y);
+    doc.text('Items', 14, y);
     y += 7;
     doc.setFontSize(9);
-    doc.text("Product", 14, y);
-    doc.text("Qty", 120, y);
-    doc.text("Unit", 140, y);
-    doc.text("Total", 170, y);
+    doc.text('Product', 14, y);
+    doc.text('Qty', 120, y);
+    doc.text('Unit', 140, y);
+    doc.text('Total', 170, y);
     y += 2;
     doc.line(14, y, 196, y);
     y += 6;
@@ -104,8 +100,8 @@ const Invoice = () => {
     // Items
     doc.setFontSize(9);
     order.products.forEach((item) => {
-      const name = item.product?.name || "Product";
-      const truncated = name.length > 50 ? name.slice(0, 47) + "..." : name;
+      const name = item.product?.name || 'Product';
+      const truncated = name.length > 50 ? name.slice(0, 47) + '...' : name;
       doc.text(truncated, 14, y);
       doc.text(String(item.quantity), 120, y);
       doc.text(`Rs. ${Number(item.price || 0).toFixed(2)}`, 140, y);
@@ -115,11 +111,11 @@ const Invoice = () => {
         doc.setFontSize(8);
         doc.setTextColor(120);
         const variant = [
-          item.selectedColor ? `Color: ${item.selectedColor}` : "",
-          item.selectedSize ? `Size: ${item.selectedSize}` : "",
+          item.selectedColor ? `Color: ${item.selectedColor}` : '',
+          item.selectedSize ? `Size: ${item.selectedSize}` : '',
         ]
           .filter(Boolean)
-          .join("  ");
+          .join('  ');
         doc.text(variant, 16, y);
         doc.setTextColor(0);
         doc.setFontSize(9);
@@ -152,7 +148,11 @@ const Invoice = () => {
       }
     }
     doc.setFontSize(12);
-    doc.text(`Grand Total: Rs. ${Number(order.totalAmount).toFixed(2)}`, 130, y);
+    doc.text(
+      `Grand Total: Rs. ${Number(order.totalAmount).toFixed(2)}`,
+      130,
+      y
+    );
     y += 10;
 
     // Payment
@@ -203,12 +203,20 @@ const Invoice = () => {
           >
             <ArrowLeft className="w-4 h-4" /> Back to Order
           </Link>
-          <button
-            onClick={handleDownloadPDF}
-            className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
-          >
-            <Download className="w-4 h-4" /> Download PDF
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+            >
+              <Printer className="w-4 h-4" /> Print
+            </button>
+            <button
+              onClick={handleDownloadPDF}
+              className="flex items-center gap-2 bg-yellow-500 hover:bg-yellow-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-4 py-2 rounded-lg transition"
+            >
+              <Download className="w-4 h-4" /> Download PDF
+            </button>
+          </div>
         </div>
 
         {/* Invoice card */}
@@ -222,7 +230,9 @@ const Invoice = () => {
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 border-b border-gray-200 dark:border-gray-700 pb-6">
             <div>
               <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">
-                Faith <span className="text-yellow-500 dark:text-red-500">AND</span> Fast
+                Faith{' '}
+                <span className="text-yellow-500 dark:text-red-500">AND</span>{' '}
+                Fast
               </h1>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Tax Invoice
@@ -233,11 +243,11 @@ const Invoice = () => {
                 <span className="font-semibold">Invoice:</span> INV-{order._id}
               </p>
               <p>
-                <span className="font-semibold">Date:</span>{" "}
+                <span className="font-semibold">Date:</span>{' '}
                 {formatDate(order.createdAt)}
               </p>
               <p>
-                <span className="font-semibold">Status:</span>{" "}
+                <span className="font-semibold">Status:</span>{' '}
                 {order.orderStatus}
               </p>
             </div>
@@ -250,7 +260,7 @@ const Invoice = () => {
                 Billed To
               </h2>
               <p className="font-medium text-gray-900 dark:text-gray-100">
-                {order.user?.name || "Customer"}
+                {order.user?.name || 'Customer'}
               </p>
               {order.user?.email && (
                 <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -261,7 +271,7 @@ const Invoice = () => {
                 <div className="text-sm text-gray-600 dark:text-gray-300 mt-2 space-y-0.5">
                   <p>{order.address.address_line}</p>
                   <p>
-                    {order.address.city}, {order.address.state}{" "}
+                    {order.address.city}, {order.address.state}{' '}
                     {order.address.pincode}
                   </p>
                   <p>{order.address.country}</p>
@@ -274,16 +284,16 @@ const Invoice = () => {
                 Payment
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                <span className="font-medium">Method:</span>{" "}
+                <span className="font-medium">Method:</span>{' '}
                 {order.paymentMethod}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-300">
-                <span className="font-medium">Status:</span>{" "}
+                <span className="font-medium">Status:</span>{' '}
                 {order.paymentStatus}
               </p>
               {order.deliveryDate && (
                 <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
-                  <span className="font-medium">Delivery:</span>{" "}
+                  <span className="font-medium">Delivery:</span>{' '}
                   {formatDate(order.deliveryDate)}
                 </p>
               )}
@@ -312,20 +322,21 @@ const Invoice = () => {
                         {item.product?.images?.[0]?.url && (
                           <img
                             src={item.product.images[0].url}
-                            alt={item.product?.name || "Product"}
+                            alt={item.product?.name || 'Product'}
                             className="w-10 h-10 rounded object-cover"
                           />
                         )}
                         <div>
                           <p className="font-medium text-gray-900 dark:text-gray-100">
-                            {item.product?.name || "Product"}
+                            {item.product?.name || 'Product'}
                           </p>
                           {(item.selectedColor || item.selectedSize) && (
                             <p className="text-xs text-gray-500 dark:text-gray-400">
                               {item.selectedColor &&
                                 `Color: ${item.selectedColor}`}
-                              {item.selectedColor && item.selectedSize && " · "}
-                              {item.selectedSize && `Size: ${item.selectedSize}`}
+                              {item.selectedColor && item.selectedSize && ' · '}
+                              {item.selectedSize &&
+                                `Size: ${item.selectedSize}`}
                             </p>
                           )}
                         </div>
@@ -357,7 +368,7 @@ const Invoice = () => {
                 <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
                   <span>
                     Discount
-                    {order.couponCode ? ` (${order.couponCode})` : ""}
+                    {order.couponCode ? ` (${order.couponCode})` : ''}
                   </span>
                   <span>- ₹{Number(discount).toFixed(2)}</span>
                 </div>

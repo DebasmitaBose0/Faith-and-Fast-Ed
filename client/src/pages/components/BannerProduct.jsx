@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
-import b1 from "../../assets/slider/1.png";
-import b2 from "../../assets/slider/2.png";
-import b3 from "../../assets/slider/3.png";
-import b4 from "../../assets/slider/4.png";
-import b5 from "../../assets/slider/5.png";
-import { FaAngleRight, FaAngleLeft } from "react-icons/fa6";
-import { motion } from "framer-motion";
+import { useCallback, useEffect, useState } from 'react';
+import b1 from '../../assets/slider/1.png';
+import b2 from '../../assets/slider/2.png';
+import b3 from '../../assets/slider/3.png';
+import b4 from '../../assets/slider/4.png';
+import b5 from '../../assets/slider/5.png';
+import { FaAngleRight, FaAngleLeft } from 'react-icons/fa6';
+import { motion } from 'framer-motion';
 
 const BannerProduct = () => {
   const [currentImage, setCurrentImage] = useState(0);
@@ -61,7 +61,7 @@ const BannerProduct = () => {
               exit={{ opacity: 0 }}
               transition={{
                 duration: 0.8,
-                ease: "easeInOut",
+                ease: 'easeInOut',
               }}
               style={{ transform: `translateX(-${currentImage * 100}%)` }}
             >
@@ -85,7 +85,7 @@ const BannerProduct = () => {
               exit={{ opacity: 0 }}
               transition={{
                 duration: 0.8,
-                ease: "easeInOut",
+                ease: 'easeInOut',
               }}
               style={{ transform: `translateX(-${currentImage * 100}%)` }}
             >

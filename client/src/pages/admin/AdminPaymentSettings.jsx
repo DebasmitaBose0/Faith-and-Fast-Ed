@@ -1,20 +1,20 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { motion } from "framer-motion";
-import { QrCode, Save, Upload } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { motion } from 'framer-motion';
+import { QrCode, Save, Upload } from 'lucide-react';
 import {
   getPaymentSettings,
   updatePaymentSettings,
-} from "@/store/extra-slice/paymentSettingsSlice";
+} from '@/store/extra-slice/paymentSettingsSlice';
 
 const AdminPaymentSettings = () => {
   const dispatch = useDispatch();
   const { settings, loading } = useSelector((state) => state.paymentSettings);
 
-  const [upiId, setUpiId] = useState("");
+  const [upiId, setUpiId] = useState('');
   const [qrFile, setQrFile] = useState(null);
-  const [qrPreview, setQrPreview] = useState("");
+  const [qrPreview, setQrPreview] = useState('');
 
   useEffect(() => {
     dispatch(getPaymentSettings());
@@ -22,16 +22,16 @@ const AdminPaymentSettings = () => {
 
   useEffect(() => {
     if (settings) {
-      setUpiId(settings.upiId || "");
-      setQrPreview(settings.qrCode?.url || "");
+      setUpiId(settings.upiId || '');
+      setQrPreview(settings.qrCode?.url || '');
     }
   }, [settings]);
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please select an image file for the QR code.");
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file for the QR code.');
       return;
     }
     setQrFile(file);
@@ -40,7 +40,7 @@ const AdminPaymentSettings = () => {
 
   const handleSave = async () => {
     if (!upiId.trim() && !qrFile && !settings?.qrCode?.url) {
-      toast.error("Add a UPI ID or upload a QR code first.");
+      toast.error('Add a UPI ID or upload a QR code first.');
       return;
     }
     try {
@@ -48,11 +48,11 @@ const AdminPaymentSettings = () => {
         updatePaymentSettings({ upiId: upiId.trim(), qrCode: qrFile })
       ).unwrap();
       setQrFile(null);
-      toast.success("Payment settings saved successfully!");
+      toast.success('Payment settings saved successfully!');
     } catch (err) {
       toast.error(
-        (typeof err === "object" ? err?.message : err) ||
-          "Failed to save payment settings"
+        (typeof err === 'object' ? err?.message : err) ||
+          'Failed to save payment settings'
       );
     }
   };
@@ -112,7 +112,7 @@ const AdminPaymentSettings = () => {
 
               <label className="inline-flex items-center gap-2 cursor-pointer px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-200 transition">
                 <Upload className="w-4 h-4" />
-                {qrFile ? "Change QR image" : "Upload QR image"}
+                {qrFile ? 'Change QR image' : 'Upload QR image'}
                 <input
                   type="file"
                   accept="image/*"
@@ -130,7 +130,7 @@ const AdminPaymentSettings = () => {
             className="inline-flex items-center justify-center gap-2 w-full sm:w-auto bg-gradient-to-r from-yellow-500 to-orange-500 dark:from-red-600 dark:to-red-700 text-white px-6 py-3 rounded-full font-semibold shadow-md hover:from-yellow-600 hover:to-orange-600 transition-all duration-300 disabled:opacity-60"
           >
             <Save className="w-4 h-4" />
-            {loading ? "Saving..." : "Save Settings"}
+            {loading ? 'Saving...' : 'Save Settings'}
           </button>
         </div>
       </div>

@@ -1,18 +1,20 @@
-import { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { motion } from "framer-motion";
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 import {
   Heart,
   Star,
   ChevronLeft,
   ChevronRight,
   ShoppingCart,
-} from "lucide-react";
-import Typewriter from "typewriter-effect";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import { addToWishList } from "@/store/add-to-wishList/addToWishList";
+} from 'lucide-react';
+import Typewriter from 'typewriter-effect';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { addToWishList } from '@/store/add-to-wishlist/addToWishList';
+import { addToCart } from '@/store/add-to-cart/addToCart';
+import StockBadge from './StockBadge';
 
 const ProductCategory = ({ title, items }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -36,8 +38,8 @@ const ProductCategory = ({ title, items }) => {
 
     updateItemsPerView();
     const resizeHandler = debounce(updateItemsPerView, 100);
-    window.addEventListener("resize", resizeHandler);
-    return () => window.removeEventListener("resize", resizeHandler);
+    window.addEventListener('resize', resizeHandler);
+    return () => window.removeEventListener('resize', resizeHandler);
   }, []);
 
   const totalItems = shuffledItems.length;
@@ -57,9 +59,19 @@ const ProductCategory = ({ title, items }) => {
     setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
   };
 
-  const handleAddCart = (item) => {
-    navigate(`/product/${item._id}`);
-    toast.info("Add item to Cart from Product page!");
+  const handleAddCart = async (item) => {
+    try {
+      await dispatch(
+        addToCart({
+          productId: item._id,
+          selectedColor: item.colors?.[0] || 'Default',
+          selectedSize: item.sizes?.[0] || 'Standard',
+        })
+      ).unwrap();
+      toast.success('Item added to cart!');
+    } catch (err) {
+      toast.error(typeof err === 'string' ? err : 'Failed to add item to cart');
+    }
   };
   const handleAddWishList = (item) => {
     dispatch(addToWishList(item._id));
@@ -107,8 +119,9 @@ const ProductCategory = ({ title, items }) => {
               transition={{ duration: 0.2 }}
             >
               <div className="relative cursor-pointer">
+                <StockBadge stock={item.stock ?? 10} />
                 <img
-                  src={item.images?.[0]?.url || "/placeholder-product.jpg"}
+                  src={item.images?.[0]?.url || '/placeholder-product.jpg'}
                   alt={item.name}
                   className="w-full h-48 object-fit rounded-t-xl"
                   onClick={() => navigate(`/product/${item._id}`)}
@@ -167,9 +180,13 @@ const ProductCategory = ({ title, items }) => {
                   <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 p-2 rounded-lg">
                     <Star className="w-5 h-5 text-yellow-400" />
                     <span className="text-md font-medium text-gray-700 dark:text-gray-200">
-                      {item.ratings ? `${item.ratings.toFixed(1)} ` : "No ratings"}
+                      {item.ratings
+                        ? `${item.ratings.toFixed(1)} `
+                        : 'No ratings'}
                     </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-300">({item.reviews?.length || 0} reviews)</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-300">
+                      ({item.reviews?.length || 0} reviews)
+                    </span>
                   </div>
                 </div>
               </div>

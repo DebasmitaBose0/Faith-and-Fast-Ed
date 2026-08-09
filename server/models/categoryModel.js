@@ -1,20 +1,20 @@
-import mongoose from "mongoose";
-import slugify from "slugify";
+import mongoose from 'mongoose';
+import slugify from 'slugify';
 
 const categorySchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Category name is required"],
+      required: [true, 'Category name is required'],
       unique: true,
       trim: true,
-      maxlength: [15, "Category name cannot exceed 15 characters"],
+      maxlength: [15, 'Category name cannot exceed 15 characters'],
     },
     slug: {
       type: String,
       unique: true,
       lowercase: true,
-      default: "",
+      default: '',
     },
     image: {
       public_id: {
@@ -32,13 +32,13 @@ const categorySchema = new mongoose.Schema(
   }
 );
 
-categorySchema.pre("save", function (next) {
+categorySchema.pre('save', function (next) {
   if (this.name) {
     this.slug = slugify(this.name, { lower: true, strict: true });
   }
   next();
 });
 
-const CategoryModel = mongoose.model("category", categorySchema);
+const CategoryModel = mongoose.model('category', categorySchema);
 
 export default CategoryModel;

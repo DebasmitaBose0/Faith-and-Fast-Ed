@@ -1,7 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
-import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
-import { CircularProgress } from "@mui/material";
+import { useEffect, useState, useMemo } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { CircularProgress } from '@mui/material';
 import {
   ResponsiveContainer,
   LineChart,
@@ -18,7 +18,7 @@ import {
   CartesianGrid,
   Tooltip as ReTooltip,
   Legend,
-} from "recharts";
+} from 'recharts';
 import {
   IndianRupee,
   ShoppingCart,
@@ -31,31 +31,33 @@ import {
   Download,
   ArrowUpRight,
   ArrowDownRight,
-} from "lucide-react";
-import { getOrderAnalytics } from "@/store/order-slice/analyticsSlice";
-import MetaData from "../extras/MetaData";
+  Printer,
+} from 'lucide-react';
+import { getOrderAnalytics } from '@/store/order-slice/analyticsSlice';
+import MetaData from '../extras/MetaData';
+import AnalyticsCharts from './AnalyticsCharts';
 
 // Palette for the status pie / bars (kept small and readable on dark + light).
 const STATUS_COLORS = {
-  PENDING: "#f59e0b",
-  SHIPPED: "#3b82f6",
-  DELIVERED: "#10b981",
-  CANCELLED: "#ef4444",
-  UNKNOWN: "#9ca3af",
+  PENDING: '#f59e0b',
+  SHIPPED: '#3b82f6',
+  DELIVERED: '#10b981',
+  CANCELLED: '#ef4444',
+  UNKNOWN: '#9ca3af',
 };
-const PIE_FALLBACK = ["#6366f1", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"];
+const PIE_FALLBACK = ['#6366f1', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
 
 const formatCurrency = (value) => {
   const n = Number(value) || 0;
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
     maximumFractionDigits: 0,
   }).format(n);
 };
 
 const formatNumber = (value) =>
-  new Intl.NumberFormat("en-IN").format(Number(value) || 0);
+  new Intl.NumberFormat('en-IN').format(Number(value) || 0);
 
 // Reusable summary card.
 const StatCard = ({ icon: Icon, label, value, accent, delta }) => (
@@ -72,12 +74,12 @@ const StatCard = ({ icon: Icon, label, value, accent, delta }) => (
       <p className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">
         {value}
       </p>
-      {typeof delta === "number" && Number.isFinite(delta) ? (
+      {typeof delta === 'number' && Number.isFinite(delta) ? (
         <p
           className={`text-xs font-medium flex items-center gap-0.5 ${
             delta >= 0
-              ? "text-emerald-600 dark:text-emerald-400"
-              : "text-red-600 dark:text-red-400"
+              ? 'text-emerald-600 dark:text-emerald-400'
+              : 'text-red-600 dark:text-red-400'
           }`}
         >
           {delta >= 0 ? (
@@ -135,9 +137,9 @@ const AdminAnalytics = () => {
     (state) => state.adminAnalytics
   );
 
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [interval, setIntervalValue] = useState("day");
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [interval, setIntervalValue] = useState('day');
 
   useEffect(() => {
     dispatch(getOrderAnalytics({ interval }));
@@ -150,10 +152,10 @@ const AdminAnalytics = () => {
   };
 
   const handleReset = () => {
-    setStartDate("");
-    setEndDate("");
-    setIntervalValue("day");
-    dispatch(getOrderAnalytics({ interval: "day" }));
+    setStartDate('');
+    setEndDate('');
+    setIntervalValue('day');
+    dispatch(getOrderAnalytics({ interval: 'day' }));
   };
 
   const handleIntervalChange = (next) => {
@@ -192,8 +194,8 @@ const AdminAnalytics = () => {
   const repeatRate = customers?.repeatRate || 0;
   const customerSplit = useMemo(
     () => [
-      { name: "New", value: customers?.newCustomers || 0 },
-      { name: "Repeat", value: customers?.repeatCustomers || 0 },
+      { name: 'New', value: customers?.newCustomers || 0 },
+      { name: 'Repeat', value: customers?.repeatCustomers || 0 },
     ],
     [customers]
   );
@@ -201,27 +203,27 @@ const AdminAnalytics = () => {
   const handleExportCsv = () => {
     if (!analytics) return;
     const rows = [];
-    rows.push(["Faith AND Fast - Analytics Export"]);
-    rows.push(["Generated", new Date().toLocaleString()]);
+    rows.push(['Faith AND Fast - Analytics Export']);
+    rows.push(['Generated', new Date().toLocaleString()]);
     rows.push([]);
-    rows.push(["Summary"]);
-    rows.push(["Total Sales", summary?.totalRevenue ?? 0]);
-    rows.push(["Total Orders", summary?.totalOrders ?? 0]);
-    rows.push(["Paid Orders", summary?.paidOrders ?? 0]);
-    rows.push(["Average Order Value", summary?.averageOrderValue ?? 0]);
-    rows.push(["Units Sold", summary?.totalUnits ?? 0]);
+    rows.push(['Summary']);
+    rows.push(['Total Sales', summary?.totalRevenue ?? 0]);
+    rows.push(['Total Orders', summary?.totalOrders ?? 0]);
+    rows.push(['Paid Orders', summary?.paidOrders ?? 0]);
+    rows.push(['Average Order Value', summary?.averageOrderValue ?? 0]);
+    rows.push(['Units Sold', summary?.totalUnits ?? 0]);
     rows.push([]);
-    rows.push(["Revenue Trend"]);
-    rows.push(["Period", "Revenue", "Orders"]);
+    rows.push(['Revenue Trend']);
+    rows.push(['Period', 'Revenue', 'Orders']);
     revenueTrend.forEach((r) => rows.push([r.period, r.revenue, r.orders]));
     rows.push([]);
-    rows.push(["Top Products"]);
-    rows.push(["Name", "Units Sold", "Revenue"]);
+    rows.push(['Top Products']);
+    rows.push(['Name', 'Units Sold', 'Revenue']);
     topProducts.forEach((p) => rows.push([p.name, p.unitsSold, p.revenue]));
     if (topCustomers.length) {
       rows.push([]);
-      rows.push(["Top Customers"]);
-      rows.push(["Name", "Email", "Orders", "Spend"]);
+      rows.push(['Top Customers']);
+      rows.push(['Name', 'Email', 'Orders', 'Spend']);
       topCustomers.forEach((c) =>
         rows.push([c.name, c.email, c.orders, c.spend])
       );
@@ -230,15 +232,15 @@ const AdminAnalytics = () => {
       .map((r) =>
         r
           .map((cell) => {
-            const str = String(cell ?? "");
+            const str = String(cell ?? '');
             return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
           })
-          .join(",")
+          .join(',')
       )
-      .join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
     link.download = `analytics-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(link);
@@ -326,6 +328,14 @@ const AdminAnalytics = () => {
               <Download className="w-4 h-4" />
               Export CSV
             </button>
+            <button
+              onClick={() => window.print()}
+              disabled={!hasAnyData}
+              className="px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-white flex items-center gap-1"
+            >
+              <Printer className="w-4 h-4" />
+              Print Report
+            </button>
           </div>
         </div>
       </div>
@@ -374,6 +384,10 @@ const AdminAnalytics = () => {
               value={formatNumber(summary?.totalUnits)}
               accent="bg-amber-500"
             />
+          </div>
+
+          <div className="my-6">
+            <AnalyticsCharts data={orderGrowth} />
           </div>
 
           {/* Charts grid */}
@@ -486,7 +500,7 @@ const AdminAnalytics = () => {
                   />
                   <ReTooltip
                     formatter={(value, key) =>
-                      key === "revenue"
+                      key === 'revenue'
                         ? formatCurrency(value)
                         : formatNumber(value)
                     }

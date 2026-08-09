@@ -1,6 +1,7 @@
 const generateReceiptHTML = (order) => {
   const {
     user,
+    guestInfo,
     products,
     totalAmount,
     orderStatus,
@@ -8,13 +9,19 @@ const generateReceiptHTML = (order) => {
     deliveryDate,
   } = order;
 
+  const customerName = user
+    ? user.name
+    : guestInfo
+      ? guestInfo.name
+      : 'Customer';
+
   const formatDateOnly = (date) => {
-    if (!date) return "To be delivered";
+    if (!date) return 'To be delivered';
     // Use toLocaleDateString with options for "Month Day, Year" format
-    return new Date(date).toLocaleDateString("en-US", {
-      month: "long",
-      day: "2-digit",
-      year: "numeric",
+    return new Date(date).toLocaleDateString('en-US', {
+      month: 'long',
+      day: '2-digit',
+      year: 'numeric',
     });
   };
 
@@ -25,7 +32,7 @@ const generateReceiptHTML = (order) => {
       const productImage =
         item.product.images && item.product.images.length > 0
           ? item.product.images[0].url
-          : "";
+          : '';
 
       return `
       <tr>
@@ -37,7 +44,7 @@ const generateReceiptHTML = (order) => {
       </tr>
     `;
     })
-    .join("");
+    .join('');
 
   return `
     <html>
@@ -59,7 +66,7 @@ const generateReceiptHTML = (order) => {
       <body>
         <div class="container">
           <h2>Order Confirmation</h2>
-          <p>Dear ${user.name},</p>
+          <p>Dear ${customerName},</p>
           <p>Thank you for shopping with Faith AND Fast. Your order has been successfully placed. Below are the order details:</p>
 
           <h3>Order Details:</h3>
@@ -87,7 +94,7 @@ const generateReceiptHTML = (order) => {
 
           <h3>Order Summary:</h3>
           <table>
-            <tr><th>Total Amount with Shipping</th><td>${totalAmount}</td></tr>
+            <tr><th>Subtotal (inclusive of taxes)</th><td>₹${totalAmount}</td></tr>
           </table>
 
           <div class="receipt-footer">
@@ -95,40 +102,13 @@ const generateReceiptHTML = (order) => {
             <p>Thank you for choosing Faith AND Fast!</p>
             <p><strong>Contact Us:</strong> support@faithandfast.com</p>
             <p><strong><a href="https://www.faithandfast.com">Faith AND Fast</a></strong></p>
+            
+            <a href="${process.env.BACKEND_URL || 'http://localhost:5000'}/api/order/invoice/${order._id}" class="download-btn" style="display: block; margin: 20px auto; width: 250px;">
+              Download Receipt as PDF
+            </a>
           </div>
         </div>
 
-        <script>
-          document.addEventListener('DOMContentLoaded', function () {
-            const downloadBtn = document.createElement('button');
-            downloadBtn.textContent = 'Download Receipt as PDF';
-            downloadBtn.className = 'download-btn';
-            downloadBtn.style.display = 'block';
-            downloadBtn.style.margin = '20px auto';
-            document.body.appendChild(downloadBtn);
-
-            downloadBtn.addEventListener('click', function () {
-              const { jsPDF } = window.jspdf; // Assumes jsPDF is loaded globally
-              const doc = new jsPDF();
-              
-              doc.text('Order Confirmation', 20, 20);
-              doc.text('Dear ${user.name},', 20, 30);
-              doc.text('Thank you for shopping with Faith AND Fast.', 20, 40);
-              
-              let y = 50;
-              ${products
-                .map((item) => {
-                  return `
-                  doc.text('${item.product.name} x ${item.quantity} - ${item.totalPrice}', 20, y);
-                  y += 10;
-                `;
-                })
-                .join("")}
-              
-              doc.save('receipt.pdf');
-            });
-          });
-        </script>
       </body>
     </html>
   `;

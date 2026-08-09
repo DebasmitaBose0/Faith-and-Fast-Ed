@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 import {
   createProduct,
   deleteProduct,
@@ -8,10 +8,11 @@ import {
   getProductDetails,
   getProductReviews,
   getSimilarProducts,
+  getTopReviews,
   postProductReview,
   searchProduct,
   updateProductDetails,
-} from "../controllers/productController.js";
+} from '../controllers/productController.js';
 import {
   getTrendingProducts,
   getFrequentlyBoughtTogether,
@@ -23,8 +24,13 @@ import { productValidation } from "../middleware/validator.js";
 
 const productRouter = express.Router();
 
+const clearProductsCache = async (req, res, next) => {
+  await invalidateCache('products:*');
+  next();
+};
+
 productRouter.post(
-  "/new",
+  '/new',
   auth,
   admin,
   productValidation.create,
@@ -32,40 +38,74 @@ productRouter.post(
   createProduct
 );
 
-productRouter.get("/get", getProduct);
+productRouter.get('/get', cacheMiddleware('products:get', 300), getProduct);
 
-productRouter.get("/get/filter", getProductByFilter);
+productRouter.get(
+  '/get/filter',
+  cacheMiddleware('products:get_filter', 300),
+  getProductByFilter
+);
 
-productRouter.get("/get/:productId", getProductDetails);
+productRouter.get(
+  '/get/:productId',
+  cacheMiddleware('products:get_details', 300),
+  getProductDetails
+);
 
 productRouter.put(
-  "/update/:_id",
+  '/update/:_id',
   auth,
   admin,
-  upload.array("images", 10),
+  clearProductsCache,
+  upload.array('images', 10),
+  validate(updateProductSchema),
   updateProductDetails
 );
 
-productRouter.delete("/delete/:deleteId", auth, admin, deleteProduct);
+productRouter.delete(
+  '/delete/:deleteId',
+  auth,
+  admin,
+  clearProductsCache,
+  deleteProduct
+);
 
-productRouter.post("/search", searchProduct);
-
-productRouter.get("/similar", getSimilarProducts);
-
-productRouter.get("/trending", getTrendingProducts);
+productRouter.post('/search', searchProduct);
 
 productRouter.get(
-  "/frequently-bought-together/:productId",
+  '/similar',
+  cacheMiddleware('products:similar', 300),
+  getSimilarProducts
+);
+
+productRouter.get(
+  '/trending',
+  cacheMiddleware('products:trending', 300),
+  getTrendingProducts
+);
+
+productRouter.get('/top-reviews', getTopReviews);
+
+productRouter.get(
+  '/frequently-bought-together/:productId',
+  cacheMiddleware('products:fbt', 300),
   getFrequentlyBoughtTogether
 );
 
-productRouter.get("/reviews/:productId", getProductReviews);
+productRouter.get('/reviews/:productId', getProductReviews);
 
-productRouter.post("/review/:productId", auth, postProductReview);
+productRouter.post(
+  '/review/:productId',
+  auth,
+  clearProductsCache,
+  validate(addReviewSchema),
+  postProductReview
+);
 
 productRouter.delete(
-  "/review/:productId/:reviewId",
+  '/review/:productId/:reviewId',
   auth,
+  clearProductsCache,
   deleteProductReview
 );
 

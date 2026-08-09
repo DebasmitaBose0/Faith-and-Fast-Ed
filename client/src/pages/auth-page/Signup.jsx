@@ -1,22 +1,22 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Email,
   Lock,
   Visibility,
   VisibilityOff,
   Person,
-} from "@mui/icons-material";
-import { useSelector, useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import { clearError, signupUser } from "@/store/auth-slice/user";
-import gsap from "gsap";
+} from '@mui/icons-material';
+import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { clearError, signupUser } from '@/store/auth-slice/user';
+import gsap from 'gsap';
 
 const SignUp = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const SignUp = () => {
     e.preventDefault();
 
     if (!name || !email || !password) {
-      toast.error("Please fill all required fields");
+      toast.error('Please fill all required fields');
       return;
     }
 
@@ -35,10 +35,10 @@ const SignUp = () => {
       // Wait for the actual result before deciding success vs failure.
       await dispatch(signupUser({ name, email, password })).unwrap();
       toast.success(
-        "Registration successful! Please check your email for the OTP."
+        'Registration successful! Please check your email for the OTP.'
       );
       // Go straight to OTP entry — the account is not verified yet.
-      navigate("/verify-email");
+      navigate('/verify-email');
     } catch {
       // Failure message is surfaced by the error effect below.
     }
@@ -50,7 +50,7 @@ const SignUp = () => {
       dispatch(clearError());
     }
 
-    gsap.from(".login-form", { opacity: 0, y: -30, duration: 1 });
+    gsap.from('.login-form', { opacity: 0, y: -30, duration: 1 });
   }, [dispatch, error, navigate]);
 
   return (
@@ -88,7 +88,7 @@ const SignUp = () => {
         <div className="mb-3 flex items-center border rounded-lg px-3 bg-white text-black dark:bg-gray-900 dark:text-white">
           <Lock className="text-gray-400" />
           <input
-            type={showPassword ? "text" : "password"}
+            type={showPassword ? 'text' : 'password'}
             placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}

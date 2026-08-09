@@ -1,16 +1,16 @@
-import { useState, useRef, useEffect } from "react";
-import { User, Camera, Mail, Phone } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { useState, useRef, useEffect } from 'react';
+import { User, Camera, Mail, Phone } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   updateProfile,
   getSingleDetail,
   uploadAvatar,
   logoutUser,
-} from "@/store/auth-slice/user";
-import { useNavigate } from "react-router-dom";
-import MetaData from "../extras/MetaData";
+} from '@/store/auth-slice/user';
+import { useNavigate } from 'react-router-dom';
+import MetaData from '../extras/MetaData';
 
 const UpdateProfile = () => {
   const dispatch = useDispatch();
@@ -20,12 +20,12 @@ const UpdateProfile = () => {
   const navigate = useNavigate();
 
   const [profileImage, setProfileImage] = useState(
-    user?.avatar || "https://placehold.co/150x150"
+    user?.avatar || 'https://placehold.co/150x150'
   );
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    mobile: "",
+    name: '',
+    email: '',
+    mobile: '',
   });
 
   useEffect(() => {
@@ -35,9 +35,9 @@ const UpdateProfile = () => {
   useEffect(() => {
     if (user) {
       setFormData({
-        name: user.name || "",
-        email: user.email || "",
-        mobile: user.mobile || "",
+        name: user.name || '',
+        email: user.email || '',
+        mobile: user.mobile || '',
         avatar: user.avatar || null,
       });
 
@@ -59,23 +59,23 @@ const UpdateProfile = () => {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("File size should be less than 5MB");
+        toast.error('File size should be less than 5MB');
         return;
       }
 
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please upload an image file");
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
         return;
       }
 
       dispatch(uploadAvatar(file))
         .unwrap()
         .then(() => {
-          toast.success("Avatar updated successfully!");
-          navigate("/my-profile");
+          toast.success('Avatar updated successfully!');
+          navigate('/my-profile');
         })
         .catch((error) => {
-          toast.error(error || "Failed to update avatar");
+          toast.error(error || 'Failed to update avatar');
         });
     }
   };
@@ -89,12 +89,12 @@ const UpdateProfile = () => {
     const formDataToSend = new FormData();
 
     if (!formData.name || !formData.email || !formData.mobile) {
-      toast.error("All fields are required");
+      toast.error('All fields are required');
       return;
     }
 
     if (formData.mobile.length !== 10) {
-      toast.error("mobile number must be 10 digits");
+      toast.error('mobile number must be 10 digits');
       return;
     }
 
@@ -103,20 +103,20 @@ const UpdateProfile = () => {
     });
 
     if (formData.avatar) {
-      formDataToSend.append("avatar", formData.avatar);
+      formDataToSend.append('avatar', formData.avatar);
     }
 
     dispatch(updateProfile(formDataToSend))
       .unwrap()
       .then(() => {
         toast.success(
-          "Profile updated successfully. Please re-login to apply the changes."
+          'Profile updated successfully. Please re-login to apply the changes.'
         );
         dispatch(logoutUser());
-        navigate("/login");
+        navigate('/login');
       })
       .catch((error) => {
-        toast.error(error.message || "Failed to update profile");
+        toast.error(error.message || 'Failed to update profile');
       });
   };
 
@@ -209,11 +209,11 @@ const UpdateProfile = () => {
                   disabled={loading}
                   className={`px-6 py-2 rounded-lg text-white font-medium ${
                     loading
-                      ? "bg-yellow-500 dark:bg-red-600 cursor-not-allowed"
-                      : "bg-yellow-500 dark:bg-red-600"
+                      ? 'bg-yellow-500 dark:bg-red-600 cursor-not-allowed'
+                      : 'bg-yellow-500 dark:bg-red-600'
                   }`}
                 >
-                  {loading ? "Updating..." : "Update Profile"}
+                  {loading ? 'Updating...' : 'Update Profile'}
                 </button>
               </div>
             </form>

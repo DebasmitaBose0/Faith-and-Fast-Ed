@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Lock } from "@mui/icons-material";
-import { toast } from "react-toastify";
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Lock } from '@mui/icons-material';
+import { toast } from 'react-toastify';
 import {
   updatePassword,
   clearPasswordState,
   clearPasswordMessages,
-} from "@/store/auth-slice/updatePasswordSlice";
-import MetaData from "../extras/MetaData";
+} from '@/store/auth-slice/updatePasswordSlice';
+import MetaData from '../extras/MetaData';
 
 const ResetPassword = () => {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -27,15 +27,18 @@ const ResetPassword = () => {
   // Email comes from the verified forgot-password step (router state first,
   // redux as fallback).
   const email = location.state?.email || storedEmail;
+  // The OTP proven in the verify step is threaded via router state and must be
+  // re-sent to the reset endpoint, which now verifies it server-side.
+  const otp = location.state?.otp;
 
   // Guard: this page is only reachable after OTP verification. Without an email
-  // there is nothing to reset, so send the user back to start the flow.
+  // and OTP there is nothing to reset, so send the user back to start the flow.
   useEffect(() => {
-    if (!email) {
-      toast.error("Please verify your email before resetting your password.");
-      navigate("/forgot-password");
+    if (!email || !otp) {
+      toast.error('Please verify your email before resetting your password.');
+      navigate('/forgot-password');
     }
-  }, [email, navigate]);
+  }, [email, otp, navigate]);
 
   // Surface errors.
   useEffect(() => {
@@ -48,9 +51,9 @@ const ResetPassword = () => {
   // On success, notify and redirect to login.
   useEffect(() => {
     if (success) {
-      toast.success("Password reset successful! Please log in.");
+      toast.success('Password reset successful! Please log in.');
       dispatch(clearPasswordState());
-      navigate("/login");
+      navigate('/login');
     }
   }, [success, navigate, dispatch]);
 
@@ -58,20 +61,20 @@ const ResetPassword = () => {
     e.preventDefault();
 
     if (!password || !confirmPassword) {
-      toast.error("Please fill in both password fields");
+      toast.error('Please fill in both password fields');
       return;
     }
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters long");
+      toast.error('Password must be at least 6 characters long');
       return;
     }
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match!");
+      toast.error('Passwords do not match!');
       return;
     }
 
     dispatch(
-      updatePassword({ email, newPassword: password, confirmPassword })
+      updatePassword({ email, otp, newPassword: password, confirmPassword })
     );
   };
 
@@ -120,7 +123,7 @@ const ResetPassword = () => {
             disabled={loading}
             className="w-full bg-yellow-500 dark:bg-red-600 text-white font-bold py-2 rounded-lg hover:bg-yellow-600 dark:hover:bg-red-700 transition disabled:opacity-60"
           >
-            {loading ? "Resetting..." : "Reset Password"}
+            {loading ? 'Resetting...' : 'Reset Password'}
           </button>
         </form>
       </div>

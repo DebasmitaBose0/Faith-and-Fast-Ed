@@ -1,6 +1,6 @@
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import OrderModel from "../models/orderModel.js";
-import Product from "../models/productModel.js";
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import OrderModel from '../models/orderModel.js';
+import Product from '../models/productModel.js';
 
 /**
  * Order Analytics (Admin)
@@ -23,7 +23,7 @@ import Product from "../models/productModel.js";
 export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
   try {
     const { startDate, endDate } = req.query;
-    const interval = req.query.interval === "month" ? "month" : "day";
+    const interval = req.query.interval === 'month' ? 'month' : 'day';
 
     // ----- Build an optional createdAt date filter -----
     const dateFilter = {};
@@ -47,10 +47,10 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
     const baseMatch = hasDateFilter ? { createdAt: dateFilter } : {};
 
     // Money math excludes cancelled orders.
-    const revenueMatch = { ...baseMatch, orderStatus: { $ne: "CANCELLED" } };
+    const revenueMatch = { ...baseMatch, orderStatus: { $ne: 'CANCELLED' } };
 
     // Date-bucket format string for $dateToString.
-    const dateFormat = interval === "month" ? "%Y-%m" : "%Y-%m-%d";
+    const dateFormat = interval === 'month' ? '%Y-%m' : '%Y-%m-%d';
 
     // ----- 1. Summary (single-doc rollup via $facet) -----
     const summaryPipeline = [
@@ -59,35 +59,33 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
         $facet: {
           // Revenue + units over non-cancelled orders.
           revenue: [
-            { $match: { orderStatus: { $ne: "CANCELLED" } } },
+            { $match: { orderStatus: { $ne: 'CANCELLED' } } },
             {
               $group: {
                 _id: null,
-                totalRevenue: { $sum: "$totalAmount" },
+                totalRevenue: { $sum: '$totalAmount' },
                 paidOrders: { $sum: 1 },
               },
             },
           ],
           // Units sold (sum of quantities) over non-cancelled orders.
           units: [
-            { $match: { orderStatus: { $ne: "CANCELLED" } } },
-            { $unwind: "$products" },
+            { $match: { orderStatus: { $ne: 'CANCELLED' } } },
+            { $unwind: '$products' },
             {
               $group: {
                 _id: null,
-                totalUnits: { $sum: "$products.quantity" },
+                totalUnits: { $sum: '$products.quantity' },
               },
             },
           ],
           // Count of every order in range (incl cancelled).
-          allOrders: [{ $count: "count" }],
+          allOrders: [{ $count: 'count' }],
           // Order status breakdown.
-          byStatus: [
-            { $group: { _id: "$orderStatus", count: { $sum: 1 } } },
-          ],
+          byStatus: [{ $group: { _id: '$orderStatus', count: { $sum: 1 } } }],
           // Payment status breakdown.
           byPayment: [
-            { $group: { _id: "$paymentStatus", count: { $sum: 1 } } },
+            { $group: { _id: '$paymentStatus', count: { $sum: 1 } } },
           ],
         },
       },
@@ -99,9 +97,9 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
       {
         $group: {
           _id: {
-            $dateToString: { format: dateFormat, date: "$createdAt" },
+            $dateToString: { format: dateFormat, date: '$createdAt' },
           },
-          revenue: { $sum: "$totalAmount" },
+          revenue: { $sum: '$totalAmount' },
           orders: { $sum: 1 },
         },
       },
@@ -109,7 +107,7 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
       {
         $project: {
           _id: 0,
-          period: "$_id",
+          period: '$_id',
           revenue: 1,
           orders: 1,
         },
@@ -122,7 +120,7 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
       {
         $group: {
           _id: {
-            $dateToString: { format: dateFormat, date: "$createdAt" },
+            $dateToString: { format: dateFormat, date: '$createdAt' },
           },
           orders: { $sum: 1 },
         },
@@ -131,7 +129,7 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
       {
         $project: {
           _id: 0,
-          period: "$_id",
+          period: '$_id',
           orders: 1,
         },
       },
@@ -140,16 +138,16 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
     // ----- 4. Top-selling products (non-cancelled) -----
     const topProductsPipeline = [
       { $match: revenueMatch },
-      { $unwind: "$products" },
+      { $unwind: '$products' },
       {
         $group: {
-          _id: "$products.product",
-          unitsSold: { $sum: "$products.quantity" },
+          _id: '$products.product',
+          unitsSold: { $sum: '$products.quantity' },
           revenue: {
             $sum: {
               $multiply: [
-                { $ifNull: ["$products.quantity", 0] },
-                { $ifNull: ["$products.price", 0] },
+                { $ifNull: ['$products.quantity', 0] },
+                { $ifNull: ['$products.price', 0] },
               ],
             },
           },
@@ -159,29 +157,26 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
       { $limit: 5 },
       {
         $lookup: {
-          from: "products",
-          localField: "_id",
-          foreignField: "_id",
-          as: "product",
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'product',
         },
       },
       {
         $project: {
           _id: 0,
-          productId: "$_id",
+          productId: '$_id',
           unitsSold: 1,
           revenue: 1,
           name: {
             $ifNull: [
-              { $arrayElemAt: ["$product.name", 0] },
-              "Unknown product",
+              { $arrayElemAt: ['$product.name', 0] },
+              'Unknown product',
             ],
           },
           image: {
-            $ifNull: [
-              { $arrayElemAt: ["$product.images.url", 0] },
-              null,
-            ],
+            $ifNull: [{ $arrayElemAt: ['$product.images.url', 0] }, null],
           },
         },
       },
@@ -204,11 +199,11 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
     const averageOrderValue = paidOrders > 0 ? totalRevenue / paidOrders : 0;
 
     const statusDistribution = (facet.byStatus || []).map((s) => ({
-      status: s._id || "UNKNOWN",
+      status: s._id || 'UNKNOWN',
       count: s.count,
     }));
     const paymentDistribution = (facet.byPayment || []).map((p) => ({
-      status: p._id || "UNKNOWN",
+      status: p._id || 'UNKNOWN',
       count: p.count,
     }));
 
@@ -242,18 +237,21 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
         {
           $match: {
             createdAt: { $gte: from, $lte: to },
-            orderStatus: { $ne: "CANCELLED" },
+            orderStatus: { $ne: 'CANCELLED' },
           },
         },
         {
           $group: {
             _id: null,
-            revenue: { $sum: "$totalAmount" },
+            revenue: { $sum: '$totalAmount' },
             orders: { $sum: 1 },
           },
         },
       ]);
-      return { revenue: result[0]?.revenue || 0, orders: result[0]?.orders || 0 };
+      return {
+        revenue: result[0]?.revenue || 0,
+        orders: result[0]?.orders || 0,
+      };
     };
 
     const pctChange = (cur, prev) => {
@@ -266,9 +264,9 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
       { $match: revenueMatch },
       {
         $group: {
-          _id: "$user",
+          _id: '$user',
           orders: { $sum: 1 },
-          spend: { $sum: "$totalAmount" },
+          spend: { $sum: '$totalAmount' },
         },
       },
     ];
@@ -277,31 +275,31 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
       { $match: revenueMatch },
       {
         $group: {
-          _id: "$user",
+          _id: '$user',
           orders: { $sum: 1 },
-          spend: { $sum: "$totalAmount" },
+          spend: { $sum: '$totalAmount' },
         },
       },
       { $sort: { spend: -1 } },
       { $limit: 5 },
       {
         $lookup: {
-          from: "users",
-          localField: "_id",
-          foreignField: "_id",
-          as: "user",
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'user',
         },
       },
       {
         $project: {
           _id: 0,
-          userId: "$_id",
+          userId: '$_id',
           orders: 1,
           spend: 1,
           name: {
-            $ifNull: [{ $arrayElemAt: ["$user.name", 0] }, "Unknown customer"],
+            $ifNull: [{ $arrayElemAt: ['$user.name', 0] }, 'Unknown customer'],
           },
-          email: { $ifNull: [{ $arrayElemAt: ["$user.email", 0] }, ""] },
+          email: { $ifNull: [{ $arrayElemAt: ['$user.email', 0] }, ''] },
         },
       },
     ];
@@ -318,15 +316,15 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
           _id: null,
           totalProducts: { $sum: 1 },
           outOfStock: {
-            $sum: { $cond: [{ $lte: ["$stock", 0] }, 1, 0] },
+            $sum: { $cond: [{ $lte: ['$stock', 0] }, 1, 0] },
           },
           lowStock: {
             $sum: {
               $cond: [
                 {
                   $and: [
-                    { $gt: ["$stock", 0] },
-                    { $lte: ["$stock", lowStockThreshold] },
+                    { $gt: ['$stock', 0] },
+                    { $lte: ['$stock', lowStockThreshold] },
                   ],
                 },
                 1,
@@ -337,8 +335,8 @@ export const getOrderAnalytics = catchAsyncErrors(async (req, res) => {
           inventoryValue: {
             $sum: {
               $multiply: [
-                { $ifNull: ["$stock", 0] },
-                { $ifNull: ["$price", 0] },
+                { $ifNull: ['$stock', 0] },
+                { $ifNull: ['$price', 0] },
               ],
             },
           },
