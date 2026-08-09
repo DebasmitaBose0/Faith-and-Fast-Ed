@@ -1,26 +1,15 @@
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const buffer = require('buffer');
-if (!buffer.SlowBuffer) {
-  buffer.SlowBuffer = buffer.Buffer;
-}
-import cloudinary from 'cloudinary';
-import cookieParser from 'cookie-parser';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import express from 'express';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import securityMiddleware from './middleware/security.js';
-import connectDB from './config/connectDB.js';
-import validateEnv from './config/validateEnv.js';
-import errorMiddleware from './middleware/errorMiddleware.js';
-import { generalLimiter } from './middleware/rateLimiter.js';
-import requestLogger from './middleware/requestLogger.js';
-import userAuditMiddleware from './middleware/userAuditMiddleware.js';
-import logger from './utils/logger.js';
-import responseWrapper from './middleware/responseWrapper.js';
-
+import cloudinary from "cloudinary";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import morgan from "morgan";
+import connectDB from "./config/connectDB.js";
+import validateEnv from "./config/validateEnv.js";
+import errorMiddleware from "./middleware/error.js";
+import errorMonitor from "./middleware/errorMonitor.js";
 dotenv.config();
 validateEnv();
 
@@ -61,10 +50,9 @@ app.use(
     crossOriginResourcePolicy: false,
   })
 );
-app.use(generalLimiter);
-app.use(requestLogger);
-app.use(userAuditMiddleware);
-app.use(morgan('combined'));
+app.use(limiter);
+app.use(morgan("combined"));
+app.use(errorMonitor);
 app.use(errorMiddleware);
 app.disable('x-powered-by');
 
@@ -145,26 +133,5 @@ connectDB().then(() => {
     logger.info(`Server is running on port ${PORT}`)
   );
 
-  const shutdown = (reason, code = 1) => {
-    logger.error(`Server shutting down: reason=${reason} code=${code}`);
-    server.close(() => process.exit(code));
-    setTimeout(() => process.exit(code), 10_000).unref();
-  };
-
-  process.on('unhandledRejection', (err) => {
-    logger.error(`Unhandled rejection: ${err?.message ?? err}`, {
-      stack: err?.stack,
-    });
-    shutdown('unhandledRejection');
-  });
-
-  process.on('uncaughtException', (err) => {
-    logger.error(`Uncaught exception: ${err?.message ?? err}`, {
-      stack: err?.stack,
-    });
-    shutdown('uncaughtException');
-  });
-
-  process.on('SIGTERM', () => shutdown('SIGTERM', 0));
-  process.on('SIGINT', () => shutdown('SIGINT', 0));
+  setupShutdownHandlers(server);
 });
