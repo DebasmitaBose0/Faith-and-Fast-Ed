@@ -174,108 +174,103 @@ const CreateOrder = () => {
             ) : (
               <motion.div variants={itemVariants} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="Full Name *"
-                    value={orderData.guestInfo.name}
-                    onChange={(e) =>
-                      setOrderData({
-                        ...orderData,
-                        guestInfo: {
-                          ...orderData.guestInfo,
-                          name: e.target.value,
-                        },
-                      })
-                    }
-                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email Address *"
-                    value={orderData.guestInfo.email}
-                    onChange={(e) =>
-                      setOrderData({
-                        ...orderData,
-                        guestInfo: {
-                          ...orderData.guestInfo,
-                          email: e.target.value,
-                        },
-                      })
-                    }
-                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
-                  />
-                  <input
-                    type="tel"
-                    placeholder="Mobile Number *"
-                    value={orderData.guestInfo.mobile}
-                    onChange={(e) =>
-                      setOrderData({
-                        ...orderData,
-                        guestInfo: {
-                          ...orderData.guestInfo,
-                          mobile: e.target.value,
-                        },
-                      })
-                    }
-                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Address Line *"
-                    value={orderData.address.address_line}
-                    onChange={(e) =>
-                      setOrderData({
-                        ...orderData,
-                        address: {
-                          ...orderData.address,
-                          address_line: e.target.value,
-                        },
-                      })
-                    }
-                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
-                  />
-                  <input
-                    type="text"
-                    placeholder="City *"
-                    value={orderData.address.city}
-                    onChange={(e) =>
-                      setOrderData({
-                        ...orderData,
-                        address: { ...orderData.address, city: e.target.value },
-                      })
-                    }
-                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
-                  />
-                  <input
-                    type="text"
-                    placeholder="State *"
-                    value={orderData.address.state}
-                    onChange={(e) =>
-                      setOrderData({
-                        ...orderData,
-                        address: {
-                          ...orderData.address,
-                          state: e.target.value,
-                        },
-                      })
-                    }
-                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Pincode *"
-                    value={orderData.address.pincode}
-                    onChange={(e) =>
-                      setOrderData({
-                        ...orderData,
-                        address: {
-                          ...orderData.address,
-                          pincode: e.target.value,
-                        },
-                      })
-                    }
-                    className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500"
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Full Name *"
+                      {...registerGuest('name')}
+                      className={`w-full p-3 border rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500 ${
+                        guestErrors.name ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                    />
+                    {guestErrors.name && (
+                      <p className="text-red-500 text-xs mt-1">{guestErrors.name.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <input
+                      type="email"
+                      placeholder="Email Address *"
+                      {...registerGuest('email')}
+                      className={`w-full p-3 border rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500 ${
+                        guestErrors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                    />
+                    {guestErrors.email && (
+                      <p className="text-red-500 text-xs mt-1">{guestErrors.email.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <input
+                      type="tel"
+                      placeholder="Mobile Number *"
+                      {...registerGuest('mobile')}
+                      className={`w-full p-3 border rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500 ${
+                        guestErrors.mobile ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                    />
+                    {guestErrors.mobile && (
+                      <p className="text-red-500 text-xs mt-1">{guestErrors.mobile.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Address Line *"
+                      {...registerGuest('address_line')}
+                      className={`w-full p-3 border rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500 ${
+                        guestErrors.address_line ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                    />
+                    {guestErrors.address_line && (
+                      <p className="text-red-500 text-xs mt-1">{guestErrors.address_line.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="City *"
+                      {...registerGuest('city')}
+                      className={`w-full p-3 border rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500 ${
+                        guestErrors.city ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                    />
+                    {guestErrors.city && (
+                      <p className="text-red-500 text-xs mt-1">{guestErrors.city.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="State *"
+                      {...registerGuest('state')}
+                      className={`w-full p-3 border rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500 ${
+                        guestErrors.state ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                    />
+                    {guestErrors.state && (
+                      <p className="text-red-500 text-xs mt-1">{guestErrors.state.message}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Pincode *"
+                      {...registerGuest('pincode')}
+                      className={`w-full p-3 border rounded-lg bg-transparent text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-yellow-500 ${
+                        guestErrors.pincode ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                      }`}
+                    />
+                    {guestErrors.pincode && (
+                      <p className="text-red-500 text-xs mt-1">{guestErrors.pincode.message}</p>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )}

@@ -252,7 +252,7 @@ export const useCheckout = () => {
           dispatch(deleteCartItem(item._id));
         });
         dispatch(getCartItems());
-        navigate('/order-success');
+        navigate('/order-success', { replace: true });
       }
     } catch (err) {
       setUploading(false);
@@ -268,7 +268,7 @@ export const useCheckout = () => {
       dispatch(deleteCartItem(item._id));
     });
     dispatch(getCartItems());
-    navigate('/order-success');
+    navigate('/order-success', { replace: true });
   };
 
   return {
