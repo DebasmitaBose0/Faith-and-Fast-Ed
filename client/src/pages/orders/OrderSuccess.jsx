@@ -1,26 +1,8 @@
-import { useEffect } from 'react';
 import { CheckCircle, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const OrderSuccess = () => {
   const navigate = useNavigate();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-
-    window.history.replaceState(null, '', window.location.href);
-
-    const preventBack = () => {
-      window.history.pushState(null, '', window.location.href);
-    };
-
-    window.history.pushState(null, '', window.location.href);
-    window.addEventListener('popstate', preventBack);
-
-    return () => {
-      window.removeEventListener('popstate', preventBack);
-    };
-  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 px-6">
