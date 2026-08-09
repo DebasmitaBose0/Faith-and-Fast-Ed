@@ -1,49 +1,159 @@
-/**
- * Lightweight JWT helpers for client-side session validation.
- *
- * The auth token issued by the server is a standard JWT whose payload
- * contains an `exp` claim (expiry, in Unix seconds). These helpers decode
- * that payload without any external dependency so the app can tell whether
- * a stored token is still valid before treating the user as authenticated.
- */
+import { jwtDecode } from 'jwt-decode';
 
 /**
- * Decode the payload segment of a JWT.
- * Returns the parsed payload object, or null if the token is missing or
- * malformed (not a decodable three-part JWT).
+ * Decode the payload segment of a JWT using jwt-decode library.
+ * Returns the parsed payload object, or null if token is missing or malformed.
+ *
+ * @param {string} token - JWT token string.
+ * @returns {Object|null} Parsed payload object or null.
  */
 export const decodeToken = (token) => {
-  if (!token || typeof token !== "string") return null;
-
-  const parts = token.split(".");
-  if (parts.length !== 3) return null;
-
+  if (!token || typeof token !== 'string') return null;
   try {
-    // JWT uses base64url; convert to standard base64 before decoding.
-    const base64Url = parts[1];
-    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    const json = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-    return JSON.parse(json);
-  } catch {
+    return jwtDecode(token);
+  } catch (error) {
     return null;
   }
 };
 
 /**
- * Returns true only when the token exists, decodes cleanly, and its `exp`
- * claim is in the future. A missing, malformed, or expired token returns
- * false — so callers can treat "valid token" and "authenticated" as the
- * same thing.
+ * Checks whether a token exists, decodes cleanly, and is unexpired (with optional clock-skew allowance).
+ *
+ * @param {string} token - JWT token string.
+ * @param {number} [clockSkewSeconds=0] - Clock skew allowance in seconds.
+ * @returns {boolean} True if valid and active, false otherwise.
  */
-export const isTokenValid = (token) => {
+export const isTokenValid = (token, clockSkewSeconds = 0) => {
   const payload = decodeToken(token);
-  if (!payload || typeof payload.exp !== "number") return false;
+  if (!payload || typeof payload.exp !== 'number') return false;
 
-  // exp is in seconds; Date.now() is in milliseconds.
-  return payload.exp * 1000 > Date.now();
+  const nowMs = Date.now() - clockSkewSeconds * 1000;
+  return payload.exp * 1000 > nowMs;
+};
+
+/**
+ * Checks whether a valid token will expire within the given threshold (default: 5 minutes).
+ *
+ * @param {string} token - JWT token string.
+ * @param {number} [thresholdMs=300000] - Threshold in milliseconds (default 5 minutes).
+ * @param {number} [clockSkewMs=0] - Clock skew in milliseconds.
+ * @returns {boolean} True if valid but expiring soon, false otherwise.
+ */
+export const isTokenExpiringSoon = (
+  token,
+  thresholdMs = 5 * 60 * 1000,
+  clockSkewMs = 0
+) => {
+  const payload = decodeToken(token);
+  if (!payload || typeof payload.exp !== 'number') return false;
+
+  const expiresAtMs = payload.exp * 1000;
+  const nowMs = Date.now() - clockSkewMs;
+
+  if (expiresAtMs <= nowMs) {
+    // Already expired
+    return false;
+  }
+
+  return expiresAtMs - nowMs <= thresholdMs;
+};
+
+/**
+ * Returns detailed diagnostic information and status about a JWT token.
+ *
+ * @param {string} token - JWT token string.
+ * @param {number} [clockSkewSeconds=0] - Clock skew allowance in seconds.
+ * @returns {Object} Diagnostic details object.
+ */
+export const getTokenDetails = (token, clockSkewSeconds = 0) => {
+  if (!token || typeof token !== 'string') {
+    return {
+      isValid: false,
+      isExpired: false,
+      isExpiringSoon: false,
+      payload: null,
+      expiresAt: null,
+      error: 'TOKEN_MISSING',
+    };
+  }
+
+  const payload = decodeToken(token);
+  if (!payload || typeof payload.exp !== 'number') {
+    return {
+      isValid: false,
+      isExpired: false,
+      isExpiringSoon: false,
+      payload: null,
+      expiresAt: null,
+      error: 'TOKEN_MALFORMED',
+    };
+  }
+
+  const expiresAt = new Date(payload.exp * 1000);
+  const nowMs = Date.now() - clockSkewSeconds * 1000;
+  const isExpired = payload.exp * 1000 <= nowMs;
+  const expiringSoon = isTokenExpiringSoon(token);
+
+  if (isExpired) {
+    return {
+      isValid: false,
+      isExpired: true,
+      isExpiringSoon: false,
+      payload,
+      expiresAt,
+      error: 'TOKEN_EXPIRED',
+    };
+  }
+
+  return {
+    isValid: true,
+    isExpired: false,
+    isExpiringSoon: expiringSoon,
+    payload,
+    expiresAt,
+    error: null,
+  };
+};
+
+/**
+ * Invokes the server refresh token endpoint, updates local storage, and returns the new token.
+ *
+ * @param {Object} axiosInstance - Axios instance to make API request.
+ * @param {string} [endpoint='/api/user/refresh-token'] - Refresh token API URL.
+ * @returns {Promise<string>} The new JWT access token.
+ */
+export const refreshToken = async (
+  axiosInstance,
+  endpoint = '/api/user/refresh-token'
+) => {
+  if (!axiosInstance || typeof axiosInstance.post !== 'function') {
+    throw new Error('Axios instance required for refreshToken');
+  }
+
+  try {
+    const response = await axiosInstance.post(endpoint, {}, { withCredentials: true });
+    const newToken =
+      response.data?.token ||
+      response.data?.accessToken ||
+      response.data?.data?.token;
+
+    if (newToken) {
+      localStorage.setItem('token', newToken);
+      return newToken;
+    }
+
+    throw new Error('No new token returned from refresh endpoint');
+  } catch (error) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    throw error;
+  }
+};
+
+export default {
+  decodeToken,
+  isTokenValid,
+  isTokenExpiringSoon,
+  getTokenDetails,
+  refreshToken,
 };

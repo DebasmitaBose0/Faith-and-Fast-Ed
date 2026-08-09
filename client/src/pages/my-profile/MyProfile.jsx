@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 import { FaUserEdit } from "react-icons/fa";
 import { getSingleDetail } from "@/store/auth-slice/user";
 import { useDispatch, useSelector } from "react-redux";
+import ActivityLogs from "./ActivityLogs";
 import { motion } from "framer-motion";
 import MetaData from "../extras/MetaData";
 
@@ -11,10 +12,11 @@ const MyProfile = () => {
   const fileInputRef = useRef(null);
   const dispatch = useDispatch();
   const { user, loading } = useSelector((state) => state.auth);
+  const [activeSubTab, setActiveSubTab] = useState("info");
 
   // eslint-disable-next-line no-unused-vars
   const [profileImage, setProfileImage] = useState(
-    user ? user.avatar : "https://placehold.co/150x150"
+    user ? user.avatar : 'https://placehold.co/150x150'
   );
 
   useEffect(() => {
@@ -27,7 +29,7 @@ const MyProfile = () => {
     }
   }, [user]);
 
-  const displayFields = ["name", "email", "mobile"];
+  const displayFields = ['name', 'email', 'mobile'];
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -39,8 +41,7 @@ const MyProfile = () => {
     visible: { y: 0, opacity: 1 },
   };
 
-  console.log("User data from Redux:", user);
-
+  console.log('User data from Redux:', user);
 
   return (
     <motion.div
@@ -121,7 +122,7 @@ const MyProfile = () => {
                     <p>Loading...</p>
                   ) : (
                     <img
-                      src={user?.avatar || "https://placehold.co/150x150"}
+                      src={user?.avatar || 'https://placehold.co/150x150'}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
@@ -130,30 +131,57 @@ const MyProfile = () => {
               </div>
               <div>
                 <h2 className="text-xl font-semibold capitalize">
-                  {loading ? "Loading..." : user?.name}
+                  {loading ? 'Loading...' : user?.name}
                 </h2>
                 <p className="text-gray-500 dark:text-gray-400">
-                  {loading ? "Loading..." : user?.role}
+                  {loading ? 'Loading...' : user?.role}
                 </p>
               </div>
             </motion.div>
 
-            <motion.div className="grid gap-4" variants={containerVariants}>
-              {displayFields.map((field) => (
-                <motion.div
-                  key={field}
-                  className="p-4 rounded-lg bg-gray-100 dark:bg-gray-900"
-                  variants={itemVariants}
-                >
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {field.charAt(0).toUpperCase() + field.slice(1)}
-                  </span>
-                  <p className="font-medium ">
-                    {user ? user[field] : "Loading..."}
-                  </p>
-                </motion.div>
-              ))}
-            </motion.div>
+            <div className="flex gap-4 border-b border-gray-200 dark:border-gray-700 mb-6">
+              <button
+                onClick={() => setActiveSubTab("info")}
+                className={`pb-2 text-sm font-semibold border-b-2 transition-all duration-200 ${
+                  activeSubTab === "info"
+                    ? "border-yellow-500 text-yellow-600 dark:border-red-600 dark:text-red-500"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Personal Info
+              </button>
+              <button
+                onClick={() => setActiveSubTab("logs")}
+                className={`pb-2 text-sm font-semibold border-b-2 transition-all duration-200 ${
+                  activeSubTab === "logs"
+                    ? "border-yellow-500 text-yellow-600 dark:border-red-600 dark:text-red-500"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                Activity Logs
+              </button>
+            </div>
+
+            {activeSubTab === "info" ? (
+              <motion.div className="grid gap-4" variants={containerVariants}>
+                {displayFields.map((field) => (
+                  <motion.div
+                    key={field}
+                    className="p-4 rounded-lg bg-gray-100 dark:bg-gray-900"
+                    variants={itemVariants}
+                  >
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {field.charAt(0).toUpperCase() + field.slice(1)}
+                    </span>
+                    <p className="font-medium ">
+                      {user ? user[field] : "Loading..."}
+                    </p>
+                  </motion.div>
+                ))}
+              </motion.div>
+            ) : (
+              <ActivityLogs />
+            )}
           </div>
         </div>
       </div>

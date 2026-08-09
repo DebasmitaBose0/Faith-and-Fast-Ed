@@ -1,5 +1,5 @@
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 /**
  * A consistent, accessible empty-state block used across user-facing pages
@@ -16,7 +16,7 @@ const EmptyState = ({
   onAction,
 }) => {
   const actionClasses =
-    "inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-yellow-500 hover:bg-yellow-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:focus:ring-red-500";
+    'inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-yellow-500 hover:bg-yellow-600 dark:bg-red-600 dark:hover:bg-red-700 text-white font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-400 dark:focus:ring-red-500';
 
   return (
     <div

@@ -1,37 +1,37 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const addressSchema = new mongoose.Schema(
   {
     address_line: {
       type: String,
-      required: [true, "Please provide an address"],
+      required: [true, 'Please provide an address'],
       trim: true,
     },
     city: {
       type: String,
-      required: [true, "Please provide a city"],
+      required: [true, 'Please provide a city'],
       trim: true,
     },
     state: {
       type: String,
-      required: [true, "Please provide a state"],
+      required: [true, 'Please provide a state'],
       trim: true,
     },
     pincode: {
       type: String,
-      required: [true, "Please provide a pincode"],
+      required: [true, 'Please provide a pincode'],
       trim: true,
     },
     country: {
       type: String,
-      required: [true, "Please provide a country"],
+      required: [true, 'Please provide a country'],
       trim: true,
-      default: "India",
+      default: 'India',
     },
     mobile: {
       type: Number,
-      required: [true, "Please provide a mobile number"],
-      match: [/^\d{10}$/, "Please provide a valid 10-digit mobile number"],
+      required: [true, 'Please provide a mobile number'],
+      match: [/^\d{10}$/, 'Please provide a valid 10-digit mobile number'],
     },
     status: {
       type: Boolean,
@@ -39,8 +39,8 @@ const addressSchema = new mongoose.Schema(
     },
     userId: {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
-      required: [true, "User ID is required"],
+      ref: 'User',
+      required: false,
     },
   },
   {
@@ -50,6 +50,6 @@ const addressSchema = new mongoose.Schema(
 
 addressSchema.index({ userId: 1 });
 
-const AddressModel = mongoose.model("address", addressSchema);
+const AddressModel = mongoose.model('address', addressSchema);
 
 export default AddressModel;

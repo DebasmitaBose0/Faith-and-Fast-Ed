@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { X } from "lucide-react";
-import { fetchDiscounts } from "@/store/extra-slice/discount";
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { X } from 'lucide-react';
+import { fetchDiscounts } from '@/store/extra-slice/discount';
 
-const SESSION_KEY = "promoBannerDismissed";
+const SESSION_KEY = 'promoBannerDismissed';
 
 // Return the best active discount to feature — one that is explicitly active,
 // has not yet expired, and has already started. Prefers PERCENTAGE over FIXED
@@ -18,7 +18,7 @@ const pickDiscount = (discounts) => {
     return true;
   });
   if (active.length === 0) return null;
-  const pct = active.find((d) => d.discountType === "PERCENTAGE");
+  const pct = active.find((d) => d.discountType === 'PERCENTAGE');
   return pct || active[0];
 };
 
@@ -53,7 +53,7 @@ const PromoBanner = () => {
   }, [dispatch, discounts.length]);
 
   const handleDismiss = () => {
-    sessionStorage.setItem(SESSION_KEY, "1");
+    sessionStorage.setItem(SESSION_KEY, '1');
     setDismissed(true);
   };
 
@@ -63,7 +63,7 @@ const PromoBanner = () => {
   if (!discount) return null;
 
   const valueText =
-    discount.discountType === "PERCENTAGE"
+    discount.discountType === 'PERCENTAGE'
       ? `${discount.discountValue}% off`
       : `₹${discount.discountValue} off`;
 
@@ -73,10 +73,10 @@ const PromoBanner = () => {
     <div className="relative z-50 w-full bg-gradient-to-r from-yellow-400 via-yellow-300 to-yellow-400 dark:from-yellow-600 dark:via-yellow-500 dark:to-yellow-600 text-yellow-900 dark:text-yellow-950 py-2 px-4">
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-center text-sm font-medium pr-6">
         <span>
-          🎉 Use code{" "}
+          🎉 Use code{' '}
           <span className="font-bold tracking-wide bg-yellow-900/10 px-1.5 py-0.5 rounded">
             {discount.name}
-          </span>{" "}
+          </span>{' '}
           for <span className="font-bold">{valueText}</span>
           {expiry && (
             <span className="ml-1 opacity-80 text-xs">— ends in {expiry}</span>

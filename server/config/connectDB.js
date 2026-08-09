@@ -1,12 +1,13 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import logger from '../utils/logger.js';
 dotenv.config();
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 5000;
 
 if (!process.env.MONGODB_URL) {
-  throw new Error("Please provide MONGODB_URL");
+  throw new Error('Please provide MONGODB_URL');
 }
 
 mongoose.connection.on("disconnected", () => {

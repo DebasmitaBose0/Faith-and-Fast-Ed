@@ -1,100 +1,100 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
-import { XCircle } from "lucide-react";
-import { updateProduct } from "@/store/product-slice/AdminProduct";
-import { getProductDetails } from "@/store/product-slice/productDetails";
-import MetaData from "../extras/MetaData";
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams, Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { motion, AnimatePresence } from 'framer-motion';
+import { XCircle } from 'lucide-react';
+import { updateProduct } from '@/store/product-slice/AdminProduct';
+import { getProductDetails } from '@/store/product-slice/productDetails';
+import MetaData from '../extras/MetaData';
 
 const categories = [
-  "MEN",
-  "WOMEN",
-  "KIDS",
-  "CLOTHING",
-  "FOOTWEAR",
-  "SEASONAL WEAR",
-  "SPECIAL CATEGORIES",
+  'MEN',
+  'WOMEN',
+  'KIDS',
+  'CLOTHING',
+  'FOOTWEAR',
+  'SEASONAL WEAR',
+  'SPECIAL CATEGORIES',
 ];
 
 const subcategories = [
-  "T-Shirts & Polos",
-  "Shirts",
-  "Hoodies & Sweatshirts",
-  "Jackets & Coats",
-  "Sweaters & Cardigans",
-  "Pants & Trousers",
-  "Jeans",
-  "Shorts",
-  "Ethnic Wear (Kurtas, Sarees, Lehengas, etc.)",
-  "Innerwear & Loungewear",
-  "Activewear",
-  "Winter Wear (Thermals, Woolen Caps, Gloves, etc.)",
-  "Summer Wear (Cotton Clothes, Sleeveless Tops, etc.)",
-  "Rainwear (Raincoats, Waterproof Shoes)",
-  "Party Wear",
-  "Office/Formal Wear",
-  "Streetwear",
-  "Sportswear",
-  "Luxury/Fashion Brands",
-  "Sneakers",
-  "Formal Shoes",
-  "Casual Shoes",
-  "Sandals & Slippers",
-  "Boots",
-  "Sports Shoes",
+  'T-Shirts & Polos',
+  'Shirts',
+  'Hoodies & Sweatshirts',
+  'Jackets & Coats',
+  'Sweaters & Cardigans',
+  'Pants & Trousers',
+  'Jeans',
+  'Shorts',
+  'Ethnic Wear (Kurtas, Sarees, Lehengas, etc.)',
+  'Innerwear & Loungewear',
+  'Activewear',
+  'Winter Wear (Thermals, Woolen Caps, Gloves, etc.)',
+  'Summer Wear (Cotton Clothes, Sleeveless Tops, etc.)',
+  'Rainwear (Raincoats, Waterproof Shoes)',
+  'Party Wear',
+  'Office/Formal Wear',
+  'Streetwear',
+  'Sportswear',
+  'Luxury/Fashion Brands',
+  'Sneakers',
+  'Formal Shoes',
+  'Casual Shoes',
+  'Sandals & Slippers',
+  'Boots',
+  'Sports Shoes',
 ];
 
 const colorOptionss = [
-  "Red",
-  "Blue",
-  "Green",
-  "Black",
-  "White",
-  "Yellow",
-  "Purple",
-  "Pink",
-  "Orange",
-  "Rainbow",
-  "Beige",
-  "Grey",
-  "Brown",
-  "Olive",
-  "Cream",
+  'Red',
+  'Blue',
+  'Green',
+  'Black',
+  'White',
+  'Yellow',
+  'Purple',
+  'Pink',
+  'Orange',
+  'Rainbow',
+  'Beige',
+  'Grey',
+  'Brown',
+  'Olive',
+  'Cream',
 ];
 
 const sizes = [
-  "Standard Sizes",
-  "Kids Sizes",
-  "Footwear Sizes",
-  "Plus Sizes",
-  "Custom Sizes",
-  "Tall & Petite Sizes",
-  "Swimwear Sizes",
-  "Sleepwear Sizes",
-  "Maternity Sizes",
+  'Standard Sizes',
+  'Kids Sizes',
+  'Footwear Sizes',
+  'Plus Sizes',
+  'Custom Sizes',
+  'Tall & Petite Sizes',
+  'Swimwear Sizes',
+  'Sleepwear Sizes',
+  'Maternity Sizes',
 ];
 
 const sizeOptionss = [
-  "XS",
-  "S",
-  "M",
-  "L",
-  "XL",
-  "XXL",
-  "XXXL",
-  "4XL",
-  "5XL",
-  "26",
-  "28",
-  "30",
-  "32",
-  "34",
-  "36",
-  "38",
-  "40",
-  "42",
+  'XS',
+  'S',
+  'M',
+  'L',
+  'XL',
+  'XXL',
+  'XXXL',
+  '4XL',
+  '5XL',
+  '26',
+  '28',
+  '30',
+  '32',
+  '34',
+  '36',
+  '38',
+  '40',
+  '42',
 ];
 
 const ProductUpdatePage = () => {
@@ -105,16 +105,16 @@ const ProductUpdatePage = () => {
   const { loading: updating } = useSelector((state) => state.adminProduct);
 
   const [productData, setProductData] = useState({
-    name: "",
-    description: "",
-    price: "",
-    category: "",
-    subcategory: "",
+    name: '',
+    description: '',
+    price: '',
+    category: '',
+    subcategory: '',
     coloroptions: [],
     size: [],
     sizeoptions: [],
-    stock: "",
-    discount: "",
+    stock: '',
+    discount: '',
   });
 
   // Existing images already saved on the product (objects with { url, public_id }).
@@ -124,19 +124,19 @@ const ProductUpdatePage = () => {
   const [newImages, setNewImages] = useState([]);
   const [newImagePreviews, setNewImagePreviews] = useState([]);
   const [fetching, setFetching] = useState(true);
-  const [customColorInput, setCustomColorInput] = useState("");
-  const [customSizeInput, setCustomSizeInput] = useState("");
+  const [customColorInput, setCustomColorInput] = useState('');
+  const [customSizeInput, setCustomSizeInput] = useState('');
 
   useEffect(() => {
     const fetchProductData = async () => {
       try {
         const response = await dispatch(getProductDetails(productId)).unwrap();
         setProductData({
-          name: response.name || "",
-          description: response.description || "",
-          price: response.price ?? "",
-          category: response.category || "",
-          subcategory: response.subcategory || "",
+          name: response.name || '',
+          description: response.description || '',
+          price: response.price ?? '',
+          category: response.category || '',
+          subcategory: response.subcategory || '',
           coloroptions: Array.isArray(response.coloroptions)
             ? response.coloroptions
             : [],
@@ -144,13 +144,15 @@ const ProductUpdatePage = () => {
           sizeoptions: Array.isArray(response.sizeoptions)
             ? response.sizeoptions
             : [],
-          stock: response.stock ?? "",
-          discount: response.discount ?? "",
+          stock: response.stock ?? '',
+          discount: response.discount ?? '',
         });
-        setExistingImages(Array.isArray(response.images) ? response.images : []);
+        setExistingImages(
+          Array.isArray(response.images) ? response.images : []
+        );
       } catch (error) {
         toast.error(
-          typeof error === "string" ? error : "Failed to load product details"
+          typeof error === 'string' ? error : 'Failed to load product details'
         );
       } finally {
         setFetching(false);
@@ -186,7 +188,7 @@ const ProductUpdatePage = () => {
   const toggleOption = (field, option) => {
     setProductData((prev) => {
       const value =
-        field === "coloroptions"
+        field === 'coloroptions'
           ? option.charAt(0).toUpperCase() + option.slice(1).toLowerCase()
           : option;
       const current = prev[field] || [];
@@ -207,7 +209,7 @@ const ProductUpdatePage = () => {
         coloroptions: [...prev.coloroptions, capitalized],
       }));
     }
-    setCustomColorInput("");
+    setCustomColorInput('');
   };
 
   const addCustomSize = () => {
@@ -219,7 +221,7 @@ const ProductUpdatePage = () => {
         sizeoptions: [...prev.sizeoptions, capitalized],
       }));
     }
-    setCustomSizeInput("");
+    setCustomSizeInput('');
   };
 
   const removeOption = (field, option) => {
@@ -232,8 +234,12 @@ const ProductUpdatePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!productData.name || !productData.description || productData.price === "") {
-      toast.error("Name, description and price are required");
+    if (
+      !productData.name ||
+      !productData.description ||
+      productData.price === ''
+    ) {
+      toast.error('Name, description and price are required');
       return;
     }
 
@@ -250,7 +256,7 @@ const ProductUpdatePage = () => {
             category: productData.category,
             subcategory: productData.subcategory,
             stock: productData.stock,
-            discount: productData.discount === "" ? 0 : productData.discount,
+            discount: productData.discount === '' ? 0 : productData.discount,
             coloroptions: productData.coloroptions,
             size: productData.size,
             sizeoptions: productData.sizeoptions,
@@ -259,11 +265,11 @@ const ProductUpdatePage = () => {
         })
       ).unwrap();
 
-      toast.success("Product updated successfully!");
-      navigate("/admin/dashboard");
+      toast.success('Product updated successfully!');
+      navigate('/admin/dashboard');
     } catch (error) {
       toast.error(
-        typeof error === "string" ? error : "Failed to update product"
+        typeof error === 'string' ? error : 'Failed to update product'
       );
     }
   };
@@ -297,7 +303,10 @@ const ProductUpdatePage = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="name"
+            className="block text-gray-700 dark:text-gray-300"
+          >
             Product Name
           </label>
           <input
@@ -447,11 +456,11 @@ const ProductUpdatePage = () => {
               <button
                 key={option}
                 type="button"
-                onClick={() => toggleOption("coloroptions", option)}
+                onClick={() => toggleOption('coloroptions', option)}
                 className={`px-3 py-1 rounded-full border transition ${
                   productData.coloroptions.includes(option)
-                    ? "bg-yellow-600 dark:bg-red-600 text-white border-yellow-600"
-                    : "bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300"
+                    ? 'bg-yellow-600 dark:bg-red-600 text-white border-yellow-600'
+                    : 'bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300'
                 }`}
               >
                 {option}
@@ -480,7 +489,7 @@ const ProductUpdatePage = () => {
                 <motion.button
                   key={option}
                   type="button"
-                  onClick={() => removeOption("coloroptions", option)}
+                  onClick={() => removeOption('coloroptions', option)}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
@@ -504,11 +513,11 @@ const ProductUpdatePage = () => {
               <button
                 key={option}
                 type="button"
-                onClick={() => toggleOption("size", option)}
+                onClick={() => toggleOption('size', option)}
                 className={`px-3 py-1 rounded-full border transition ${
                   productData.size.includes(option)
-                    ? "bg-yellow-600 dark:bg-red-600 text-white border-yellow-600"
-                    : "bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300"
+                    ? 'bg-yellow-600 dark:bg-red-600 text-white border-yellow-600'
+                    : 'bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300'
                 }`}
               >
                 {option}
@@ -516,7 +525,7 @@ const ProductUpdatePage = () => {
             ))}
           </div>
           <div className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-            Selected: {productData.size.join(", ") || "None"}
+            Selected: {productData.size.join(', ') || 'None'}
           </div>
         </div>
 
@@ -530,11 +539,11 @@ const ProductUpdatePage = () => {
               <button
                 key={option}
                 type="button"
-                onClick={() => toggleOption("sizeoptions", option)}
+                onClick={() => toggleOption('sizeoptions', option)}
                 className={`px-3 py-1 rounded-full border transition ${
                   productData.sizeoptions.includes(option)
-                    ? "bg-yellow-600 dark:bg-red-600 text-white border-yellow-600"
-                    : "bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300"
+                    ? 'bg-yellow-600 dark:bg-red-600 text-white border-yellow-600'
+                    : 'bg-white text-gray-700 dark:bg-gray-600 dark:text-white border-gray-300'
                 }`}
               >
                 {option}
@@ -563,7 +572,7 @@ const ProductUpdatePage = () => {
                 <motion.button
                   key={option}
                   type="button"
-                  onClick={() => removeOption("sizeoptions", option)}
+                  onClick={() => removeOption('sizeoptions', option)}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
@@ -605,8 +614,8 @@ const ProductUpdatePage = () => {
             Replace Images (optional)
           </label>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            Leave empty to keep the current images. Selecting new images replaces
-            all existing ones.
+            Leave empty to keep the current images. Selecting new images
+            replaces all existing ones.
           </p>
           <input
             type="file"
@@ -639,7 +648,7 @@ const ProductUpdatePage = () => {
             whileHover={{ scale: updating ? 1 : 1.05 }}
             whileTap={{ scale: updating ? 1 : 0.95 }}
           >
-            {updating ? "Updating…" : "Update Product"}
+            {updating ? 'Updating…' : 'Update Product'}
           </motion.button>
         </div>
       </form>

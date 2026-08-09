@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import { MapPin, PlusCircle, Trash2, Edit2, X } from "lucide-react";
-import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from 'react';
+import { MapPin, PlusCircle, Trash2, Edit2, X } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   userAddress,
   updateUserAddress,
   deleteUserAddress,
   addUserAddress,
-} from "@/store/address-slice/addressSlice";
-import { toast } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
-import { Country, State, City } from "country-state-city";
-import MetaData from "../extras/MetaData";
-import EmptyState from "../components/EmptyState";
+} from '@/store/address-slice/addressSlice';
+import { toast } from 'react-toastify';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Country, State, City } from 'country-state-city';
+import MetaData from '../extras/MetaData';
+import EmptyState from '../components/EmptyState';
 
 const SavedAddress = () => {
   const dispatch = useDispatch();
@@ -21,12 +21,12 @@ const SavedAddress = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    address_line: "",
-    city: "",
-    state: "",
-    pincode: "",
-    mobile: "",
-    country: "",
+    address_line: '',
+    city: '',
+    state: '',
+    pincode: '',
+    mobile: '',
+    country: '',
   });
 
   const [countries, setCountries] = useState([]);
@@ -70,12 +70,12 @@ const SavedAddress = () => {
   const closeEditModal = () => {
     setIsEditing(false);
     setFormData({
-      address_line: "",
-      city: "",
-      state: "",
-      pincode: "",
-      mobile: "",
-      country: "",
+      address_line: '',
+      city: '',
+      state: '',
+      pincode: '',
+      mobile: '',
+      country: '',
     });
   };
 
@@ -83,7 +83,7 @@ const SavedAddress = () => {
     e.preventDefault();
 
     if (!editData?._id) {
-      toast.error("Address ID is missing. Cannot update.");
+      toast.error('Address ID is missing. Cannot update.');
       return;
     }
 
@@ -95,43 +95,43 @@ const SavedAddress = () => {
       !formData.mobile ||
       !formData.country
     ) {
-      toast.error("All fields are required");
+      toast.error('All fields are required');
       return;
     }
 
     if (formData.mobile.length !== 10) {
-      toast.error("Mobile number must be 10 digits");
+      toast.error('Mobile number must be 10 digits');
       return;
     }
 
     if (formData.pincode.length !== 6) {
-      toast.error("Pincode must be 6 digits");
+      toast.error('Pincode must be 6 digits');
       return;
     }
     const updatedData = { ...formData, _id: editData._id };
     dispatch(updateUserAddress(updatedData))
       .unwrap()
       .then(() => {
-        toast.success("Address updated successfully!");
+        toast.success('Address updated successfully!');
         closeEditModal();
       })
-      .catch((err) => toast.error(err.message || "Failed to update address"));
+      .catch((err) => toast.error(err.message || 'Failed to update address'));
   };
 
   const handleDelete = (id) => {
     if (!id) {
-      toast.error("Address ID is missing. Cannot delete.");
+      toast.error('Address ID is missing. Cannot delete.');
       return;
     }
 
     dispatch(deleteUserAddress(id))
       .unwrap()
       .then(() => {
-        toast.success("Address deleted successfully!");
+        toast.success('Address deleted successfully!');
         // Refresh the address list from state instead of reloading the page.
         dispatch(userAddress());
       })
-      .catch((err) => toast.error(err.message || "Failed to delete address"));
+      .catch((err) => toast.error(err.message || 'Failed to delete address'));
   };
 
   const handleAddAddress = (e) => {
@@ -139,18 +139,18 @@ const SavedAddress = () => {
     dispatch(addUserAddress(formData))
       .unwrap()
       .then(() => {
-        toast.success("Address added successfully!");
+        toast.success('Address added successfully!');
         setIsAdding(false);
         setFormData({
-          address_line: "",
-          city: "",
-          state: "",
-          pincode: "",
-          mobile: "",
-          country: "",
+          address_line: '',
+          city: '',
+          state: '',
+          pincode: '',
+          mobile: '',
+          country: '',
         });
       })
-      .catch((err) => toast.error(err.message || "Failed to add address"));
+      .catch((err) => toast.error(err.message || 'Failed to add address'));
   };
 
   const containerVariants = {

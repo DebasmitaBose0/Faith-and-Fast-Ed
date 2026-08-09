@@ -1,18 +1,18 @@
-import axiosInstance from "@/api";
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axiosInstance from '@/api';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // Step 1 — request a password-reset OTP for the given email.
 export const sendResetOtp = createAsyncThunk(
-  "updatePassword/sendResetOtp",
+  'updatePassword/sendResetOtp',
   async (email, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put("/api/user/forgot-password", {
+      const response = await axiosInstance.put('/api/user/forgot-password', {
         email,
       });
       return { ...response.data, email };
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to send reset OTP."
+        error.response?.data?.message || 'Failed to send reset OTP.'
       );
     }
   }
@@ -20,17 +20,17 @@ export const sendResetOtp = createAsyncThunk(
 
 // Step 2 — verify the OTP the user received by email.
 export const verifyResetOtp = createAsyncThunk(
-  "updatePassword/verifyResetOtp",
+  'updatePassword/verifyResetOtp',
   async ({ email, otp }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put("/api/user/verify-otp", {
+      const response = await axiosInstance.put('/api/user/verify-otp', {
         email,
         otp,
       });
       return { ...response.data, email };
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "OTP verification failed."
+        error.response?.data?.message || 'OTP verification failed.'
       );
     }
   }
@@ -38,17 +38,17 @@ export const verifyResetOtp = createAsyncThunk(
 
 // Step 3 — set the new password (requires a verified OTP for this email).
 export const updatePassword = createAsyncThunk(
-  "updatePassword/reset",
+  'updatePassword/reset',
   async (userData, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.put(
-        "/api/user/reset-password",
+        '/api/user/reset-password',
         userData
       );
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Something went wrong."
+        error.response?.data?.message || 'Something went wrong.'
       );
     }
   }
@@ -61,11 +61,11 @@ const initialState = {
   message: null,
   otpSent: false, // step 1 complete
   otpVerified: false, // step 2 complete
-  email: "",
+  email: '',
 };
 
 const updatePasswordSlice = createSlice({
-  name: "updatePassword",
+  name: 'updatePassword',
   initialState,
   reducers: {
     // Reset the whole recovery flow (call on mount / after completion).
@@ -122,7 +122,7 @@ const updatePasswordSlice = createSlice({
         state.loading = false;
         state.success = true;
         state.error = null;
-        state.message = action.payload?.message || "Password updated.";
+        state.message = action.payload?.message || 'Password updated.';
       })
       .addCase(updatePassword.rejected, (state, action) => {
         state.loading = false;
